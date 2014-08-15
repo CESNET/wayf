@@ -1,0 +1,351 @@
+sbody {
+    background-color: #FFFFFF;
+    padding: 0;
+}
+
+#wayf {
+    font-family: Tahoma, helvetica, sans-serif;
+    width: 100%;
+    padding: 0;
+    z-index: 150;
+}
+
+div#wayf > div {
+    background: none repeat scroll 0 0 #FFFFFF;
+/*    border-bottom: 1px solid #BBBBBB; */
+    margin: 0;
+/*    padding: 8px 14px; */
+
+}
+
+
+div#wayf > div.top {
+/*    background: none repeat scroll 0 0 #FFFFFF; */
+    background: none repeat scroll 0 0 #F6F6F6;
+    border-bottom: 1px solid #BBBBBB;
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-height: 2em;
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: .6em;
+}
+
+div#wayf > div.bottom {
+    border-top: 1px solid #BBBBBB;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding-right: 0;
+    padding-left: 0;
+    background-color: #F6F6F6;
+}
+
+#wayf p {
+    margin: 2px;
+    margin-left: 8px;
+    padding: 0;
+}
+
+#wayf .toptitle {
+    color: #666666;
+/*    font-family: Tahoma,Helvetica, sans-serif; */
+    font-weight: normal;
+}
+
+#wayf .content {
+/*    max-height: 450px; */
+/*    overflow: auto; */
+    width: 100%;
+    padding: 0;
+}
+
+#wayf div.scroller {
+    padding: 1px 1px 10px;
+}
+
+/* #wayf > */
+div.bottom {
+/*    background: none repeat scroll 0 0 #FFFFFF; */
+/*    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px; */
+    margin: 0;
+    padding: 0.2em 0.6em;
+/*    font-size: 75%; */
+}
+
+/* #wayf > */
+ div.bottom > div.setup {
+    float: left;
+    background: url(gear_wheel.png) no-repeat;
+    width: 1em;
+    height: 2em;
+    cursor:pointer;
+    bottom: -4px;
+    right: -5px;
+}
+
+#wayf .bottom  .lang {
+/*    float: bottom; */
+/*    width: 1em;
+    height: 2em; */
+    cursor: pointer;
+    vertical-align: bottom;
+    margin-right: 2px;
+
+}
+
+#wayf #help {
+    cursor: pointer;
+    color: #CCCCCC;
+/*    font-size: 75%;
+    text-align: right; */
+    float: right;
+    vertical-align: bottom;
+}
+
+#wayf #help .helpimg {
+    margin-left: .2em;
+    vertical-align: bottom;
+/*    bottom: -4px;
+    position: relative;
+    right: -5px;
+*/
+}
+
+#wayf div.scroller hr {
+    margin: 0;
+    padding: 0;
+    clear: both;
+    height: 0;
+    visibility: hidden;
+}
+
+#wayf div.scroller div {
+    background-color: #FFFFFF;
+    border: 1px solid #BBBBBB;
+    border-radius: 3px 3px 3px 3px;
+    color: #333333;
+    display: block;
+/*    font-family: Tahoma,Helvetica,sans-serif; */
+    margin-bottom: 2px;
+    text-decoration: none;
+    text-shadow: 0 1px #FFFFFF;
+    padding: 3px;
+/*    padding: 3px 6px; */
+    outline: medium none;
+}
+
+.topfiller {
+    min-height: 40px;
+    border: none !important;
+}
+
+.bottomfiller {
+    min-height: 16ex;
+    border: none !important;
+}
+
+#wayf div.scroller img.logo {
+    float: right;
+    margin: 0;
+    border: medium none;
+    outline: none;
+}
+
+#wayf div.scroller div span.title {
+    margin-right: 0;
+    color: #333333;
+/*    font-family: "Arial Narrow"; */
+    text-shadow: 0 1px #FFFFFF;
+}
+
+div.closeX {
+    background-color: #FFFFFF;
+    border: none;
+    float: right;
+    margin-right: 8px;
+    margin-top: 0;
+    padding: 0.1em 0.2em;
+    color: #FFFFFF;
+    outline: none;
+    text-decoration: none;
+}
+
+div.closeE {
+    background-color: #FFFFFF;
+    border: 1px solid #BBBBBB;
+    border-radius: 3px 3px 3px 3px;
+    cursor: pointer;
+    float: right;
+    margin-right: 8px;
+    margin-top: 0;
+    padding: 0.1em 0.2em;
+    color: #444444;
+    outline: medium none;
+    text-decoration: none;
+    position: fixed;
+    right: 8px;
+    top: 2px;
+}
+
+div.closeE:hover {
+    background-color: #fff;
+    border: 1px solid #000! important;
+}
+
+div.enabled {
+    cursor: pointer;
+    padding: 30px 60px;
+}
+
+#wayf div.scroller div.enabled:hover  {
+    background-color: #fff;
+    border: 1px solid #000! important;
+}
+
+#wayf div.scroller div.enabled:focus {
+    background-color: #fff;
+    border: 1px solid #000! important;
+}
+
+.button {
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+#wayf .button div.label {
+    border: 1px solid #BBBBBB;
+    background-color: #FFFFFF;
+    border-radius: 3px 3px 3px 3px;
+/*    margin: 4px 2px 0 0; */
+    cursor: pointer;
+    margin-right: 8px;
+    margin-left: 8px;
+    padding: 3px 6px;
+    min-height: 40px;
+}
+#wayf div.button div.label span {
+    vertical-align: middle;
+}
+
+#wayf div.button div.label:hover {
+    background-color: #fff;
+    border: 1px solid #000! important;
+}
+
+.idpdiv {
+    border: 1px solid;
+    padding: .7em;
+    border-radius:10px; -moz-border-radius:10px;
+    height: 3em;
+}
+
+#wayf > div.bottom > div.lang {
+    float: left;
+    width: 1em;
+    height: 2em;
+    margin-right: 0.2em;
+    cursor:pointer;
+    padding: 5px 10px 0 0;
+}
+
+#wayf > div.bottom > div.lang > img {
+    padding: 1px;
+}
+
+span.closeEfiller {
+    float: right;
+    border: solid 1px;
+    padding: 2px 3px;
+    border-radius: 3px;
+    margin-top: 3px;
+    margin-right: 2px;
+    color: #F6F6F6;
+    background-color: #F6F6F6;
+}
+    
+span.closeE {
+    float: right;
+    border: solid 1px #BBBBBB;
+    padding: 2px 3px;
+    border-radius: 3px;
+    margin-top: 3px;
+    margin-right: 2px;
+    cursor: pointer;
+    background-color: #F6F6F6;
+}
+
+span.closeE:hover {
+    border: 1px solid #000! important;
+}
+    
+span.closeE:focus {
+    border: 1px solid #000! important;
+}
+
+div.bwrap {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+button.button {
+    background-color: white;
+    border: 1px solid #BBBBBB;
+    border-radius: 3px 3px 3px 3px;
+    color: #333333;
+    display: block;
+    font-size: 100%;
+    min-height: 40px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.button {
+    margin-bottom: 3px;
+    margin-top: 3px;
+}
+
+#wayf > div.bottom > div.lang {
+    float: left;
+/*
+    width: 1em;
+    height: 2em;
+*/
+    margin-left: 8px;
+    cursor:pointer;
+    padding: 5px 10px 0 0;
+}
+    
+#wayf > div.bottom > div.lang > img {
+    padding: 1px;
+}
+
+#wayf > div.bottom > div.lang > img:hover {
+    border-style: solid;
+    border-width: 1px;
+    padding: 0px;
+}
+
+#wayf > div.bottom > div.lang > img:focus {
+    border-style: solid;
+    border-width: 1px;
+    padding: 0px;
+}
+
+#wayf > div.bottom > div.setup {
+    float: left;
+    background: url(gear_wheel.png) no-repeat;
+    width: 24px;
+    height: 2em;
+    cursor:pointer;
+
+    bottom: -4px;
+/*
+    right: -5px;
+*/
+    margin: 4px 0 0 8px;
+    padding-top: 5px;
+}

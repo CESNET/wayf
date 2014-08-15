@@ -1,0 +1,11 @@
+#paramlist {
+/*  background-color: #EEEEEE; */
+  padding: 5px 20px 20px 20px;
+  margin: 20px 0px 0px 20px;
+    float: left;
+}
+
+.roztah {
+    float: both;
+    width: 100%;
+}

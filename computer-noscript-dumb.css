@@ -1,0 +1,234 @@
+body {
+    background-color: #BBBBBB;
+}
+
+#wayf {
+    font-family: Tahoma,Helvetica,sans-serif;
+    max-width: 50em; 
+    padding: 0;
+    z-index: 150;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top: 2em;
+    overflow: hidden;
+}
+
+div#wayf > div {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-bottom: 1px solid #BBBBBB;
+    margin: 0;
+    padding: 8px 4px;
+}
+
+div#wayf > div.top {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-bottom: 1px solid #BBBBBB;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+#wayf p {
+    margin: 2px;
+    padding: 0;
+}
+
+#wayf .toptitle {
+    color: #666666;
+    font-weight: normal;
+    font-size: 250%;
+}
+
+#wayf .content {
+    overflow: auto;
+    padding: 20px 40px 20px 20px;
+}
+
+#wayf div.scroller {
+    padding: 1px 1px 10px;
+}
+
+#wayf > div.bottom {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    margin: 0;
+    z-index: 100;
+    padding: 8px 14px;
+}
+
+#wayf > div.bottom > div.button {
+    padding: 0 0 4px 0;
+}
+
+#wayf > div.bottom > div.setup {
+    float: left;
+    background: url(gear_wheel.png) no-repeat;
+    width: 2em;
+    height: 2em;
+    cursor:pointer;
+    bottom: -4px;
+    right: -5px;
+    margin: 4px 0 0 0;
+    padding-top: 5px;
+}
+
+#wayf > div.bottom > div.lang {
+    float: left;
+    width: 1em;
+    height: 2em;
+    margin-right: 0.2em;
+    cursor:pointer;
+    padding: 5px 10px 0 0;
+}
+
+#wayf > div.bottom > div.lang > img {
+    padding: 1px;
+}
+
+#wayf > div.bottom > div.lang > img:hover {
+    border-style: solid;
+    border-width: 1px;
+    padding: 0px;
+}
+
+#wayf p#help {
+    color: #CCCCCC;
+    font-size: 75%;
+    text-align: right;
+    vertical-align: baseline;
+
+}
+
+#wayf p#help .helpimg {
+    bottom: -4px;
+    position: relative;
+    right: -5px;
+    margin-left: 0.2em;
+}
+
+#wayf div.scroller hr {
+    margin: 0;
+    padding: 0;
+    clear: both;
+    height: 0;
+    visibility: hidden;
+}
+
+#wayf div.scroller a, #wayf div.scroller button  {
+    background-color: #FFFFFF;
+    border: 1px solid #BBBBBB;
+    border-radius: 3px 3px 3px 3px;
+    color: #333333;
+    display: block;
+    margin: 30px 40px 0 0;
+    text-decoration: none;
+    text-shadow: 0 1px #FFFFFF;
+    padding: 20px 6px;
+    outline: medium none;
+    width: 100%;
+    font-size: 250%;
+}
+
+#wayf div.scroller div.disabled {
+    background-color: #CCCCCC;
+}
+
+
+#wayf div.scroller img.logo {
+    float: right;
+    margin: 0;
+    border: medium none;
+    outline: none;
+}
+
+.trashicon {
+    float: left;
+    border-right: 1px solid #AAAAAA;
+    margin: 0 10px 0 0;
+}
+
+#wayf div.scroller div span.title {
+    margin-right: 0.4em;
+    color: #333333;
+/*    font-family: "Arial Narrow"; */
+    text-shadow: 0 1px #FFFFFF;
+}
+
+div.closeX {
+    background-color: #FFFFFF;
+    border: none;
+    float: right;
+    margin-right: 8px;
+    margin-top: 0;
+    padding: 0.1em 0.2em;
+    color: #FFFFFF;
+    outline: none;
+    text-decoration: none;
+}
+
+button.enabled, a.enabled {
+    cursor: pointer;
+}
+
+#wayf div.scroller button.enabled:hover, #wayf div.scroller button.enabled:hover  {
+    background-color: #fff;
+    border: 1px solid #000! important;
+}
+
+#wayf div.scroller div.disabled  {
+    background-color: #eeeeee;
+}
+
+#wayf div.button a.label {
+    border: 1px solid #BBBBBB;
+    border-radius: 3px 3px 3px 3px;
+    margin: 4px 2px 0 0;
+    cursor: pointer;
+    padding: 3px 6px;
+}
+
+#wayf div.button a.label:hover {
+    background-color: #fff;
+    border: 1px solid #000! important;
+}
+
+.idpdiv {
+    border: 1px solid;
+    padding: .7em;
+    border-radius:10px; -moz-border-radius:10px;
+    height: 3em;
+}
+
+span.closeE:hover, span.closeE:focus {
+    border: 1px solid #000! important;
+  color: #000 !important;
+}
+
+a.button {
+    background-color: white;
+    border: 1px solid #BBBBBB;
+    border-radius: 3px 3px 3px 3px;
+    color: #333333;
+    display: block;
+    font-size: 100%;
+    min-height: 20px;
+/*    min-width: 80px; */
+    text-decoration: none;
+    padding: 10px 130px 10px 130px;
+}
+
+label.label {
+    text-decoration: none;
+    width: 332px;
+}
+
+.button {
+    margin-bottom: 3px;
+    margin-top: 3px;
+}
+
+a.button span.label {
+    color: #555555;
+    margin-left: 130px;
+    margin-bottom: 200px;
+}

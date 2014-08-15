@@ -1,0 +1,297 @@
+#wayf {
+    font-family: Tahoma, Helvetica, sans-serif;
+    margin: 0;
+    max-width: 30em;
+    min-width: 20em;
+    padding: 0;
+    position:absolute;
+    right:10px;
+    top: 30px;
+    bottom: 20px;
+    z-index: 150;
+}
+
+#wayf div.scroller div.disabled  {
+    background-color: #eeeeee;
+}
+
+div#wayf > div {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-bottom: 1px solid #BBBBBB;
+    margin: 0;
+    padding: 8px 14px;
+}
+
+div#wayf > div.top {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-bottom: 1px solid #BBBBBB;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+#wayf p {
+    margin: 2px;
+    padding: 0;
+}
+
+#wayf .toptitle {
+    color: #666666;
+    font-weight: normal;
+}
+
+#wayf .content {
+    max-height: 60%; 
+    overflow: auto;
+}
+
+#wayf div.scroller {
+    padding: 1px 1px 10px;
+}
+
+#wayf > div.bottom {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    margin: 0;
+    padding: 8px 14px;
+}
+
+#wayf > div.bottom > div.setup {
+    float: left;
+    background: url(gear_wheel.png) no-repeat;
+    width: 2em;
+    height: 2em;
+    cursor:pointer;
+    bottom: -4px;
+    right: -5px;
+    margin: 4px 0 0 0;
+    padding-top: 5px;
+}
+
+#wayf > div.bottom > div.lang {
+    float: left;
+    width: 1em;
+    height: 2em;
+    margin-right: 0.2em;
+    cursor:pointer;
+    padding: 5px 10px 0 0;
+}
+
+#wayf > div.bottom > div.lang > img {
+    padding: 1px;
+}
+
+
+#wayf p#help {
+    color: #CCCCCC;
+    font-size: 75%;
+    text-align: right;
+    vertical-align: top;
+    text-decoration: none;
+}
+
+#helpa {
+    text-decoration: none;
+    color: #CCCCCC;
+}
+
+#helpi {
+    position: relative;
+    right: -2px;
+}
+
+#helps {
+    position: relative;
+    bottom: 4px;
+    right: 1px;
+}
+
+#wayf > div.bottom > div.lang > img:hover {
+    border-style: solid;
+    border-width: 1px;
+    padding: 0px;
+}
+
+#wayf p#help .imghelp {
+    bottom: -4px;
+    position: relative;
+    right: -5px;
+    margin-right: .2em;
+}
+
+#wayf div.scroller hr {
+    margin: 0;
+    padding: 0;
+    clear: both;
+    height: 0;
+    visibility: hidden;
+}
+
+#wayf div.scroller div {
+    background-color: #FFFFFF;
+    border: 1px solid #BBBBBB;
+    border-radius: 3px 3px 3px 3px;
+    color: #333333;
+    display: block;
+    margin: 4px 2px 0 0;
+    text-decoration: none;
+    text-shadow: 0 1px #FFFFFF;
+    padding: 3px 6px;
+    outline: medium none;
+}
+
+#wayf div.scroller img.logo {
+    float: right;
+    margin: 0;
+    border: medium none;
+    outline: none;
+}
+
+#wayf div.scroller span.trash {
+    float: left;
+    padding: 5px 5px 7px;
+    margin: 0;
+    border: medium none;
+    outline: none;
+}
+
+#wayf div.scroller div span.title {
+    margin-right: 0.4em;
+    color: #333333;
+    text-shadow: 0 1px #FFFFFF;
+}
+
+div.closeX {
+    background-color: #FFFFFF;
+    border: none;
+    float: right;
+    margin-right: 8px;
+    margin-top: 0;
+    padding: 0.1em 0.2em;
+    color: #FFFFFF;
+    outline: none;
+    text-decoration: none;
+}
+
+div.closeE {
+    background-color: #FFFFFF;
+    border: 1px solid #BBBBBB;
+    border-radius: 3px 3px 3px 3px;
+    cursor: pointer;
+    float: right;
+    margin-right: 0.2em;
+    margin-top: 0;
+    padding: 0.1em 0.2em;
+    color: #444444;
+    outline: medium none;
+    text-decoration: none;
+	z-index: 10;
+}
+
+
+div.closeE:hover {
+    background-color: #fff;
+    border: 1px solid #000! important;
+}
+
+div.enabled {
+    cursor: pointer;
+}
+
+#wayf div.scroller div.enabled:hover  {
+    background-color: #fff;
+    border: 1px solid #000! important;
+}
+
+#wayf div.scroller div.enabled:focus {
+    background-color: #fff;
+    border: 1px solid #000! important;
+}
+
+#wayf div.button div.label {
+    border: 1px solid #BBBBBB;
+    border-radius: 3px 3px 3px 3px;
+    margin: 4px 2px 0 0;
+    cursor: pointer;
+    padding: 3px 6px;
+}
+
+#wayf div.button div.label:hover {
+    background-color: #fff;
+    border: 1px solid #000! important;
+}
+
+.idpdiv {
+    border: 1px solid;
+    padding: .7em;
+    border-radius:10px; -moz-border-radius:10px;
+    height: 3em;
+}
+
+.trashicon {
+    float: left;
+    border-right: 1px solid #AAAAAA;
+    margin: 0 10px 0 0;
+}
+
+span.closeEfiller, span.closeE {
+    float: right;
+    border: solid 1px;
+    padding: 2px 3px;
+    border-radius: 3px;
+    margin-top: 3px;
+    margin-right: 2px;
+    font-size: 13;
+}
+
+span.closeEfiller {
+  color: white;
+}
+span.closeE {
+  cursor: pointer;
+  border-color: #BBBBBB;
+  color: #333;
+}
+
+span.closeE:hover, span.closeE:focus {
+    border: 1px solid #000! important;
+  color: #000 !important;
+}
+
+button.button:hover, button.button:focus {
+    border: 1px solid #000000;
+}
+
+button.button {
+    background-color: white;
+    border: 1px solid #BBBBBB;
+    border-radius: 3px 3px 3px 3px;
+    color: #333333;
+    display: block;
+    font-size: 100%;
+    min-height: 40px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.button {
+    margin-bottom: 3px;
+    margin-top: 3px;
+}
+
+button.button {
+    background-color: white;
+    border: 1px solid #BBBBBB;
+    border-radius: 3px 3px 3px 3px;
+    color: #333333;
+    display: block;
+    font-size: 100%;
+    min-height: 40px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.button {
+    margin-bottom: 3px;
+    margin-top: 3px;
+}

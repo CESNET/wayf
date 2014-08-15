@@ -1,0 +1,6 @@
+div#wayf > div.top {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-bottom: 1px solid #BBBBBB;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
