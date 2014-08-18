@@ -1,0 +1,35 @@
+android.css               - CSS hack for android devices 
+base64.js                 - base64 library
+computer.css              - CSS for desktops without IFRAME
+computer-iframe.css       - CSS for desktops in IFRAME (most commonly used, lazy session)
+computer-noscript.css     - CSS for browsers without javascript
+computer-noscript-dumb.css  - CSS for browsers without javascript and bad implementation of CSS
+computer-shared.css       - CSS for all computer (TODO)
+cs.png                    - Czech language flag
+doc                       - documentation directory
+ds.js                     - WAYF component included to SP web - displays list of IdPs on click to login
+errorpage.css             - CSS of error page
+favicon.ico               - icon of WAYF
+feeds.js                  - standalone application for making filter (subset od displayer IdPs)
+filter.js                 - standalone application for making filter (subset od displayer IdPs)
+filter.php                - standalone application for making filter (subset od displayer IdPs)
+gb.png                    - English language flag
+gear_wheel.png            - settings page icon
+help.png                  - help icon
+jquery.ui.accordion.js    - JQuery library (used only for filter application)
+jquery-ui.css             - JQuery library (used only for filter application)
+jquery-ui.js              - JQuery library (used only for filter application)
+jquery-2.0.0.js           - JQuery library (used only for filter application)
+json2.js                  - hack for browser not supporting JSON format
+libraries.dat             - hack for library institutions (list of IdPs used as access list)
+logo                      - logos directory
+missing.png_b64           - generic logo for institutions without logo in feed metadata
+mobile.css                - CSS for generic mobile device
+Mobile_Detect.php         - library for device detection
+trash_32.png              - trash icon
+trash_48.png              - trash icon
+trash_64.png              - trash icon
+wayf.js                   - WAYF - dynamic version
+wayf.php                  - WAYF - dynamic version
+wayf-static.php           - WAYF - static version (browser without javascript support)
+

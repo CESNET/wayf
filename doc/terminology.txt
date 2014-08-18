@@ -1,0 +1,7 @@
+
+feed - group of IdPs (for example, federations, virtual organizations etc.)
+
+IdP - Identity Provider - user database, make authentization
+
+SP - Service Provider - web presentation with authentization against IdP
+
