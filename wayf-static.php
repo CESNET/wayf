@@ -1,8 +1,22 @@
 <?php
 
-include 'Mobile_Detect.php';
-include '/opt/getMD/lib/SPInfo.php';
+/**
+ * wayf-static.php 
+ *
+ * static version of WAYF (without javascript)
+ *
+ * @version ?.? 2013 - 2014
+ * @author Jan Chvojka jan.chvojka@cesnet.cz
+ * @see getMD - TODO: add link - prepares feed for WAYF
+ * @see Mobile Detect - TODO: add link - browser detection
+ *
+ */
 
+
+include 'Mobile_Detect.php';  // Broser detection library
+include '/opt/getMD/lib/SPInfo.php';  // Feed preparation
+
+// Development mode
 $DEVEL = false;
 $wayfBase = "https://ds.eduid.cz";
 
@@ -16,11 +30,17 @@ else {
     $logFile = "/tmp/wayf.log";
 }
 
+// Messages
 $messages = array(
     "LOGIN" => array("cs" => "Přihlásit účtem", "en" => "Login with" ),
     "CREATE_ACCOUNT" => array("cs" => "Vytvořit účet", "en" => "Create account" ),
 );
 
+/** Function returns label from metadata
+ *
+ * @param $entity - metadata
+ * @return label
+ */
 function getLabelFromEntity($entity) {
     global $lang;
     if(isset($entity["label"][$lang]) && $entity["label"][$lang] != "") {
@@ -35,18 +55,34 @@ function getLabelFromEntity($entity) {
     return $title;
 }
 
+/** Function strCompare - eliminate national character and then compares strings
+ *
+ * @param $str1 - first string to compare
+ * @param $str2 - second string to compare
+ * @return true if string equals
+ */
 function strCompare($str1, $str2) {
     $a = str_replace("Č", "C", $str1);
     $b = str_replace("Č", "C", $str2);
     return strcmp($a, $b);
 }
 
+/** function idpCmp - compares labels of IdP
+ *
+ * @param $a - IdP a
+ * @param $b - IdP b
+ * @return true if IdP labels equals
+ */
 function idpCmp($a, $b) {
     $aLabel = getLabelFromEntity($a);
     $bLabel = getLabelFromEntity($b);
     return strCompare($aLabel, $bLabel);
 }
 
+/** function wlog - log data to logfile
+ *
+ * @param $data - logged data
+ */
 function wlog($data) {
     global $logFile;
     $d = date("Y m d H:i:s");
@@ -56,6 +92,11 @@ function wlog($data) {
     error_log("\n", 3, $logFile);
 }
 
+/** function wdebug - log debug data to logfile
+ *
+ * @param $data - logged data
+ * @param $popis - description 
+ */
 function wdebug($data, $popis) {
     global $logFile;
     $d = date("Y m d H:i:s");
@@ -65,6 +106,10 @@ function wdebug($data, $popis) {
     error_log("\n", 3, $logFile);
 }
 
+/** function getUri - returns uri from $_GET with switched lang
+ *
+ * @param $lang - switch to language $lang
+ */
 function getUri($lang) {
     $uri = "?";
     foreach($_GET as $key => $value) {
@@ -79,6 +124,10 @@ function getUri($lang) {
     return $uri;
 }
 
+/** function getHostelRegistrarUrl - ?
+ *
+ * @return $uri 
+ */
 function getHostelRegistrarUrl() {
     global $wayfURL, $lang, $hostelRegistrarURL;
     $uri = $hostelRegistrarURL . "?";
@@ -94,16 +143,25 @@ function getHostelRegistrarUrl() {
     return $uri;
 }
 
+// Check if SP specified special return entityID variable
 if(isset($_GET['returnIDParam'])) {
     $returnIDVariable = $_GET['returnIDParam'];
 }
 else {
+    // default return in entityID
     $returnIDVariable = 'entityID';
 }
 
+/** function addIdP - add IdP to list displayed IdPs
+ *
+ * param $label - label of IdP
+ * param $id - entityId of IdP
+ * param $logo - logo of IdP
+ */
 function addIdP($label, $id, $logo) {
     global $returnURL, $returnIDVariable, $ban_lib, $lib;
 
+    // if IdP is on banned list and should be banned cancel adding (library nowadays) 
     if($ban_lib) {
         if(in_array($id, $lib)) {
             return;
@@ -119,6 +177,7 @@ function addIdP($label, $id, $logo) {
 
 
 // ---------- Knihovny? Nein, danke! ----------
+// Loading list of banned IdP (library nowadays)
 $ban_lib = false;
 $lib = array();
 if(isset($_GET["k-n-d"])) {
@@ -138,13 +197,16 @@ if(isset($_GET["k-n-d"])) {
 }
 // -------------------------------------------
 
-
+// Web browser detection
 $detect = new Mobile_Detect();
+
+// IE hack - turn off compatible mode in IE
 $edge = "<meta http-equiv=\"X-UA-Compatible\" content=\"edge\" >";
 
 //$doctype = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\" \"http://www.w3.org/TR/html4/frameset.dtd\">\n";
 //$charset = "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">";
 
+// Tested header, it works well
 $doctype = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n";
 $charset = "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n";
 
@@ -165,12 +227,13 @@ $hostelRegistrarURL = 'https://adm.hostel.eduid.cz/registrace';
 $hostelId = "https://idp.hostel.eduid.cz/idp/shibboleth";
 $hostelLabel = "Hostel IdP";
 $hostelLogo = "/logo/idp.hostel.eduid.cz.idp.shibboleth.png";
-$fromHostelRegistrar = $_GET['fromHostel'];
+$fromHostelRegistrar = $_GET['fromHostel'];  // after registration on Hostel
 $allowHostel = false;
 $allowHostelReg = false;
 
 // $_GET["filter"] = "eyAiYWxsb3dGZWVkcyI6IEFycmF5KCJlZHVJRC5jeiIpLCAgImFsbG93SG9zdGVsIjogdHJ1ZSwgImFsbG93SG9zdGVsUmVnIjogdHJ1ZX0=";
 
+// filter and external filter
 if(isset($_GET["filter"])) {
     $extFilter = $_GET["filter"];
 }
@@ -244,7 +307,9 @@ if(isset($_GET['dumb'])) {
     }
 }
 
+
 if(isset($fromHostelRegistrar)) {
+    // Hostel hack - redirect to Hostel to authenticate
     $returnURL = urldecode($_GET['return']);
     $returnURL = $returnURL . "&" . $returnIDVariable . "=" . $hostelId;
     $otherParams = "";
@@ -263,7 +328,7 @@ if(isset($fromHostelRegistrar)) {
     header("Location: " . $returnURL);
 }
 else if(!isset($entityID)) {
-
+    // missing entityID
     echo($doctype);
     echo("<html><head>");
     echo($charset);
@@ -291,11 +356,9 @@ else if(!isset($entityID)) {
     }
     echo("</div><div class=\"roztah\"></div>");
 
-
-
 }
 else {
-
+    // right way, all params available
     $mobile = false;
     if($detect->isMobile() || $detect->isTablet()) {
         $mobile = true;
