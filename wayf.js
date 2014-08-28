@@ -1012,6 +1012,7 @@ Wayf.prototype.listAllIdps = function(forceAll) {
 }
 
 Wayf.prototype.createEntityLink = function(eid) {
-    retURL = returnURL + "&" + returnIDVariable + "=" + eid + otherParams;
+    decodedEid = eid.replace("&amp;", "&");
+    retURL = returnURL + "&" + returnIDVariable + "=" + decodedEid + otherParams;
     return retURL;
 }
