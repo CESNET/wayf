@@ -1,3 +1,18 @@
+/**
+ * wayf.js
+ *
+ * javascript version of WAYF
+ *
+ * @version ?.? 2013 - 2014
+ * @author Jan Chvojka jan.chvojka@cesnet.cz
+ * @author Pavel Polacek pavel.polacek@ujep.cz
+ * @see getMD - TODO: add link - prepares feed for WAYF
+ * @see Mobile Detect - TODO: add link - browser detection
+ *
+ */
+
+
+
 var wayf = "";
 var hostelURL  = 'https://adm.hostel.eduid.cz/registrace';
 var showedIdpList;
@@ -12,7 +27,8 @@ var labels = {
     'IDP_HOSTEL': {'cs':'Hostel IdP', 'en':'Hostel IdP'},
     'SETUP': {'cs':'Nastavení', 'en':'Setup'},
     'CONFIRM_DELETE': {'cs':'Zapomenout ', 'en':'Forget '},
-    'BACK_TITLE': {'cs':'Zpět', 'en':'Back'}
+    'BACK_TITLE': {'cs':'Zpět', 'en':'Back'},
+    'NOT_AVAILABLE': {'cs':'Nedostupný pro tuto službu', 'en':'Not available for this service'}
 }
 
 var mobileVersion = true;
@@ -20,10 +36,12 @@ var hostelEntityID = "https://idp.hostel.eduid.cz/idp/shibboleth";
 var inIframe = false;
 document.domain = "ds.eduid.cz";
 
+// check if local storage is available
 if(localStorage === undefined || localStorage === null) {
     window.location.href = noHTML5URL;
 }
 
+// check support of json, otherwise use 3rd implementation
 if (typeof JSON == 'undefined') {
   var fileref = document.createElement('script')
   fileref.setAttribute("type", "text/javascript")
@@ -31,6 +49,7 @@ if (typeof JSON == 'undefined') {
   document.getElementsByTagName("head")[0].appendChild(fileref)
 }
 
+// check support of Array.prototype, otherwise use 3rd implementation
 if(!Array.prototype.indexOf) {
     Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {
         "use strict";
@@ -64,6 +83,11 @@ if(!Array.prototype.indexOf) {
     }
 }
 
+/** function toAscii - primitive transformation of international characters
+  *
+  * @param data - dato to transformation
+  * @return clear ascii text
+  */
 function toAscii(data) {
     var ret = data;
     ret = ret.replace(/Á/g, "A");
@@ -83,6 +107,8 @@ function toAscii(data) {
     return ret;
 }
 
+/** function isInIframe - returns true if script is embedded in frame
+  */
 function isInIframe() {
     try {
         if(top.location.href != window.location.href) {
@@ -94,8 +120,8 @@ function isInIframe() {
     }
 }
 
-//localStorage.clear();
-
+/** function getAllFeeds - returns all feeds
+  */
 function getAllFeeds() {
     var ret = Array();
     base = "https://ds.eduid.cz/feed/";
@@ -123,12 +149,16 @@ Persistor.prototype.removeItem = function(key) {
     localStorage.removeItem(key);
 }
 
+/** Object View - what user see
+  */
 function View(divId) {
     this.divId = divId;
     var wayDiv = document.getElementById(divId);
     this.wayfDiv = wayDiv;
 }
 
+/** function View.prototype.addButton - insert button 
+  */
 View.prototype.addButton = function(label) {
     var bWrap = document.createElement('div');
     bWrap.className = "bwrap";
@@ -156,6 +186,8 @@ View.prototype.addButton = function(label) {
     }
 }
 
+/** function View.prototype.addNewHostelAccountButton - insert button for creating new account in Hostel
+  */
 View.prototype.addNewHostelAccountButton = function(buttonLabel, label) {
     var bWrap = document.createElement('div');
     bWrap.className = "bwrap";
@@ -188,6 +220,8 @@ View.prototype.addNewHostelAccountButton = function(buttonLabel, label) {
 
 }
 
+/** View.prototype.addHostelIdp - add Hostel to IdP list
+  */
 View.prototype.addHostelIdp = function(label, isSetup) {
     var logoSource = "/logo/idp.hostel.eduid.cz.idp.shibboleth.png";
     var url = returnURL + "&" + returnIDVariable + "=" + hostelEntityID + otherParams;
@@ -212,6 +246,8 @@ View.prototype.createSetupList = function() {
     wayf.listSavedIdps(true);
 }
 
+/** function View.prototype.createContainer - generate <div> container for IdP list
+  */
 View.prototype.createContainer = function(label, showSetup, showClosing, isSetup, langCallback) {
 
     this.wayfDiv = document.createElement('div');
@@ -344,6 +380,8 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     body.appendChild(this.wayfDiv);
 }
 
+/** function View.prototype.deleteContainer - destroy <div> container from page
+  */
 View.prototype.deleteContainer = function() {
     if(this.wayfDiv == null) {
        return;
@@ -360,18 +398,21 @@ View.prototype.deleteContainer = function() {
     }
 }
 
+/** function View.prototype.addIdpToList - insert one Idp to list of Idp in container
+  */
 View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDeleteIcon, enabled) {
     var idpDiv = document.createElement('div');
     if(enabled) {
         idpDiv.className = "enabled";
+        idpDiv.title = label;
     }
     else {
         idpDiv.className = "disabled";
+        idpDiv.title = label + ' ' + this.getLabelText( "NOT_AVAILABLE" );
     }
     if(callback != null) {
         idpDiv.onclick = callback;
     }
-    idpDiv.title = label;
 
     if(showDeleteIcon) {
         var trashIcon = document.createElement('img');
@@ -419,6 +460,8 @@ View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDel
     this.scroller.appendChild(idpDiv);
 }
 
+/** function View.prototype.addTopLabel - insert top label to container
+  */
 View.prototype.addTopLabel = function(text) {
     var topFix = document.createElement('div');
     topFix.className = "topfix";
@@ -432,6 +475,8 @@ View.prototype.addTopLabel = function(text) {
     this.listDiv.appendChild(topFix);
 }
 
+/** function View.prototype.getLabelText - get message statically defined on top of this file (variable labels)
+  */
 View.prototype.getLabelText = function(id) {
     var lab = labels[id];
     if(lab == null) {
@@ -458,6 +503,8 @@ View.prototype.getLabelText = function(id) {
     }
 }
 
+/** Contructor of object Wayf
+  */
 function Wayf(divName) {
     this.feedData = new Array();
     this.divName = divName;
@@ -518,6 +565,8 @@ Wayf.prototype.getQueryVariable = function(variable) {
     return "";
 }
 
+/** function Wayf.prototype.saveUsedIdp - save selected IdP to local persistant memory
+  */
 Wayf.prototype.saveUsedIdp = function(feedId, id) {
     var date = new Date();
     var time = date.getTime();
@@ -567,6 +616,8 @@ Wayf.prototype.saveUsedIdp = function(feedId, id) {
     wayf.persistor.setItem("usedIdps", JSON.stringify(usedIdpsObj));
 }
 
+/** function Wayf.prototype.saveUsedHostelIdp - save selected Hostel to local persistant memory
+  */
 Wayf.prototype.saveUsedHostelIdp = function() {
     var hostelEntity = {"label": {"en": "Hostel IdP", "cs":"Hostel IdP"}, "logo": "/logo/idp.hostel.eduid.cz.idp.shibboleth.png"};
     var date = new Date();
@@ -608,6 +659,8 @@ Wayf.prototype.saveUsedHostelIdp = function() {
     this.persistor.setItem("usedIdps", JSON.stringify(usedIdpsObj));
 }
 
+/** function Wayf.prototype.deleteUsedIdp - dalete selected IdP from local persistant memory
+  */
 Wayf.prototype.deleteUsedIdp = function(id) {
     try {
         var usedIdps = this.persistor.getItem("usedIdps");
@@ -642,6 +695,8 @@ Wayf.prototype.deleteUsedIdp = function(id) {
     }
 }
 
+/** function Wayf.prototype.isIdpInFeed - return true if IdP is in feed
+  */
 Wayf.prototype.isIdpInFeed = function(idp, feed) {
     var feedStr = wayf.persistor.getItem("saved@" + feed);
     if(feedStr == null) {
@@ -656,6 +711,8 @@ Wayf.prototype.isIdpInFeed = function(idp, feed) {
     return false;
 }
 
+/** function Wayf.prototype.getUrlFromFeedId - return URL of feed with feedId
+  */
 Wayf.prototype.getUrlFromFeedId = function(feedId) {
     try {
         var ret = allFeeds[feedId];
@@ -701,14 +758,16 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
     }
 }
 
+/** function listData - starts here - onload page
+  */
 function listData() {
-    inIframe = isInIframe();
+    inIframe = isInIframe();  // running in IFRAME?
     wayf = new Wayf('wayf');
-    if(wayf.userHasSavedIdps()) {
-        wayf.listSavedIdps(false);
+    if(wayf.userHasSavedIdps()) { 
+        wayf.listSavedIdps(false);  // display saved IdPs
     }
     else {
-        wayf.listAllIdps(false);
+        wayf.listAllIdps(false);  // display All IdPs in feeds
     }
 }
 
@@ -735,6 +794,8 @@ Wayf.prototype.getBase64Image = function(url, etag) {
     xmlhttp.send();
 }
 
+/** function Wayf.prototype.userHasSavedIdps - check if local persistant memory is available
+  */
 Wayf.prototype.userHasSavedIdps = function() {
     var usedIdps = this.persistor.getItem("usedIdps");
     if(usedIdps == null) {
@@ -746,6 +807,8 @@ Wayf.prototype.userHasSavedIdps = function() {
     }
 }
 
+/** function Wayf.prototype.getLabelFromLabels - return label of IdP from feed in selected language
+  */
 Wayf.prototype.getLabelFromLabels = function(labels) {
     if(prefLang != "") {
         var flang = labels[prefLang];
@@ -777,6 +840,8 @@ Wayf.prototype.getLabelFromLabels = function(labels) {
     }
 }
 
+/** function Wayf.prototype.listSavedIdps - display saved or all IdP
+  */
 Wayf.prototype.listSavedIdps = function(isSetup) {
     var idpFilter = false;
     var feedFilter = false;
@@ -829,6 +894,7 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
             var logoSource = 'data:image/png;base64,' + entity.logo;
             var enabled = true;
             var enabledIdp = false;
+            var alert_na= this.view.getLabelText( "NOT_AVAILABLE" );
             var callback = null;
             if(isSetup) {
                 callback = (function() {
@@ -901,6 +967,14 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
                         }
                     })();
 
+                } else {
+                    callback = (function() {
+		                    var vlabel = label;
+			                  var valert = alert_na;
+		                    return function() {
+	                        alert( valert + " - " + vlabel );
+		    	              }
+                    })();
                 }
             }
             try {
@@ -919,6 +993,7 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
         this.view.addButton(this.view.getLabelText('BUTTON_NEXT'));
     }
 }
+
 
 Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow) {
     var savedFeedPrefix = "saved@";
