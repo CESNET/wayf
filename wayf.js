@@ -28,7 +28,7 @@ var labels = {
     'SETUP': {'cs':'Nastavení', 'en':'Setup'},
     'CONFIRM_DELETE': {'cs':'Zapomenout ', 'en':'Forget '},
     'BACK_TITLE': {'cs':'Zpět', 'en':'Back'},
-    'NOT_AVAILABLE': {'cs':'Nedostupný pro tuto službu', 'en':'Not available for this service'}
+    'NOT_AVAILABLE': {'cs':'K této službě se nelze přihlásit pomocí', 'en':'Service is not available for'}
 }
 
 var mobileVersion = true;
