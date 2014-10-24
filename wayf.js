@@ -408,7 +408,7 @@ View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDel
     }
     else {
         idpDiv.className = "disabled";
-        idpDiv.title = this.getLabelText( "NOT_AVAILABLE" + ' - ' label );
+        idpDiv.title = this.getLabelText( "NOT_AVAILABLE" ) + ' - ' label;
     }
     if(callback != null) {
         idpDiv.onclick = callback;
