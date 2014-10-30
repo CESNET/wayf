@@ -151,7 +151,7 @@
     <xsl:text>"</xsl:text>
       <xsl:value-of select="@xml:lang"/>
       <xsl:text>": "</xsl:text>
-      <xsl:value-of select="normalize-space(.)"/>
+      <xsl:value-of select="translate(normalize-space(.), '&quot;', '')"/>
       <xsl:text>"</xsl:text>
       <xsl:if test="position()!=last()">
         <xsl:text>,
