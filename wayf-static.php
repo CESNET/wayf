@@ -50,7 +50,18 @@ function getLabelFromEntity($entity) {
         $title = $entity["label"]["cs"];
     }
     else {
-        $title = $entity["label"]["en"];
+        if(isset($entity["label"]["en"])) {
+            $title = $entity["label"]["en"];
+        }
+        else if(isset($entity["label"]["fr"])) {
+            $title = $entity["label"]["fr"];
+        }
+        else if(isset($entity["label"]["es"])) {
+            $title = $entity["label"]["es"];
+        }
+        else if(isset($entity["label"]["de"])) {
+            $title = $entity["label"]["de"];
+        }
     }
     return $title;
 }
@@ -375,7 +386,12 @@ else {
             $feedFile = file_get_contents($feedPath);
             $fd = json_decode($feedFile, true);
             $c_entities = $fd["entities"];
-            $entities = array_merge($entities, $c_entities);
+            if(is_array($c_entities)) {
+                $entities = array_merge($entities, $c_entities);
+            }
+            else {
+                wdebug($c_entities, "Not a feeds array: ");
+            }
         }
     }
     else {
