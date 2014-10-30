@@ -869,7 +869,7 @@ sub startLock {
     my $t = new Proc::ProcessTable;
     my $running = 0;
     foreach $p ( @{$t->table} ){
-	$running++ if ($p==$pid);
+	$running++ if ($p->pid==$pid);
     };
 
     if ($running) {
@@ -888,9 +888,10 @@ sub finishUnlock {
   unlink $f;
 }
 
-END {
-  finishUnlock();
-}
+# Semik: Tohle odstrani fail s lock file a ono to pak bezi Xkrat
+#END {
+#  finishUnlock();
+#}
 
 my $myId = time;
 $conf->define('myId');
@@ -902,8 +903,8 @@ my $ret = $conf->file($cfgFile);
 
 info "getMD: Starting run $myId";
 
+startLock(); 
 createDirs() or die "Error creating directory structure: $!\n";
-startLock();
 
 createDB($conf->spdb_db, $conf->spdb_schema);
 
@@ -920,5 +921,6 @@ while (my $l = $feedFile->getline) {
 
 publish($conf);
 cleanUp();
+finishUnlock();
 info "getMD run $myId finished";
 
