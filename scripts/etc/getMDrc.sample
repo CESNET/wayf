@@ -1,0 +1,53 @@
+# paths
+feedList = <path to feeds on disc>
+signerDir = <path to directory with signing certificates>
+lockFile = <path to lock file>
+
+# Note: myId is defined by the caller before reading this file 
+pubBase = <path on disc to the newest data directory>
+
+downloadBase = <path to base directory with data>
+cacheDir = <path to cache directory>
+
+# The directory (or a symlink) from which the data is read by httpd
+oldPubBase = <old data directory, which has to be unlinked>
+
+downloadDir = $downloadBase/feed
+downloadLogoDir = $downloadBase/logo
+statusDir = $pubBase/status
+oldStatusDir = $oldPubBase/status
+
+feedPubDir = $pubBase/feed
+logoPubDir = $pubBase/logo
+logoPubBaseURI = <http base URI of logos directory>
+logoListDir = $cacheDir/logolists
+
+xslFile = <path to xsl file>
+
+# where are the predefined logo files (missing.png...)?
+logoPredefDir = <path to directory with predefined logos>
+
+# SP database
+[spdb]
+schema = <path to database schema file>
+db = <path to sqlite data file>
+
+# External commands
+[cmd]
+wget = <path to wget binary>
+sqlite = <path to sqlite3 binary>
+xsltproc = <path to xsltproc binary>
+xmlsec = <path to xmlsec1 binary>
+
+# Logo parameters
+[logo]
+max_width = <maximal logo width in pixels>
+max_height = <maximal logo height in pixels>
+
+# How long to keep results fro previous runs
+[oldRun]
+# results from runs older than $max_age (in seconds) will be deleted
+max_age = <maximum age of data in seconds>
+
+# minimum number of results to keep
+min_kept = <minimal kept count of data directories>
