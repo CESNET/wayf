@@ -61,26 +61,31 @@
   
 
   <xsl:template match="md:EntityDescriptor">
-    <xsl:if test="md:IDPSSODescriptor">
-      <xsl:text>"</xsl:text><xsl:value-of select="@entityID"/><xsl:text>":
-   {</xsl:text>
-      <!--      <xsl:apply-templates select="md:IDPSSODescriptor">
+    <xsl:choose>
+      <xsl:when test="@entityID='https://edugain-group.cesnet.cz/idp/shibboleth'"/>
+      <xsl:otherwise>
+	<xsl:if test="md:IDPSSODescriptor">
+	  <xsl:text>"</xsl:text><xsl:value-of select="@entityID"/><xsl:text>":
+	  {</xsl:text>
+	  <!--      <xsl:apply-templates select="md:IDPSSODescriptor">
       </xsl:apply-templates> 
       <xsl:text>,
-</xsl:text> -->
-      <xsl:call-template name="entityDisplayName">
-      </xsl:call-template>
-      <xsl:text>,
-</xsl:text>
-      <xsl:call-template name="entityLogo">
-      </xsl:call-template>
-      <xsl:call-template name="specialEntityParams"/>
-      <xsl:text>}</xsl:text>
-      <xsl:if test="position()!=last()">
-        <xsl:text>,
-</xsl:text>
-      </xsl:if>
-    </xsl:if>
+      </xsl:text> -->
+	  <xsl:call-template name="entityDisplayName">
+	  </xsl:call-template>
+	  <xsl:text>,
+	  </xsl:text>
+	  <xsl:call-template name="entityLogo">
+	  </xsl:call-template>
+	  <xsl:call-template name="specialEntityParams"/>
+	  <xsl:text>}</xsl:text>
+	  <xsl:if test="position()!=last()">
+	    <xsl:text>,
+	    </xsl:text>
+	  </xsl:if>
+	</xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template name="specialEntityParams">
