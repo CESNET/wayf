@@ -632,10 +632,11 @@ sub b64Logo {
   my $tgtFname = $srcFname . "_b64";
 
   $srcF = IO::File->new($srcFname, "r");
-  $tgtF = IO::File->new($tgtFname, "w");
-  my $src = join('',$srcF->getlines);
-  $tgtF->print(encode_base64($src,''));
-  
+  if (defined($srcF)) {
+      $tgtF = IO::File->new($tgtFname, "w");
+      my $src = join('',$srcF->getlines);
+      $tgtF->print(encode_base64($src,''));
+  };  
 }
 
 package main;
