@@ -280,6 +280,11 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     title.className = "toptitle";
     title.innerHTML = label;
 
+    /* search field */
+    var search = document.createElement('input');
+    search.className = "topsearch";
+    search.size = 12;
+
     this.bottom = document.createElement('div');
     this.bottom.className = "bottom";
 
@@ -351,6 +356,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     langEN.appendChild(langENimg);
 
     top.appendChild(title);
+    title.appendChild(search);
 
     if(showClosing && isSetup) {
         if(inIframe) {
@@ -402,13 +408,14 @@ View.prototype.deleteContainer = function() {
   */
 View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDeleteIcon, enabled) {
     var idpDiv = document.createElement('div');
+    idpDiv.id = eid;
     if(enabled) {
         idpDiv.className = "enabled";
         idpDiv.title = label;
     }
     else {
         idpDiv.className = "disabled";
-        idpDiv.title = this.getLabelText( "NOT_AVAILABLE" ) + ' - ' label;
+        idpDiv.title = this.getLabelText( "NOT_AVAILABLE" ) + ' - ' + label;
     }
     if(callback != null) {
         idpDiv.onclick = callback;
@@ -516,8 +523,11 @@ function Wayf(divName) {
     this.LOGO_SUFFIX_BIG = "";
     this.persistor = new Persistor();
     this.view = new View(divName);
+    this.selectedIdps = new Object();  // list of idps, only ones added to view by addIdpToList(), caching results
+    this.lastSearch = '';  // last search string 
     var ifr = false;
     var cssFile = "";
+
     if(inIframe) {
         ifr = true;
         this.view.target = window.parent;
@@ -695,7 +705,7 @@ Wayf.prototype.deleteUsedIdp = function(id) {
     }
 }
 
-/** function Wayf.prototype.isIdpInFeed - return true if IdP is in feed
+/** function Wayf.prototype.isIdpInFeed - return true if IdP is in locally stored feed
   */
 Wayf.prototype.isIdpInFeed = function(idp, feed) {
     var feedStr = wayf.persistor.getItem("saved@" + feed);
@@ -754,6 +764,7 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
                 tgrt.location = murl;
             }
         })();
+        this.selectedIdps[ eid ] = entity.label;
         this.view.addIdpToList(eid, logoSource, label, callback, false, true);
     }
 }
@@ -769,6 +780,35 @@ function listData() {
     else {
         wayf.listAllIdps(false);  // display All IdPs in feeds
     }
+}
+
+// special characters must be escaped in id selector; source http://learn.jquery.com/using-jquery-core/faq/how-do-i-select-an-element-by-an-id-that-has-characters-used-in-css-notation/
+function escapeJquerySelectorsId( myid ) {
+  return "#" + myid.replace( /(:|\.|\[|\])/g, "\\$1" );
+}
+
+function searchAuto( query, wayf, callback, saveQuery ) {
+  var result = [];
+  var usedIdps = wayf.usedIdps;
+
+  if( saveQuery ) {
+    wayf.lastSearch = query;
+  }
+
+  // wayf.view.deleteContainer();  // nedava smysl, pac si clovek smaze i jquery-ui tagy
+  $( ".enabled" ).hide();  // hide all institutions
+  $( ".disabled" ).hide();  // hide even all disabled institions
+
+  // looking at only filtered records
+  for(var entity in this.wayf.selectedIdps ) {
+    for(var curLang in this.wayf.selectedIdps[entity]){
+      if( this.wayf.selectedIdps[entity][curLang].search( new RegExp( query, "i" )) != -1) {
+        $( document.getElementById(entity) ).show();
+      }
+    }
+  }
+
+  // callback( result );  // we don't use autocompletion list
 }
 
 Wayf.prototype.getBase64Image = function(url, etag) {
@@ -856,6 +896,7 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
                 for(feed in filter["allowFeeds"]) {
                     feedUrl = af[filter["allowFeeds"][feed]];
                     wayf.getFeed(feed, feedUrl, false, false, true);
+    
                 }
             }
         }
@@ -866,6 +907,7 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
             wayf.getFeed(feed, feedUrl, false, false, true);
         }
     }
+
 
     var usedIdps = this.usedIdps;
     this.view.deleteContainer();
@@ -978,6 +1020,7 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
                 }
             }
             try {
+                this.selectedIdps[ eid ] = entity.entity.label;
                 this.view.addIdpToList(eid, logoSource, label, callback, isSetup, enableIdp);
             }
             catch(err) {
@@ -992,12 +1035,40 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
     if(!isSetup) {
         this.view.addButton(this.view.getLabelText('BUTTON_NEXT'));
     }
+
+    // jquery-ui
+    var textSearch = this.lastSearch;
+    $(document).ready( function() {
+      $( ".topsearch" ).css("position", "relative");
+      $( ".topsearch" ).css( "float", "right" ); 
+      $( ".topsearch" ).focus();
+      $( ".topsearch" ).val( textSearch );
+      $( ".topsearch" ).autocomplete( {
+        select: function (event, ui)
+        {
+          "use strict";
+          console.debug('select event called');
+          console.debug(ui.item.value);
+        },
+	      source: function( request, response) {
+          var searchFor = request.term;
+          searchAuto( searchFor, wayf, response, true);
+        },
+		    minLength: 0
+      });
+
+      // lastSearch action
+      searchAuto( textSearch, wayf, null, false);
+
+    });
+
 }
 
 
 Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow) {
     var savedFeedPrefix = "saved@";
     var xmlhttp = new XMLHttpRequest();
+    var textSearch = this.lastSearch;
     xmlhttp.feedId = id;
     xmlhttp.onreadystatechange = function() {
         var state = xmlhttp.readyState;
@@ -1021,6 +1092,7 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow) {
                     if(!dontShow) {
                         wayf.listAllData(xmlhttp.feedId, mdSet);
                     }
+
                     break;
                 case 304:
                     if(!dontShow) {
@@ -1030,6 +1102,8 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow) {
                 default:
                     break;
             }
+
+            searchAuto( textSearch, wayf, null, false );       
         }
     };
     var feedStr = wayf.persistor.getItem(savedFeedPrefix + id);
@@ -1046,11 +1120,10 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow) {
 Wayf.prototype.listAllIdps = function(forceAll) {
     var feedFilter = false;
     var idpFilter = false;
-    var langCallback = (function() {
-        return function() {
-            wayf.listAllIdps(forceAll);
-        }
-    })();
+    var langCallback = function() {
+        wayf.listAllIdps(forceAll);
+    }
+
     this.view.deleteContainer();
     this.view.createContainer(this.view.getLabelText('TEXT_ALL_IDPS'), false, inIframe, false, langCallback);
     if(useFilter &&  "allowFeeds" in filter) {
@@ -1065,6 +1138,7 @@ Wayf.prototype.listAllIdps = function(forceAll) {
         }
         var feedUrl = allFeeds[feedId];
         this.getFeed(feedId, feedUrl, false, forceAll, false);
+    
     }
 
     var useHostelIdp = false;
@@ -1079,11 +1153,35 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     }
 
     if(useHostelIdp) {
+        var hostelLabel = { "en":this.view.getLabelText('IDP_HOSTEL') };
+        this.selectedIdps[ hostelEntityID ] = hostelLabel;
         this.view.addHostelIdp(this.view.getLabelText('IDP_HOSTEL'), false);
         if(allowHostelRegistration) {
             this.view.addNewHostelAccountButton(this.view.getLabelText('BUTTON_HOSTEL'), this.view.getLabelText('TEXT_ACCOUNT'));
         }
     }
+
+    // jquery-ui
+    var textSearch = this.lastSearch;
+    $(document).ready( function() {
+      $( ".topsearch" ).css( "position", "relative" );
+      $( ".topsearch" ).css( "float", "right" );
+      $( ".topsearch" ).focus();
+      $( ".topsearch" ).val( textSearch );
+      $( ".topsearch" ).autocomplete( {
+        select: function (event, ui)
+        {
+          "use strict";
+          console.debug('select event called');
+          console.debug(ui.item.value);
+        },
+	      source: function( request, response) {
+          var searchFor = request.term;
+          searchAuto( searchFor, wayf, response, true);
+        },
+		    minLength: 0
+      });
+    });
 }
 
 Wayf.prototype.createEntityLink = function(eid) {
