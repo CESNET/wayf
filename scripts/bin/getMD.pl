@@ -1,10 +1,10 @@
 #!/usr/bin/perl
-# $Id: getMD.pl,v 1.3 2012-11-25 22:07:04 sova Exp $
 
 use AppConfig qw(:expand);
 use Sys::Syslog;
 use Proc::ProcessTable;
 use Data::Dumper;
+
 use lib qw(/opt/getMD/lib);
 use getMD::LogoManip;
 
@@ -249,7 +249,8 @@ use File::Copy;
 use File::Temp;
 use File::Spec::Functions;
 use MIME::Base64;
-
+use JSON;
+use Text::Iconv;
 
 our $wget = '/usr/bin/wget';
 our $sqlite = '/usr/bin/sqlite3';
@@ -493,10 +494,40 @@ sub convert {
     main::err "error converting feed ".$self->{id}.": ".$self->{cmd}{errbuf};
     return;
   };
-  move($self->getTmpJSFname, $self->getPubJSFname) or do {
-    main::err "error moving feed ".$self->getTmpJSFname." to ".$self->getPubJSFname.": $!\n";
+
+  # Semik: Pridani konverze do JSONu
+  #move($self->getTmpJSFname, $self->getPubJSFname) or do {
+  #  main::err "error moving feed ".$self->getTmpJSFname." to ".$self->getPubJSFname.": $!\n";
+  #  return;
+  #};
+  open(F, '<'.$self->getTmpJSFname) or do {
+    main::err "error opening feed ".$self->getTmpJSFname.": $!\n";
     return;
   };
+  my $json = join('', <F>);
+  close(F);
+  my $converter = Text::Iconv->new('utf8', "ascii//TRANSLIT");
+  my $wayf_db = decode_json( $json  );
+
+  foreach my $entity (keys %{$wayf_db->{entities}}) {
+      foreach my $lang (keys %{$wayf_db->{entities}->{$entity}->{label}}) {
+	  my $label = $wayf_db->{entities}->{$entity}->{label}->{$lang};
+	  my $ascii = $converter->convert($label);
+	  if ($label ne $ascii) {
+	      $wayf_db->{entities}->{$entity}->{label}->{"$lang;ascii"} = $ascii;
+	  };
+      };
+  };
+  $json = to_json($wayf_db, {pretty=>1});
+
+  open(F, '>'.$self->getPubJSFname) or do {
+    main::err "error writting feed ".$self->getPubJSFname.": $!\n";
+    return;
+  };
+  binmode(F, ":utf8");
+  print F $json;
+  close(F);
+  unlink($self->getTmpJSFname);
   
   $self;
 }
@@ -641,6 +672,7 @@ sub b64Logo {
 
 package main;
 
+use AppConfig qw(:expand :argcount);
 use IO::File;
 use File::Basename;
 use File::Path qw(make_path remove_tree);
