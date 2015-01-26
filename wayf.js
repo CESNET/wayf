@@ -278,12 +278,21 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
 
     var title = document.createElement('p');
     title.className = "toptitle";
-    title.innerHTML = label;
+    // title.innerHTML = label;
+
+    var toplabel = document.createElement('span');
+    toplabel.innerHTML = label;
 
     /* search field */
     var search = document.createElement('input');
     search.className = "topsearch";
     search.size = 12;
+    search.style.backgroundRepeat="no-repeat";
+    search.style.backgroundPosition="right";
+    search.style.backgroundImage="url('search.png')";
+    if( noSearch ) {
+      search.style.visibility = "hidden";
+    }
 
     this.bottom = document.createElement('div');
     this.bottom.className = "bottom";
@@ -357,6 +366,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
 
     top.appendChild(title);
     title.appendChild(search);
+    title.appendChild(toplabel);
 
     if(showClosing && isSetup) {
         if(inIframe) {
@@ -799,15 +809,28 @@ function searchAuto( query, wayf, callback, saveQuery ) {
   $( ".enabled" ).hide();  // hide all institutions
   $( ".disabled" ).hide();  // hide even all disabled institions
 
+  if( query.length ) {
+    $( ".topsearch").css( "background-Image", "none");
+  } else {
+    $( ".topsearch").css( "background-Image", "url('search.png')");
+  }
+
   // looking at only filtered records
   for(var entity in this.wayf.selectedIdps ) {
     for(var curLang in this.wayf.selectedIdps[entity]){
       if( this.wayf.selectedIdps[entity][curLang].search( new RegExp( query, "i" )) != -1) {
-        $( document.getElementById(entity) ).show();
+        $( document.getElementById( entity ) ).show();
       }
     }
   }
 
+  $( ".topsearch" ).keypress(function(e) {
+    // if pressed key is enter
+    if( e.which == 13 ) {
+      $( ".scroller" ).children( "div:visible" ).first().click();
+    }
+  });
+ 
   // callback( result );  // we don't use autocompletion list
 }
 
@@ -1047,8 +1070,8 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
         select: function (event, ui)
         {
           "use strict";
-          console.debug('select event called');
-          console.debug(ui.item.value);
+          //console.debug('select event called');
+          //console.debug(ui.item.value);
         },
 	      source: function( request, response) {
           var searchFor = request.term;
@@ -1172,8 +1195,8 @@ Wayf.prototype.listAllIdps = function(forceAll) {
         select: function (event, ui)
         {
           "use strict";
-          console.debug('select event called');
-          console.debug(ui.item.value);
+          //console.debug('select event called');
+          //console.debug(ui.item.value);
         },
 	      source: function( request, response) {
           var searchFor = request.term;
