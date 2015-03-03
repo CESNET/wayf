@@ -67,6 +67,7 @@ function urldecodeToArray($url) {
     return $ret_ar;
 }
 
+/* pass variable from php to javascript */
 function addVariable($varName, $varValue, $isRecursion=false) {
     if(!$isRecursion) {
         echo("var $varName = ");
@@ -383,6 +384,12 @@ else {
 	$prefLang = $_GET['lang'];
     }
     addVariable("prefLang", $prefLang);
+
+    $nosearch = 0;
+    if( isset( $_GET['nosearch'] )) {
+      $nosearch = 1;
+    }
+    addVariable( "noSearch", $nosearch );
 
     $referrer = "";
     if(isset($_SERVER['HTTP_REFERER'])) {
