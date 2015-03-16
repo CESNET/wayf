@@ -88,6 +88,33 @@ if(!Array.prototype.indexOf) {
   * @param data - dato to transformation
   * @return clear ascii text
   */
+var map = {
+    "Á": "A",
+    "Č": "C",
+    "Ď": "D",
+    "É": "E",
+    "Ě": "E",
+    "Í": "I",
+    "Ň": "N",
+    "Ó": "O",
+    "Ř": "R",
+    "Š": "S",
+    "Ť": "T",
+    "Ú": "U",
+    "Ý": "Y",
+    "Ž": "Z"
+  };
+
+function replaceEntity(chr) {
+  return map[chr];
+}
+
+function toAscii(data) {
+  var ret = data;
+  return ret.replace(/[ÁČĎÉĚÍŃÓŘŠŤÚÝŽ]/g, replaceEntity );
+}
+
+/* first poor implementation 
 function toAscii(data) {
     var ret = data;
     ret = ret.replace(/Á/g, "A");
