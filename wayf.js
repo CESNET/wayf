@@ -88,23 +88,32 @@ if(!Array.prototype.indexOf) {
   * @param data - dato to transformation
   * @return clear ascii text
   */
+var map = {
+    "Á": "A",
+    "Å": "A",
+    "Č": "C",
+    "Ď": "D",
+    "É": "E",
+    "Ě": "E",
+    "Í": "I",
+    "Ň": "N",
+    "Ó": "O",
+    "Ö": "O",
+    "Ř": "R",
+    "Š": "S",
+    "Ť": "T",
+    "Ú": "U",
+    "Ý": "Y",
+    "Ž": "Z"
+  };
+
+function replaceEntity(chr) {
+  return map[chr];
+}
+
 function toAscii(data) {
-    var ret = data;
-    ret = ret.replace(/Á/g, "A");
-    ret = ret.replace(/Č/g, "C");
-    ret = ret.replace(/Ď/g, "D");
-    ret = ret.replace(/É/g, "E");
-    ret = ret.replace(/Ě/g, "E");
-    ret = ret.replace(/Í/g, "I");
-    ret = ret.replace(/Ň/g, "N");
-    ret = ret.replace(/Ó/g, "O");
-    ret = ret.replace(/Ř/g, "R");
-    ret = ret.replace(/Š/g, "S");
-    ret = ret.replace(/Ť/g, "T");
-    ret = ret.replace(/Ú/g, "U");
-    ret = ret.replace(/Ý/g, "Y");
-    ret = ret.replace(/Ž/g, "Z");
-    return ret;
+  var ret = data;
+  return ret.replace(/[ÁÅČĎÉĚÍŃÓÖŘŠŤÚÝŽ]/g, replaceEntity );
 }
 
 /** function isInIframe - returns true if script is embedded in frame
@@ -290,6 +299,9 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     search.style.backgroundRepeat="no-repeat";
     search.style.backgroundPosition="right";
     search.style.backgroundImage="url('search.png')";
+    search.style.borderRadius="3px";
+    search.style.borderStyle="1px solid #bbb";
+
     if( noSearch ) {
       search.style.visibility = "hidden";
     }
@@ -339,6 +351,8 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
 
     this.scroller = document.createElement('div');
     this.scroller.className = "scroller";
+
+    this.mixela = new Array();
 
     var langCS = document.createElement('div');
     langCS.className = "lang";
@@ -451,7 +465,21 @@ View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDel
     idpDiv.appendChild(idpName);
     idpDiv.appendChild(hr);
 
+    /* idp zaradime abecedne do seznamu bez ohledu na nabodenicka */
     var upLabel = toAscii(label.toUpperCase());
+
+    /* first full hash array, sort and full list */
+    this.mixela[ this.mixela.length ] = [upLabel, idpDiv];
+
+    // sort mixela
+/*
+    this.mixela.sort( function(a,b) {return a[0]>b[0]} );
+    for( var i=0;i<this.mixela.length;i++ ) {
+      this.scroller.appendChild( this.mixela[i][1] );
+    }
+*/
+
+/*
     var nodes = this.scroller.childNodes;
     for (var i=0; i<nodes.length; i++) { 
         var node = nodes.item(i);
@@ -474,7 +502,9 @@ View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDel
             }
         }
     }
+
     this.scroller.appendChild(idpDiv);
+*/
 }
 
 /** function View.prototype.addTopLabel - insert top label to container
@@ -777,6 +807,14 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
         this.selectedIdps[ eid ] = entity.label;
         this.view.addIdpToList(eid, logoSource, label, callback, false, true);
     }
+
+    // sort mixela
+    this.view.mixela.sort( function(a,b) {return a[0]>b[0]} );
+    for( var i=0;i<this.view.mixela.length;i++ ) {
+      this.view.scroller.appendChild( this.view.mixela[i][1] );
+    }
+
+
 }
 
 /** function listData - starts here - onload page
@@ -1059,6 +1097,13 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
         this.view.addButton(this.view.getLabelText('BUTTON_NEXT'));
     }
 
+    // sort mixela
+    this.view.mixela.sort( function(a,b) {return a[0]>b[0]} );
+    for( var i=0;i<this.view.mixela.length;i++ ) {
+      this.view.scroller.appendChild( this.view.mixela[i][1] );
+    }
+
+
     // jquery-ui
     var textSearch = this.lastSearch;
     $(document).ready( function() {
@@ -1184,9 +1229,12 @@ Wayf.prototype.listAllIdps = function(forceAll) {
         }
     }
 
+ 
+
     // jquery-ui
     var textSearch = this.lastSearch;
     $(document).ready( function() {
+
       $( ".topsearch" ).css( "position", "relative" );
       $( ".topsearch" ).css( "float", "right" );
       $( ".topsearch" ).focus();
