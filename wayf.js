@@ -136,7 +136,7 @@ function getAllFeeds() {
     base = "https://ds.eduid.cz/feed/";
     feeds = {'ACONet':'https://wayf.aco.net/aconet-aai-metadata.xml', 'InCommon':'urn:mace:incommon', 'Kalmar2':'kalmarcentral2', 'SURFfederatie':'wayf.surfnet.nl', 'SWITCHAAI':'urn:mace:switch.ch:SWITCHaai', 
              'UKAccessFederation':'http://ukfederation.org.uk', 'eduGAIN':'http://edugain.org/', 'eduID.cz':'https://eduid.cz/metadata', 'Hostel':'https://hostel.eduid.cz/metadata',
-             'LoginMuni':'https://login.ics.muni.cz/metadata', 'ExLibris':'ExLibris'};
+             'LoginMuni':'https://login.ics.muni.cz/metadata', 'ExLibris':'ExLibris', 'Social':'Social'};
     for(feed in feeds) {
         ret[feed] = base + feed+ ".js";
     }
@@ -301,6 +301,8 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     search.style.backgroundImage="url('search.png')";
     search.style.borderRadius="3px";
     search.style.borderStyle="1px solid #bbb";
+    search.style.position="relative";
+    search.style.cssFloat="right";
 
     if( noSearch ) {
       search.style.visibility = "hidden";
@@ -352,7 +354,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     this.scroller = document.createElement('div');
     this.scroller.className = "scroller";
 
-    this.mixela = new Array();
+    this.mixelaHash = new Object();
 
     var langCS = document.createElement('div');
     langCS.className = "lang";
@@ -469,15 +471,7 @@ View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDel
     var upLabel = toAscii(label.toUpperCase());
 
     /* first full hash array, sort and full list */
-    this.mixela[ this.mixela.length ] = [upLabel, idpDiv];
-
-    // sort mixela
-/*
-    this.mixela.sort( function(a,b) {return a[0]>b[0]} );
-    for( var i=0;i<this.mixela.length;i++ ) {
-      this.scroller.appendChild( this.mixela[i][1] );
-    }
-*/
+    this.mixelaHash[ upLabel ] = idpDiv;
 
 /*
     var nodes = this.scroller.childNodes;
@@ -808,13 +802,6 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
         this.view.addIdpToList(eid, logoSource, label, callback, false, true);
     }
 
-    // sort mixela
-    this.view.mixela.sort( function(a,b) {return a[0]>b[0]} );
-    for( var i=0;i<this.view.mixela.length;i++ ) {
-      this.view.scroller.appendChild( this.view.mixela[i][1] );
-    }
-
-
 }
 
 /** function listData - starts here - onload page
@@ -946,6 +933,7 @@ Wayf.prototype.getLabelFromLabels = function(labels) {
 Wayf.prototype.listSavedIdps = function(isSetup) {
     var idpFilter = false;
     var feedFilter = false;
+
     if(useFilter) {
         if("allowIdPs" in filter) {
             idpFilter = true;
@@ -954,18 +942,30 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
             feedFilter = true;
             if(!isSetup) {
                 var af = getAllFeeds();
+                var lastCount = Object.keys(filter["allowFeeds"]).length;
+                var last = false;
+                var i = 0;
                 for(feed in filter["allowFeeds"]) {
+                    i++;
+                    if( i == lastCount ) last = true;
+
                     feedUrl = af[filter["allowFeeds"][feed]];
-                    wayf.getFeed(feed, feedUrl, false, false, true);
+                    wayf.getFeed(filter["allowFeeds"][feed], feedUrl, false, false, true, last);
     
                 }
             }
         }
     }
     else {
+        var lastCount = Object.keys(allFeeds).length;
+        var last = false;
+        var i = 0;
         for(var feed in allFeeds) {
+            i++;
+            if( i == lastCount ) last = true;
+
             var feedUrl = allFeeds[feed];
-            wayf.getFeed(feed, feedUrl, false, false, true);
+            wayf.getFeed(feed, feedUrl, false, false, true, last);
         }
     }
 
@@ -1097,13 +1097,6 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
         this.view.addButton(this.view.getLabelText('BUTTON_NEXT'));
     }
 
-    // sort mixela
-    this.view.mixela.sort( function(a,b) {return a[0]>b[0]} );
-    for( var i=0;i<this.view.mixela.length;i++ ) {
-      this.view.scroller.appendChild( this.view.mixela[i][1] );
-    }
-
-
     // jquery-ui
     var textSearch = this.lastSearch;
     $(document).ready( function() {
@@ -1133,10 +1126,38 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
 }
 
 
-Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow) {
+Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow, last) {
     var savedFeedPrefix = "saved@";
-    var xmlhttp = new XMLHttpRequest();
     var textSearch = this.lastSearch;
+
+    // optimization
+    var tmpFeed;
+    if(typeof wayf.feedData[id] != 'undefined' ) {
+      // data is in memory, so add it to list
+      wayf.listAllData( id, wayf.feedData[id]["mdSet"]);
+
+      if( last ) {
+        // sort mixela
+        var tmpMixela = [];
+        for(var key in wayf.view.mixelaHash) tmpMixela.push( [key, wayf.view.mixelaHash[key] ] );
+          tmpMixela.sort( function(a,b) {
+            return a[0]>b[0]?1:-1;} 
+          );
+      
+        // empty scroller due to duplicity
+        while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild);
+      
+        for( var i=0;i<tmpMixela.length;i++ ) {
+          wayf.view.scroller.appendChild( tmpMixela[i][1] ); 
+        }
+
+        searchAuto( textSearch, wayf, null, false );
+      }
+
+      return;
+    }
+
+    var xmlhttp = new XMLHttpRequest();
     xmlhttp.feedId = id;
     xmlhttp.onreadystatechange = function() {
         var state = xmlhttp.readyState;
@@ -1171,7 +1192,22 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow) {
                     break;
             }
 
-            searchAuto( textSearch, wayf, null, false );       
+            if( last ) { 
+              // sort mixela
+              var tmpMixela = [];
+              for(var key in wayf.view.mixelaHash) tmpMixela.push( [key, wayf.view.mixelaHash[key] ] );
+
+              tmpMixela.sort( function(a,b) {return a[0]>b[0]?1:-1;} );
+
+              // empty scroller due to duplicity
+              while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
+ 
+              for( var i=0;i<tmpMixela.length;i++ ) {
+                wayf.view.scroller.appendChild( tmpMixela[i][1] ); 
+              }
+
+              searchAuto( textSearch, wayf, null, false );
+            }
         }
     };
     var feedStr = wayf.persistor.getItem(savedFeedPrefix + id);
@@ -1197,7 +1233,13 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     if(useFilter &&  "allowFeeds" in filter) {
         feedFilter = true;
     }
+    var lastCount = Object.keys(allFeeds).length;
+    var last = false;
+    var i = 0;
     for(var feedId in allFeeds) {
+        i++;
+        if( i == lastCount ) last = true;
+
         if(feedId == "indexOf") {
             continue;
         }
@@ -1205,7 +1247,7 @@ Wayf.prototype.listAllIdps = function(forceAll) {
             continue;
         }
         var feedUrl = allFeeds[feedId];
-        this.getFeed(feedId, feedUrl, false, forceAll, false);
+        this.getFeed(feedId, feedUrl, false, forceAll, false, last);
     
     }
 
