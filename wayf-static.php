@@ -36,46 +36,49 @@ $messages = array(
     "CREATE_ACCOUNT" => array("cs" => "Vytvořit účet", "en" => "Create account" ),
 );
 
-/** Function returns label from metadata
+/** Function returns label in prefered language from metadata
  *
  * @param $entity - metadata
  * @return label
  */
 function getLabelFromEntity($entity) {
-    global $lang;
+  global $lang;
+    // prefered lang by browser
     if(isset($entity["label"][$lang]) && $entity["label"][$lang] != "") {
         $title = $entity["label"][$lang];
     }
     else if(isset($value["label"]["cs"])) {
+        // prefered lang by authors of wayf
         $title = $entity["label"]["cs"];
     }
+    else if(isset($entity["label"]["en"])) {
+        // standard english label
+        $title = $entity["label"]["en"];
+      
+    }
     else {
-        if(isset($entity["label"]["en"])) {
-            $title = $entity["label"]["en"];
-        }
-        else if(isset($entity["label"]["fr"])) {
-            $title = $entity["label"]["fr"];
-        }
-        else if(isset($entity["label"]["es"])) {
-            $title = $entity["label"]["es"];
-        }
-        else if(isset($entity["label"]["de"])) {
-            $title = $entity["label"]["de"];
+         /* english not exist, use first one description */
+        $title = reset($entity["label"]);
+        if( $title == false ) {
+            $title = $entity ." - unknown description";
         }
     }
+
     return $title;
 }
 
-/** Function strCompare - eliminate national character and then compares strings
+/** Function strCompare - eliminate national character and then compares strings case-insensitive
  *
  * @param $str1 - first string to compare
  * @param $str2 - second string to compare
  * @return true if string equals
  */
 function strCompare($str1, $str2) {
-    $a = str_replace("Č", "C", $str1);
-    $b = str_replace("Č", "C", $str2);
-    return strcmp($a, $b);
+  $search  = array( 'Á', 'Å', 'Č', 'Ď', 'É', 'Ě', 'Í', 'Ň', 'Ó', 'Ö', 'Ř', 'Š', 'Ť', 'Ú', 'Ý', 'Ž', 'ě', 'š', 'č', 'ř', 'ž', 'ý', 'á', 'í', 'é', 'ú', 'ů', 'ď', 'ň', 'ť', 'ó' );
+  $replace = array( 'A', 'A', 'C', 'D', 'E', 'E', 'I', 'N', 'O', 'O', 'R', 'S', 'T', 'U', 'Y', 'Z', 'e', 's', 'c', 'r', 'z', 'y', 'a', 'i', 'e', 'u', 'u', 'd', 'n', 't', 'o' );
+  $a = str_replace( $search, $replace, $str1 );
+  $b = str_replace( $search, $replace, $str2 );  
+  return strcasecmp($a, $b);
 }
 
 /** function idpCmp - compares labels of IdP
