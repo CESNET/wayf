@@ -38,7 +38,12 @@ document.domain = "ds.eduid.cz";
 
 // check if local storage is available
 if(localStorage === undefined || localStorage === null) {
-    window.location.href = noHTML5URL;
+    try {
+        window.location.href = noHTML5URL;
+    }
+    catch(e) {
+	window.location.href = noHTML5URL;
+    } 
 }
 
 // check support of json, otherwise use 3rd implementation
