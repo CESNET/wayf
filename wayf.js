@@ -323,6 +323,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     search.style.backgroundRepeat="no-repeat";
     search.style.backgroundPosition="right";
     search.style.backgroundImage="url('search.png')";
+    search.style.marginRight="10"
     if( noSearch ) {
       search.style.visibility = "hidden";
     }
