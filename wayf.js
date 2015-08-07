@@ -308,8 +308,13 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     search.style.borderStyle="1px solid #bbb";
     search.style.position="relative";
     search.style.cssFloat="right";
-    search.style.marginRight="10px"
+    search.style.visibility = "visible";
+
     if( noSearch ) {
+      search.style.visibility = "hidden";
+    }
+
+    if( noSearchSavedIdps ) {
       search.style.visibility = "hidden";
     }
 
@@ -815,6 +820,7 @@ function listData() {
     inIframe = isInIframe();  // running in IFRAME?
     wayf = new Wayf('wayf');
     if(wayf.userHasSavedIdps()) { 
+        noSearchSavedIdps = true;
         wayf.listSavedIdps(false);  // display saved IdPs
     }
     else {
@@ -1232,6 +1238,8 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     var langCallback = function() {
         wayf.listAllIdps(forceAll);
     }
+
+    noSearchSavedIdps = false;
 
     this.view.deleteContainer();
     this.view.createContainer(this.view.getLabelText('TEXT_ALL_IDPS'), false, inIframe, false, langCallback);
