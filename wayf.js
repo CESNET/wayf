@@ -1114,6 +1114,12 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
 
 
     }
+
+    // vykresli ulozena Idp
+    for(var key in wayf.view.mixelaHash) {
+      wayf.view.scroller.appendChild( wayf.view.mixelaHash[ key ] );
+    }
+
     if(!isSetup) {
         this.view.addButton(this.view.getLabelText('BUTTON_NEXT'));
     }
