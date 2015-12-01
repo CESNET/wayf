@@ -37,14 +37,19 @@ var inIframe = false;
 document.domain = "ds.eduid.cz";
 
 // check if local storage is available
-if(localStorage === undefined || localStorage === null) {
-    try {
-        window.location.href = noHTML5URL;
+
+try {
+    if(localStorage === undefined || localStorage === null) {
+	try {
+    	    window.location.href = noHTML5URL;
+	}
+	catch(e) {
+	    window.location.href = noHTML5URL;
+	}	 
     }
-    catch(e) {
-	window.location.href = noHTML5URL;
-    } 
-}
+} catch (e2) {
+       window.location.href = noHTML5URL;
+} 
 
 // check support of json, otherwise use 3rd implementation
 if (typeof JSON == 'undefined') {
@@ -443,6 +448,11 @@ View.prototype.deleteContainer = function() {
 /** function View.prototype.addIdpToList - insert one Idp to list of Idp in container
   */
 View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDeleteIcon, enabled) {
+
+    if(typeof label == 'undefined') {
+	return;
+    }
+
     var idpDiv = document.createElement('div');
     idpDiv.id = eid;
     if(enabled) {
@@ -1246,6 +1256,31 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     if(useFilter &&  "allowFeeds" in filter) {
         feedFilter = true;
     }
+
+    var useHostelIdp = false;
+    var allowHostelRegistration = false;
+    if(useFilter) {
+        if("allowHostel" in filter) {
+            useHostelIdp = filter.allowHostel;
+        }
+        if("allowHostelReg" in filter) {
+            allowHostelRegistration = filter.allowHostelReg;
+        }
+    }
+
+    if(useHostelIdp) {
+        var hostelLabel = { "en":this.view.getLabelText('IDP_HOSTEL') };
+        this.selectedIdps[ hostelEntityID ] = hostelLabel;
+        // this.view.addHostelIdp(this.view.getLabelText('IDP_HOSTEL'), false);
+        this.view.addHostelIdp('Hostel IdP', false);
+        if(allowHostelRegistration) {
+            this.view.addNewHostelAccountButton(this.view.getLabelText('BUTTON_HOSTEL'), this.view.getLabelText('TEXT_ACCOUNT'));
+        }
+    }
+
+
+
+
     var lastCount = Object.keys(allFeeds).length;
     var last = false;
     var i = 0;
@@ -1264,6 +1299,7 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     
     }
 
+/*
     var useHostelIdp = false;
     var allowHostelRegistration = false;
     if(useFilter) {
@@ -1278,12 +1314,13 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     if(useHostelIdp) {
         var hostelLabel = { "en":this.view.getLabelText('IDP_HOSTEL') };
         this.selectedIdps[ hostelEntityID ] = hostelLabel;
-        this.view.addHostelIdp(this.view.getLabelText('IDP_HOSTEL'), false);
+        // this.view.addHostelIdp(this.view.getLabelText('IDP_HOSTEL'), false);
+        this.view.addHostelIdp('Hostel IdP', false);
         if(allowHostelRegistration) {
             this.view.addNewHostelAccountButton(this.view.getLabelText('BUTTON_HOSTEL'), this.view.getLabelText('TEXT_ACCOUNT'));
         }
     }
-
+*/
  
 
     // jquery-ui
