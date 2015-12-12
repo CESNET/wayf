@@ -1,10 +1,6 @@
 wayf-static.php 
 wayf.php
 wayf.js
-wayf-dev-ui.php
-wayf-dev-ui.js
-wayf-dev.php
-wayf-dev.js
 trash_64.png
 trash_48.png
 trash_32.png
@@ -18,7 +14,6 @@ jquery-ui.js
 jquery-ui.css
 jquery.ui.accordion.js
 jquery-2.0.0.js
-hostname
 help.png
 gear_wheel.png
 gb.png
