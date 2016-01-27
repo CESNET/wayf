@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+# Dependencies: libappconfig-perl libproc-processtable-perl perlmagick  libjson-perl sqlite3 xsltproc xmlsec1 optipng
+
 use AppConfig qw(:expand);
 use Sys::Syslog;
 use Proc::ProcessTable;
