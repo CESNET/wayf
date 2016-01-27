@@ -1,5 +1,22 @@
+#One feed per line:
+#feedURL feedID signingCertificate description
+#
+#feedURL
+# example: https://metadata.eduid.cz/entities/eduid   - download only if modified since
+#          !http://mds.edugain.org/ download all the time
+#feedID
+# example: eduID.cz
+#
+#signingCertificate
+# PEM format
+# file located in etc/signers/ posibly all the chain, see SWITCHaaiMetadataSigningCA2015-18.crt.pem for example
+# see source code for posible prefixes r/k
+#
+#description
+# the rest of line posibly with spaces  
+# --
 http://wayf.aco.net/aconet-metadata.xml ACOnet aconet-metadata-signing.crt ACOnet
-http://metadata.aai.switch.ch/metadata.switchaai.xml SWITCHAAI r:SWITCHaaiMetadataSigningCA2011.crt.pem SWITCH AAI
+http://metadata.aai.switch.ch/metadata.switchaai.xml SWITCHAAI SWITCHaaiMetadataSigningCA2015-18.crt.pem SWITCH AAI
 http://federatie.surfnet.nl/metadata-signed.xml SURFfederatie SURFfederatie.pem SURFfederatie Metadata
 https://metadata.eduid.cz/entities/eduid eduID.cz metadata.eduid.cz.crt.pem eduID.cz
 !http://mds.edugain.org/ eduGAIN edugain-cert.pem eduGAIN 
@@ -10,4 +27,4 @@ https://metadata.eduid.cz/entities/hostel Hostel metadata.eduid.cz.crt.pem Hoste
 https://login.ics.muni.cz/metadata/metadata-signed.xml LoginMuni login.ics.muni.cz.pem LoginMuni
 https://idp-ext.cuni.cz/idp/profile/Metadata/SAML ExLibris ExLibris.pem ExLibris
 https://metadata.eduid.cz/entities/StandaloneIdP StandaloneIdP metadata.eduid.cz.crt.pem StandaloneIdP
-!https://metadata.eduid.cz/static/social Social metadata.eduid.cz.crt.pem Social
+https://metadata.eduid.cz/static/social Social metadata.eduid.cz.crt.pem Social
