@@ -108,7 +108,7 @@ sub run {
   $self->{errcode} = ($?>>8);
   if ($self->{errcode}) {
 # DBG
-    main::dbg "errcode: ".$self->{errcode}."\n";
+    #main::dbg "errcode: ".$self->{errcode}."\n";
     return;
   }
   $self;
@@ -251,6 +251,7 @@ use File::Spec::Functions;
 use MIME::Base64;
 use JSON;
 use Text::Iconv;
+use Data::Dumper;
 
 our $wget = '/usr/bin/wget';
 our $sqlite = '/usr/bin/sqlite3';
@@ -342,12 +343,14 @@ sub verifyXML {
     push @cmdArgs, qw(--trusted);
     push @cmdArgs, $signerFname;
   };
+
   $self->{cmd}
     = getMD::Cmd->new($self->{conf}->cmd_xmlsec,
 		      @cmdArgs,
 #		      qw(--verify --id-attr:ID urn:oasis:names:tc:SAML:2.0:metadata:EntitiesDescriptor --enabled-key-data raw-x509-cert),
 		      $self->getDldFname);
   $self->{cmd}->run or do {
+    main::err join(' ', $self->{conf}->cmd_xmlsec, @cmdArgs, $self->getDldFname);
     main::err "error: XML signature verificaion failed: $!";
     main::err $self->{cmd}{errbuf}."\n";
     return;
@@ -363,6 +366,8 @@ sub downloadLogo {
   my ($self, $url) = @_;
   my $storedFname = $url;
   $storedFname =~ s|^[^:]*://||;
+
+  main::info "Downloading logo from $url";
   $self->{cmd} = getMD::Cmd->new($self->{conf}->cmd_wget,
 				 qw(-t 1 -T 10 -N -x --no-check-certificate),
 				 '-P', $self->{conf}->downloadLogoDir, $url);
@@ -603,8 +608,8 @@ sub listLogos {
 
 sub getLogos {
   my $self = shift;
-  main::info "getLogos(".$self->{id}.")\n";
-  
+  main::info "getLogos(".$self->{id}."; ".$self->getLogoListFname.")\n";
+
   my $fh = IO::File->new($self->getLogoListFname,'r') or do {
     warn "error opening logolist file ".$self->getLogoListFname.":$!";
     return;
@@ -612,16 +617,18 @@ sub getLogos {
   while (my $l = $fh->getline) {
     my $tmpF;
     my $tmpFO;
-    
+
     chomp;
-    next if ($l =~ /^\s*$/);
-    my ($rem, $loc) = split(/\s+/, $l); 
+    next if ($l =~ /^\s*$/); # skip line if it is only whitespace
+    next unless ($l =~ /^(.*)\s+(\S+)$/);
+    my $rem = $1; my $loc = $2;
     my $locURIprefix = $self->{conf}->logoPubBaseURI;
     my $locDir = $self->{conf}->logoPubDir;
     $loc =~ s/^$locURIprefix/$locDir/;
 
     if ($rem =~ /^data:image(.*)$/) {
       my $u = $1;
+
       my (@parts) = split(/[:;,]/, $u);
       my $imgType = $parts[0];
       $imgType =~ s/\///;
@@ -631,15 +638,14 @@ sub getLogos {
 	return;
       };
       my $osel = select($tmpFO); $| = 1; select($osel);
-      print $tmpFO decode_base64($data);
+      $data =~ s/^\s*//;
+      my $decoded = decode_base64($data);
+      print $tmpFO $decoded;
       $tmpF = $tmpFO->filename;
 #      close $tmpFO;
     } else {
       $tmpF = $self->downloadLogo($rem);
     }
-#    if ($tmpF) {
-#      $self->processLogo($tmpF, $loc);
-#    }
     unless ($tmpF and $self->processLogo($tmpF, $loc)) {
       copy(catfile($self->{conf}->logoPredefDir,'missing.png'),$loc);
     }
@@ -667,7 +673,7 @@ sub b64Logo {
       $tgtF = IO::File->new($tgtFname, "w");
       my $src = join('',$srcF->getlines);
       $tgtF->print(encode_base64($src,''));
-  };  
+  };
 }
 
 package main;
@@ -920,11 +926,6 @@ sub finishUnlock {
   my $f = getLockFname();
   unlink $f;
 }
-
-# Semik: Tohle odstrani fail s lock file a ono to pak bezi Xkrat
-#END {
-#  finishUnlock();
-#}
 
 my $myId = time;
 $conf->define('myId');
