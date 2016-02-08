@@ -744,6 +744,12 @@ sub doFeed {
   $f->get or do {
     $f->addToStatusMsg($f->{cmd}{errbuf});
     $f->status(getMD::Feed::Status::ERR_DOWNLOAD);
+    unless ( -e $f->getDldDir) {
+	# File with feed wasn't created and there is no cached version
+	# from past => terminate.
+	main::info "--Prematurely Finished feed $feedID\n";
+	return;
+    };
   };
   my $dlTime = (stat($f->getDldFname))[9] || -1;
   my $cnvTime = (stat($f->getPubJSFname))[9] || -1;
