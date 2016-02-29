@@ -72,7 +72,7 @@ foreach my $file (@{$np->opts->file}) {
 };
 
 if ($result == OK) {
-    $np->nagios_exit($result, "$files_ok files|Total=$files_ok, ".join(' ', @perf));
+    $np->nagios_exit($result, "$files_ok files|Total=$files_ok ".join(' ', @perf));
 } else {
     $np->nagios_exit($result, $error_msg);
 };
