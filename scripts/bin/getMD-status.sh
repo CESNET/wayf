@@ -11,7 +11,7 @@ now=`/bin/date "+%s"`
 
 age=$[$now-$current]
 
-msg="WAYF data are old $age seconds"
+msg="WAYF data are old $age seconds|age=$age"
 
 if [ $age -gt $critical ]
 then
