@@ -307,19 +307,37 @@ sub logStatus {
 sub get {
   my $self = shift;
   my ($src, $opt) = $self->getSrcURL;
-  my @cmdArgs = ('-P', $self->getDldDir);
-  if ($opt eq 'conditional') {
-    push @cmdArgs, qw(-N);
-  } else {
-    push @cmdArgs, ('-O', $self->getDldDir.'/'.$self->{id});
-    mkdir($self->getDldDir) unless -d $self->getDldDir;
-  };
 
-#  $self->{cmd} = getMD::Cmd->new($wget, @cmdArgs, qw(-P),				 $self->getDldDir, $src);
-  $self->{cmd} = getMD::Cmd->new($wget, @cmdArgs, $src);
+  if ($self->{conf}->cmd_curl) {
+    my $srcfile = $src; $srcfile =~ s|.*/||;
+    my $targetfile = $self->getDldDir.'/'.$srcfile;
+    if ($opt eq 'conditional') {
+      my $targetfile = $self->getDldDir.'/'.$self->{id};
+    };
+
+    my @cmdArgs = ('--retry', 1, '--max-time', 10, '--silent', '--show-error', '--insecure',
+		   '--create-dirs',
+		   '--output', $targetfile);
+    push @cmdArgs, ('--time-cond', $targetfile) if ($opt eq 'conditional');
+
+    $self->{cmd} = getMD::Cmd->new($self->{conf}->cmd_curl,
+				   @cmdArgs,
+				   $src);
+  } else {
+    my @cmdArgs = ('-P', $self->getDldDir);
+    if ($opt eq 'conditional') {
+      push @cmdArgs, qw(-N);
+    } else {
+      push @cmdArgs, ('-O', $self->getDldDir.'/'.$self->{id});
+      mkdir($self->getDldDir) unless -d $self->getDldDir;
+    };
+
+    $self->{cmd} = getMD::Cmd->new($wget, @cmdArgs, $src);
+  };
 
   $self->{cmd}->run() or do {
     main::err "error downloading feed ".$self->{id}.": $!";
+    warn join(' ', @{$self->{cmd}->{cmd}});
     warn $self->{cmd}{errbuf}."\n";
     return;
   };
@@ -370,9 +388,23 @@ sub downloadLogo {
   $storedFname =~ s|^[^:]*://||;
 
   main::info "Downloading logo from $url";
-  $self->{cmd} = getMD::Cmd->new($self->{conf}->cmd_wget,
-				 qw(-t 1 -T 10 -N -x --no-check-certificate),
-				 '-P', $self->{conf}->downloadLogoDir, $url);
+
+  # preferujeme curl kdyz je nakonfigurovan
+  if ($self->{conf}->cmd_curl) {
+    my $targetfile = join('/',
+			  $self->{conf}->downloadLogoDir,
+			  $storedFname);
+    $self->{cmd} = getMD::Cmd->new($self->{conf}->cmd_curl,
+				   qw(--retry 1 --max-time 10 --silent --show-error --insecure),
+				   '--output', $targetfile,
+				   '--time-cond', $targetfile,
+				   '--create-dirs',
+				   $url);
+  } else {
+    $self->{cmd} = getMD::Cmd->new($self->{conf}->cmd_wget,
+				   qw(-t 1 -T 10 -N -x --no-check-certificate),
+				   '-P', $self->{conf}->downloadLogoDir, $url);
+  };
   $self->{cmd}->run or do {
     warn "error downloading logo from $url: $!\n";
     warn join(' ', @{$self->{cmd}->{cmd}});
@@ -715,6 +747,7 @@ my $conf = AppConfig->new({CASE	=> 1,
 			     cmd_sqlite
 			     cmd_xsltproc
 			     cmd_xmlsec
+			     cmd_curl
 			     logo_max_width
 			     logo_max_height
 			     logo_fill_width
