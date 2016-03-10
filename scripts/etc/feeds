@@ -15,16 +15,19 @@
 #description
 # the rest of line posibly with spaces  
 # --
-http://wayf.aco.net/aconet-metadata.xml ACOnet aconet-metadata-signing.crt ACOnet
-http://metadata.aai.switch.ch/metadata.switchaai.xml SWITCHAAI SWITCHaaiMetadataSigningCA2015-18.crt.pem SWITCH AAI
-http://federatie.surfnet.nl/metadata-signed.xml SURFfederatie SURFfederatie.pem SURFfederatie Metadata
+# Semik 10.3.2016 - tyhle se nikdy nepouzivaly
+#http://wayf.aco.net/aconet-metadata.xml ACOnet aconet-metadata-signing.crt ACOnet
+#http://metadata.aai.switch.ch/metadata.switchaai.xml SWITCHAAI SWITCHaaiMetadataSigningCA2015-18.crt.pem SWITCH AAI
+# Semik 10.3.2016 - tyhle naposledy pouzity v 03/2015
+#http://federatie.surfnet.nl/metadata-signed.xml SURFfederatie SURFfederatie.pem SURFfederatie Metadata
+#http://metadata.ukfederation.org.uk/ukfederation-metadata.xml UKAccessFederation ukfederation.pem The UK Access Management Federation
+#http://wayf.incommonfederation.org/InCommon/InCommon-metadata.xml InCommon incommon.pem InCommon
+#http://kalmar2.org/simplesaml/module.php/aggregator/?id=kalmarcentral2&set=saml2 Kalmar2 Kalmar2.pem Kalmar2
+
 https://metadata.eduid.cz/entities/eduid eduID.cz metadata.eduid.cz.crt.pem eduID.cz
-!http://mds.edugain.org/ eduGAIN edugain-cert.pem eduGAIN 
-http://kalmar2.org/simplesaml/module.php/aggregator/?id=kalmarcentral2&set=saml2 Kalmar2 Kalmar2.pem Kalmar2
-http://metadata.ukfederation.org.uk/ukfederation-metadata.xml UKAccessFederation ukfederation.pem The UK Access Management Federation
-http://wayf.incommonfederation.org/InCommon/InCommon-metadata.xml InCommon incommon.pem InCommon
 https://metadata.eduid.cz/entities/hostel Hostel metadata.eduid.cz.crt.pem Hostel
-https://login.ics.muni.cz/metadata/metadata-signed.xml LoginMuni login.ics.muni.cz.pem LoginMuni
-https://idp-ext.cuni.cz/idp/profile/Metadata/SAML ExLibris ExLibris.pem ExLibris
 https://metadata.eduid.cz/entities/StandaloneIdP StandaloneIdP metadata.eduid.cz.crt.pem StandaloneIdP
 https://metadata.eduid.cz/static/social Social metadata.eduid.cz.crt.pem Social
+!http://mds.edugain.org/ eduGAIN edugain-cert.pem eduGAIN 
+https://login.ics.muni.cz/metadata/metadata-signed.xml LoginMuni login.ics.muni.cz.pem LoginMuni
+https://idp-ext.cuni.cz/idp/profile/Metadata/SAML ExLibris ExLibris.pem ExLibris
