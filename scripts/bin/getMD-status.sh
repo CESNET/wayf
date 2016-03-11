@@ -5,8 +5,16 @@ warn=$[1*24*60*60]
 # 4 dny
 critical=$[4*24*60*60]
 
+P=/opt/getMD/var/pub/current
+
+if [ ! -e $P ]
+then
+  echo "directory $P does not exist"
+  exit 2
+fi
+
 # resolve link current
-current=`/bin/ls -l /opt/getMD/var/pub/current | /bin/sed 's/.*\/\([0-9]*\)$/\1/'`
+current=`/bin/ls -l $P | /bin/sed 's/.*\/\([0-9]*\)$/\1/'`
 now=`/bin/date "+%s"`
 
 age=$[$now-$current]
