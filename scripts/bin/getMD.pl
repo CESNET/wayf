@@ -10,7 +10,7 @@ use Data::Dumper;
 use lib qw(/opt/getMD/lib);
 use getMD::LogoManip;
 
-$cfgFile = '/opt/getMD/etc/getMDrc';
+my $cfgFile = '/opt/getMD/etc/getMDrc';
 
 openlog('getMD', 'pid', 'daemon');
 
@@ -247,6 +247,7 @@ sub logStatus {
 
 package getMD::Feed;
 
+use strict;
 use File::Copy;
 use File::Temp;
 use File::Spec::Functions;
@@ -308,22 +309,34 @@ sub get {
   my $self = shift;
   my ($src, $opt) = $self->getSrcURL;
 
+  #my $srcfile = $src; $srcfile =~ s|.*/||;
+  my $targetfile = $self->getDldDir.'/'.$self->{id};
   if ($self->{conf}->cmd_curl) {
-    my $srcfile = $src; $srcfile =~ s|.*/||;
-    my $targetfile = $self->getDldDir.'/'.$srcfile;
+    warn "tt: $targetfile\n";
+    # defaultne je veskere stahovani podminene, jen hloupy eduGAINi
+    # server se stim nedovede vyrovat a tak je moznost pred stahovane
+    # url dat ! coz zpusobi ze se to stahuje vzdy znovu.
     if ($opt eq 'conditional') {
-      my $targetfile = $self->getDldDir.'/'.$self->{id};
+      $targetfile = $self->getDldDir.'/'.$self->{id};
     };
+    # navic eduGAINi MDX nema zadny nazev souboru... no nejsou to dementi? ;)
+    $targetfile .= $self->{id} if ($targetfile =~ /\/$/);
+    warn "tt: $targetfile\n";
 
-    my @cmdArgs = ('--retry', 1, '--max-time', 10, '--silent', '--show-error', '--insecure',
+    my @cmdArgs = ('--retry', 1, '--max-time', 180, '--silent', '--show-error', '--insecure',
 		   '--create-dirs',
-		   '--output', $targetfile);
+		   '--output', $targetfile.'.curl');
     push @cmdArgs, ('--time-cond', $targetfile) if ($opt eq 'conditional');
 
+    warn "cmd:".join(' ', @cmdArgs);
     $self->{cmd} = getMD::Cmd->new($self->{conf}->cmd_curl,
 				   @cmdArgs,
 				   $src);
   } else {
+    # wget stahuje podle jmena ktery ma vzdalena strana, pote co jsem
+    # doimplementoval podporu pro curl kde se to vzdy stahuje pod
+    # nasim ID mi tohle prijde jako hloupy napad, ale nechavam to byt
+    # jak to bylo
     my @cmdArgs = ('-P', $self->getDldDir);
     if ($opt eq 'conditional') {
       push @cmdArgs, qw(-N);
@@ -335,15 +348,18 @@ sub get {
     $self->{cmd} = getMD::Cmd->new($wget, @cmdArgs, $src);
   };
 
-  $self->{cmd}->run() or do {
+  if ($self->{cmd}->run()) {
+    rename($targetfile.'.curl', $targetfile) if (-e $targetfile.'.curl');
+  } else {
     main::err "error downloading feed ".$self->{id}.": $!";
+    unlink $targetfile.'.curl' if (-e $targetfile.'.curl');
     warn join(' ', @{$self->{cmd}->{cmd}});
     warn $self->{cmd}{errbuf}."\n";
     return;
   };
-  
+
   main::dbg "dldFile: ". $self->getDldFname."\n";
-  
+
   $self;
 }
 
@@ -390,13 +406,13 @@ sub downloadLogo {
   main::info "Downloading logo from $url";
 
   # preferujeme curl kdyz je nakonfigurovan
+  my $targetfile = join('/',
+			$self->{conf}->downloadLogoDir,
+			$storedFname);
   if ($self->{conf}->cmd_curl) {
-    my $targetfile = join('/',
-			  $self->{conf}->downloadLogoDir,
-			  $storedFname);
     $self->{cmd} = getMD::Cmd->new($self->{conf}->cmd_curl,
 				   qw(--retry 1 --max-time 10 --silent --show-error --insecure),
-				   '--output', $targetfile,
+				   '--output', $targetfile.'.curl',
 				   '--time-cond', $targetfile,
 				   '--create-dirs',
 				   $url);
@@ -405,7 +421,10 @@ sub downloadLogo {
 				   qw(-t 1 -T 10 -N -x --no-check-certificate),
 				   '-P', $self->{conf}->downloadLogoDir, $url);
   };
-  $self->{cmd}->run or do {
+  if ($self->{cmd}->run) {
+    rename($targetfile.'.curl', $targetfile) if (-e $targetfile.'.curl');
+  } else {
+    unlink($targetfile.'.curl') if (-e $targetfile.'.curl');
     warn "error downloading logo from $url: $!\n";
     warn join(' ', @{$self->{cmd}->{cmd}});
     warn $self->{cmd}{errbuf};
@@ -603,7 +622,7 @@ sub registerSPs {
     if (scalar(@ebuf)) {
       main::err "error registering SPs for feed ".$self->{id}.": $!\n";
 #    warn $self->{cmd}->{errbuf}."\n";
-      main::err "ebuf: ".join("\n", $ebuf)."\n";
+      main::err "ebuf: ".join("\n", @ebuf)."\n";
     }
   };
   
@@ -684,7 +703,7 @@ sub getLogos {
       copy(catfile($self->{conf}->logoPredefDir,'missing.png'),$loc);
     }
     $self->b64Logo($loc);
-    close $tmpFO;
+    close $tmpFO if (defined $tmpFO);
   }
   $self;
 }
@@ -702,9 +721,9 @@ sub b64Logo {
   my ($self,$srcFname) = @_;
   my $tgtFname = $srcFname . "_b64";
 
-  $srcF = IO::File->new($srcFname, "r");
+  my $srcF = IO::File->new($srcFname, "r");
   if (defined($srcF)) {
-      $tgtF = IO::File->new($tgtFname, "w");
+      my $tgtF = IO::File->new($tgtFname, "w");
       my $src = join('',$srcF->getlines);
       $tgtF->print(encode_base64($src,''));
   };
@@ -948,7 +967,7 @@ sub startLock {
 
     my $t = new Proc::ProcessTable;
     my $running = 0;
-    foreach $p ( @{$t->table} ){
+    foreach my $p ( @{$t->table} ){
 	$running++ if ($p->pid==$pid);
     };
 
@@ -978,7 +997,7 @@ my $ret = $conf->file($cfgFile);
 
 info "getMD: Starting run $myId";
 
-startLock(); 
+startLock();
 createDirs() or die "Error creating directory structure: $!\n";
 
 createDB($conf->spdb_db, $conf->spdb_schema);
