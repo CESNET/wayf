@@ -1,6 +1,6 @@
 #!/bin/bash
 
-P=/opt/getMD/var/pub/currentX/feed
+P=/opt/getMD/var/pub/current/feed
 
 if [ -d $P ]
 then
