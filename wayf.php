@@ -79,7 +79,7 @@ function addVariable($varName, $varValue, $isRecursion=false) {
     }
 }
 
-$wayfBase = "https://$_SERVER[SERVER_NAME]";
+$wayfBase = "https://" . $_SERVER['SERVER_NAME'];
 $returnURL = $_GET['return'];
 
 if(isset($_GET["filter"])) {
