@@ -1,7 +1,7 @@
 if (typeof JSON == 'undefined') {
   var fileref = document.createElement('script')
   fileref.setAttribute("type", "text/javascript")
-  fileref.setAttribute("src", "https://ds.eduid.cz/json2.js")
+  fileref.setAttribute("src", "/json2.js")
   document.getElementsByTagName("head")[0].appendChild(fileref)
 }
 

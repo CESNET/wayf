@@ -18,18 +18,16 @@ $charset = "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8
 
 $DEVEL = false;
 
-$wayfBase = "https://ds.eduid.cz";
-
 if(isset($DEVEL) && $DEVEL == true) {
-    $failbackWayf = "https://ds.eduid.cz/wayf-static-dev.php";
+    $failbackWayf = "/wayf-static-dev.php";
     $script = file_get_contents("wayf-dev.js");
-    $wayfURL = $wayfBase . "/wayf-dev.php";
+    $wayfURL = "/wayf-dev.php";
     $logFile = "/tmp/wayf-dev.log";
 }
 else {
-    $failbackWayf = "https://ds.eduid.cz/wayf-static.php";
+    $failbackWayf = "/wayf-static.php";
     $script = file_get_contents("wayf.js");
-    $wayfURL = $wayfBase . "/wayf.php";
+    $wayfURL = "/wayf.php";
     $logFile = "/tmp/wayf.log";
 }
 
@@ -437,7 +435,7 @@ else {
 
     if(isset($useHostel)) {
         echo("var useHostel = true;\n");
-        $hostelIdpParams = "https://ds.eduid.cz/Shibboleth.sso/Login?SAMLDS=1&" . $returnIDVariable . "=" . urlencode($hostelId);
+        $hostelIdpParams = "/Shibboleth.sso/Login?SAMLDS=1&" . $returnIDVariable . "=" . urlencode($hostelId);
         $hostelRegistrarParams = "?return=";
         $hostelReturnParam = $wayfURL . "?fromHostelRegistrar" . $getParams;
         $hostelRegistrarParams .= urlencode($hostelReturnParam);

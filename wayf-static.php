@@ -18,15 +18,14 @@ include '/opt/getMD/lib/SPInfo.php';  // Feed preparation
 
 // Development mode
 $DEVEL = false;
-$wayfBase = "https://ds.eduid.cz";
 
 if(isset($DEVEL) && $DEVEL == true) {
-    $wayfURL = $wayfBase . "/wayf-static-dev.php";
+    $wayfURL = "/wayf-static-dev.php";
     $logFile = "/tmp/wayf-dev.log";
 }
 else {
-    $failbackWayf = "https://ds.eduid.cz/wayf-static.php";
-    $wayfURL = $wayfBase . "/wayf-static.php";
+    $failbackWayf = "/wayf-static.php";
+    $wayfURL = "/wayf-static.php";
     $logFile = "/tmp/wayf.log";
 }
 
