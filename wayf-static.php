@@ -92,32 +92,6 @@ function idpCmp($a, $b) {
     return strCompare($aLabel, $bLabel);
 }
 
-/** function wlog - log data to logfile
- *
- * @param $data - logged data
- */
-function wlog($data) {
-    global $logFile;
-    $d = date("Y m d H:i:s");
-    error_log("[" . $d . "] [STATIC] ", 3, $logFile);
-    $a = print_r($data, true);
-    error_log($a, 3, $logFile);
-    error_log("\n", 3, $logFile);
-}
-
-/** function wdebug - log debug data to logfile
- *
- * @param $data - logged data
- * @param $popis - description 
- */
-function wdebug($data, $popis) {
-    global $logFile;
-    $d = date("Y m d H:i:s");
-    error_log("[" . $d . "] [STATIC] ", 3, $logFile);
-    $a = print_r($data, true);
-    error_log($popis . $a, 3, $logFile);
-    error_log("\n", 3, $logFile);
-}
 
 /** function getUri - returns uri from $_GET with switched lang
  *
@@ -258,9 +232,7 @@ else if(isset($_GET["efilter"])) {
     if(!curl_errno($ch)){
         $info = curl_getinfo($ch);
         $extFilter = $cdata;
-    } else {
-        wlog('Curl error: ' . curl_error($ch));
-    }
+    } 
     curl_close($ch);
 }
 
@@ -269,7 +241,6 @@ $useHostel = false;
 if(isset($extFilter)) {
     $rawFilter = $extFilter;
     $filter = base64_decode($rawFilter);
-    wdebug($filter, "Decoded filter: ");
     $filter = str_replace("Array(", "[", $filter);
     $filter = str_replace(")", "]", $filter);
     $jFilter = json_decode($filter, true);
@@ -282,12 +253,7 @@ if(isset($extFilter)) {
             }
         }
     }
-    else {
-        wlog("Error decoding filter " . $filter);
-    }
-}
-else {
-    wlog("External filter is not set.");
+    
 }
 
 if(isset($_GET['entityID'])) {
@@ -300,12 +266,6 @@ if(isset($_GET['entityID'])) {
     }
 }
 
-wdebug($_GET, "Request: ");
-wdebug($_SERVER["HTTP_USER_AGENT"], "User agent: ");
-wdebug($_SERVER["REMOTE_ADDR"], "Remote address: ");
-wdebug($_SERVER["HTTP_REFERER"], "HTTP referrer: ");
-wdebug($spInfo, "spInfo");
-wlog("-----");
 
 if(isset($_GET['lang'])) {
     if($_GET['lang'] == "cs" || $_GET['lang'] == "en") {
@@ -381,9 +341,9 @@ else {
 
 
     if($useFilter && isset($jFilter['allowFeeds'])) {
-//        wlog("allowFeeds is set");
+
         foreach($jFilter['allowFeeds'] as $feed) {
-//            wdebug($feed, "FilterFeed: ");
+
             $feedPath = "/opt/getMD/var/pub/current/feed/" . $feed . ".js";
             $feedFile = file_get_contents($feedPath);
             $fd = json_decode($feedFile, true);
@@ -391,13 +351,11 @@ else {
             if(is_array($c_entities)) {
                 $entities = array_merge($entities, $c_entities);
             }
-            else {
-                wdebug($c_entities, "Not a feeds array: ");
-            }
+            
         }
     }
     else {
-//        wlog("allowFeeds is not set");
+
         foreach($spInfo['feeds'] as $feed) {
             $feedPath = "/opt/getMD/var/pub/current/feed/" . $feed . ".js";
             $feedFile = file_get_contents($feedPath);
@@ -407,22 +365,16 @@ else {
         }
     }
 
-//    wdebug($jFilter, "jFilter: ");
-    wdebug($entities, "entities: ");
-    wdebug($spInfo, "spInfo: ");
     if($useFilter && isset($jFilter['allowIdPs'])) {
         $fentities = Array();
         foreach($entities as $key => $value) {
-//            wdebug($key, "Testing key: ");
-
             if(in_array($key, $jFilter['allowIdPs'])) {
                 $fentities[$key] = $value;
-//                wdebug($key, "Adding IdP: ");
             }
         }
         $entities = $fentities;
     }
-//    wdebug($spInfo, "Entities: ");
+
     $sorted_entities = uasort($entities, 'idpCmp');
 
     echo($doctype);

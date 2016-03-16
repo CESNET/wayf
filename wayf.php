@@ -31,24 +31,6 @@ else {
     $logFile = "/tmp/wayf.log";
 }
 
-function wlog($data) {
-    global $logFile;
-    $d = date("Y m d H:i:s");
-    error_log("[" . $d . "] [DYNAMIC] ", 3, $logFile);
-    error_log($data, 3, $logFile);
-    error_log("\n", 3, $logFile);
-}
-
-function wdebug($data, $popis) {
-    global $logFile;
-//    $logFile = "/tmp/wayf-dev.log";
-    $d = date("Y m d H:i:s");
-    error_log("[" . $d . "] [DYNAMIC] ", 3, $logFile);
-    $a = print_r($data, true);
-    error_log($popis . $a, 3, $logFile);
-    error_log("\n", 3, $logFile);
-}
-
 function urldecodeToArray($url) {
     $ret_ar = array();
     if (($pos = strpos($url, '?')) !== false) {
@@ -111,21 +93,16 @@ else if(isset($_GET["efilter"])) {
     if(!curl_errno($ch)){
         $info = curl_getinfo($ch);
         $extFilter = $cdata;
-    } else {
-        wlog('Curl error: ' . curl_error($ch));
-    }
+    } 
     curl_close($ch);
 }
 
-//wdebug($_GET, "Request: ");
-//wdebug($extFilter, "External Filter: ");
 
 $useFilter = false;
 $useHostel = false;
 if(isset($extFilter)) {
     $rawFilter = $extFilter;
     $filter = base64_decode($rawFilter);
-//    wdebug($filter, "Decoded filter: ");
     $filter = str_replace("Array(", "[", $filter);
     $filter = str_replace(")", "]", $filter);
     $jFilter = json_decode($filter, true);
@@ -138,12 +115,7 @@ if(isset($extFilter)) {
             }
         }
     }
-    else {
-        wlog("Error decoding filter " . $filter);
-    }
-}
-else {
-//    wlog("External filter is not set.");
+    
 }
 
 $entityID = $_GET['entityID'];
@@ -183,8 +155,6 @@ if(isset($_GET['fromHostel'])) {
 
 $browser = get_browser($_SERVER['HTTP_USER_AGENT'], true);
 $supportedBrowser = true;
-//wdebug($_SERVER['HTTP_USER_AGENT'], "User agent: ");
-//wdebug($browser, "Browser: ");
 
 if($browser["browser"] == "Firefox" || $browser["browser"] == "Chrome") {
 	$supportedBrowser = true;
@@ -197,15 +167,6 @@ if($browser["browser"] == "Firefox" || $browser["browser"] == "Chrome") {
         $supportedBrowser = true;
     }
 }
-
-wdebug($_GET, "Request: ");
-wdebug($_SERVER["HTTP_USER_AGENT"], "User agent: ");
-wdebug($_SERVER["REMOTE_ADDR"], "Remote address: ");
-wdebug($_SERVER["HTTP_REFERER"], "HTTP referrer: ");
-wdebug($browser["browser"], "Browser: ");
-wdebug($browser["majorver"], "Browser version: ");
-wlog("-----");
-
 
 if(isset($fromHostelRegistrar)) {
 
@@ -267,9 +228,6 @@ else {
     $mobile = false;
     $dumb = false;
 
-//    $a = print_r($detect, true);
-//    error_log($a . "\n", 3, "/tmp/mobile.log");
-
     if($detect->isMobile() || $detect->isTablet()) {
         $mobile = true;
         if($detect->isAndroidOS() && $detect->isSafari()) {
@@ -277,30 +235,14 @@ else {
         }
     }
 
-    if($mobile) {
-        wlog("Mobile browser");
-        if($dumb) {
-            wlog("Dumb browser");
-        }
-        else {
-            wlog("Smart browser");
-        }
-    }
-    else {
-        wlog("Computer browser");
-    }
-    wlog("-----");
-
     header("X-UA-Compatible: IE=edge");
 
     if(isset($_GET["returnIDParam"])) {
         $useIDParam = true;
         $idParam = $_GET["returnIDParam"];
-        error_log("ID_PARAM: true\n", 3, "/tmp/browser.log");
     }
     else {
         $useIDParam = false;
-        error_log("ID_PARAM: false\n", 3, "/tmp/browser.log");
     }
 
     $qs = $_SERVER['QUERY_STRING'];
@@ -336,7 +278,6 @@ else {
         }
     }
 
-//     wdebug($jFilter, "Filter value: ");
      if($useFilter && isset($jFilter['allowFeeds'])) {
         $f = '{';
         foreach($jFilter['allowFeeds'] as $feed) {
@@ -352,8 +293,6 @@ else {
         }
         $feeds = rtrim($f,",")."}";
     }
-
-//    wdebug($feeds, "FEEDS: ");
 
     echo("<script type=\"text/javascript\">\n");
 
