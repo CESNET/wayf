@@ -289,7 +289,7 @@ else {
     else {
         $f = '{';
         foreach($spInfo['feeds'] as $feed) {
-            $f .= "\"$feed\":\"$wayfBase/feed/$feed.js\",";
+            $f .= "\"$feed\":\"/feed/$feed.js\",";
         }
         $feeds = rtrim($f,",")."}";
     }
