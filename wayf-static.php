@@ -21,12 +21,10 @@ $DEVEL = false;
 
 if(isset($DEVEL) && $DEVEL == true) {
     $wayfURL = "/wayf-static-dev.php";
-    $logFile = "/tmp/wayf-dev.log";
 }
 else {
     $failbackWayf = "/wayf-static.php";
     $wayfURL = "/wayf-static.php";
-    $logFile = "/tmp/wayf.log";
 }
 
 // Messages

@@ -22,13 +22,11 @@ if(isset($DEVEL) && $DEVEL == true) {
     $failbackWayf = "/wayf-static-dev.php";
     $script = file_get_contents("wayf-dev.js");
     $wayfURL = "/wayf-dev.php";
-    $logFile = "/tmp/wayf-dev.log";
 }
 else {
     $failbackWayf = "/wayf-static.php";
     $script = file_get_contents("wayf.js");
     $wayfURL = "/wayf.php";
-    $logFile = "/tmp/wayf.log";
 }
 
 function urldecodeToArray($url) {
