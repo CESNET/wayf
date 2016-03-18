@@ -79,7 +79,7 @@ function addVariable($varName, $varValue, $isRecursion=false) {
     }
 }
 
-$wayfBase = "https://" . $_SERVER['SERVER_NAME'];
+$wayfBase = "https://" . $_SERVER['HTTP_HOST'];
 $returnURL = $_GET['return'];
 
 if(isset($_GET["filter"])) {
@@ -281,7 +281,7 @@ else {
      if($useFilter && isset($jFilter['allowFeeds'])) {
         $f = '{';
         foreach($jFilter['allowFeeds'] as $feed) {
-            $f .= "\"$feed\":\"$wayfBase/feed/$feed.js\",";
+            $f .= "\"$feed\":\"/feed/$feed.js\",";
         }
         $feeds = rtrim($f,",")."}";
 
