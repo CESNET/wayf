@@ -95,7 +95,7 @@ function regenerateFilter() {
              " To lze udělat <ul><li>Parametrem \"<i>filter</i>\", který obsahuje přímo hodnotu" +
              " filtru uvedeného níže, nebo</li><li>Parametrem \"<i>efilter</i>\", který obsahuje URL," +
              " na kterém je dostupná hodnota filtru níže.</li></ul><b>Příklady použití:</b>" +
-             "<ul><li>https://ds.eduid.cz/wayf.php?filter=abcd</li><li>https://ds.eduid.cz/wayf.php?efilter=www.example.com/someurl" +
+             "<ul><li>/wayf.php?filter=abcd</li><li>/wayf.php?efilter=www.example.com/someurl" +
              " (na www.example.com/someurl je vygenerovaný filtr)</li></ul>Pro více informací pokračujte na" +
              " dokumentaci WAYFu pro <a href=\"https://www.eduid.cz/wiki/eduid/admins/howto/wayf/wayf-sp\" target=\"_blank\">správce SP</a>" +
              " nebo <a href=\"https://www.eduid.cz/wiki/eduid/admins/howto/wayf/index\" target=\"_blank\">uživatele</a>.<br><br>" +
@@ -107,7 +107,7 @@ function regenerateFilter() {
              "<div class=\"scroll nowrap\">&lt;<span class=\"tagname\">SessionInitiator</span> type=\"Chaining\" Location=\"/DS\" isDefault=\"false\" id=\"DS\"&gt;<br>" +
              "    &lt;SessionInitiator type=\"SAML2\" template=\"bindingTemplate.html\"/&gt;<br>" +
              "    &lt;SessionInitiator type=\"Shib1\"/&gt;<br>" + 
-             "    &lt;SessionInitiator type=\"SAMLDS\" URL=\"https://ds.eduid.cz/wayf.php?filter=<span class=\"red\">" +
+             "    &lt;SessionInitiator type=\"SAMLDS\" URL=\"/wayf.php?filter=<span class=\"red\">" +
              filterValue +
              "</span>\"/&gt;<br>" +
              "&lt;/<span class=\"tagname\">SessionInitiator</span>&gt;</div><br><br>" + 
@@ -115,7 +115,7 @@ function regenerateFilter() {
              "Novější verze Shibboleth SP umožnuje zjednodušenou konfiguraci:<br><br>" + 
              
              "<div class=\"scroll nowrap\">&lt;<span class=\"tagname\">SSO</span> discoveryProtocol=\"SAMLDS\"<br>" + 
-             "    discoveryURL=\"https://ds.eduid.cz/wayf.php?filter=<span class=\"red\">" + 
+             "    discoveryURL=\"/wayf.php?filter=<span class=\"red\">" + 
              filterValue +
              "</span>\"&gt;<br>" + 
              "    SAML2 SAML1<br>" +
@@ -127,7 +127,7 @@ function regenerateFilter() {
              "<div class=\"scroll nowrap\">\'<span class=\"tagname\">default-sp</span>\' => array(<br>" + 
              "    \'saml:SP\',<br>" + 
              "    \'idp\' => NULL,<br>" + 
-             "    \'discoURL\' => \'https://ds.eduid.cz/wayf.php?filter=<span class=\"red\">" +
+             "    \'discoURL\' => \'/wayf.php?filter=<span class=\"red\">" +
               filterValue + 
              "</span>\',<br>" + 
              "    ...<br>" + 

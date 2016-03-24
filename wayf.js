@@ -34,7 +34,6 @@ var labels = {
 var mobileVersion = true;
 var hostelEntityID = "https://idp.hostel.eduid.cz/idp/shibboleth";
 var inIframe = false;
-document.domain = "ds.eduid.cz";
 
 // check if local storage is available
 
@@ -55,7 +54,7 @@ try {
 if (typeof JSON == 'undefined') {
   var fileref = document.createElement('script')
   fileref.setAttribute("type", "text/javascript")
-  fileref.setAttribute("src", "https://ds.eduid.cz/json2.js")
+  fileref.setAttribute("src", "/json2.js")
   document.getElementsByTagName("head")[0].appendChild(fileref)
 }
 
@@ -143,7 +142,7 @@ function isInIframe() {
   */
 function getAllFeeds() {
     var ret = Array();
-    base = "https://ds.eduid.cz/feed/";
+    base = "/feed/";
     feeds = {'ACONet':'https://wayf.aco.net/aconet-aai-metadata.xml', 'InCommon':'urn:mace:incommon', 'Kalmar2':'kalmarcentral2', 'SURFfederatie':'wayf.surfnet.nl', 'SWITCHAAI':'urn:mace:switch.ch:SWITCHaai', 
              'UKAccessFederation':'http://ukfederation.org.uk', 'eduGAIN':'http://edugain.org/', 'eduID.cz':'https://eduid.cz/metadata', 'Hostel':'https://hostel.eduid.cz/metadata',
              'LoginMuni':'https://login.ics.muni.cz/metadata', 'ExLibris':'ExLibris', 'Social':'Social'};
