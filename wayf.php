@@ -150,20 +150,14 @@ if(isset($_GET['fromHostel'])) {
     $fromHostelRegistrar = $_GET['fromHostel'];
 }
 
-
-$browser = get_browser($_SERVER['HTTP_USER_AGENT'], true);
 $supportedBrowser = true;
-
-if($browser["browser"] == "Firefox" || $browser["browser"] == "Chrome") {
-	$supportedBrowser = true;
-} else if($browser["browser"] == "IE") {
-	if($browser["majorver"] == 9 || $browser["majorver"] == 10) {
-		$supportedBrowser = true;
-	}
-} else if($browser["default"]) {
-    if(strpos($_SERVER['HTTP_USER_AGENT'], "Chrome/23")!==FALSE) {
-        $supportedBrowser = true;
-    }
+$server_http_agent = $_SERVER['HTTP_USER_AGENT'];
+if( strpos( $server_http_agent, 'MSIE 8' ) === TRUE ) {
+  $supportedBrowser = false;
+} else if( strpos( $server_http_agent, 'MSIE 7' ) === TRUE ) {
+  $supportedBrowser = false;
+} else if( strpos( $server_http_agent, 'MSIE 6' ) === TRUE ) {
+  $supportedBrowser = false;
 }
 
 if(isset($fromHostelRegistrar)) {
