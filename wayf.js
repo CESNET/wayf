@@ -35,6 +35,7 @@ var mobileVersion = true;
 var hostelEntityID = "https://idp.hostel.eduid.cz/idp/shibboleth";
 var inIframe = false;
 document.domain = "ds.eduid.cz";
+var feedCount = 0;
 
 // check if local storage is available
 
@@ -963,30 +964,19 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
             feedFilter = true;
             if(!isSetup) {
                 var af = getAllFeeds();
-                var lastCount = Object.keys(filter["allowFeeds"]).length;
-                var last = false;
-                var i = 0;
+                feedCount = Object.keys(filter["allowFeeds"]).length;
                 for(feed in filter["allowFeeds"]) {
-                    i++;
-                    if( i == lastCount ) last = true;
-
                     feedUrl = af[filter["allowFeeds"][feed]];
-                    wayf.getFeed(filter["allowFeeds"][feed], feedUrl, false, false, true, last);
-    
+                    wayf.getFeed(filter["allowFeeds"][feed], feedUrl, false, false, true );
                 }
             }
         }
     }
     else {
-        var lastCount = Object.keys(allFeeds).length;
-        var last = false;
-        var i = 0;
+        feedCount = Object.keys(allFeeds).length;
         for(var feed in allFeeds) {
-            i++;
-            if( i == lastCount ) last = true;
-
             var feedUrl = allFeeds[feed];
-            wayf.getFeed(feed, feedUrl, false, false, true, last);
+            wayf.getFeed(feed, feedUrl, false, false, true );
         }
     }
 
@@ -1153,7 +1143,7 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
 }
 
 
-Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow, last) {
+Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
     var savedFeedPrefix = "saved@";
     var textSearch = this.lastSearch;
 
@@ -1163,24 +1153,20 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow, last) {
       // data is in memory, so add it to list
       wayf.listAllData( id, wayf.feedData[id]["mdSet"]);
 
-      if( last ) {
-        // sort mixela
-        var tmpMixela = [];
-        for(var key in wayf.view.mixelaHash) tmpMixela.push( [key, wayf.view.mixelaHash[key] ] );
-          tmpMixela.sort( function(a,b) {
-            return a[0]>b[0]?1:-1;} 
-          );
-      
-        // empty scroller due to duplicity
-        while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild);
-      
-        for( var i=0;i<tmpMixela.length;i++ ) {
-          wayf.view.scroller.appendChild( tmpMixela[i][1] ); 
-        }
+      // sort mixela
+      var tmpMixela = [];
+      for(var key in wayf.view.mixelaHash) tmpMixela.push( [key, wayf.view.mixelaHash[key] ] );
 
-        searchAuto( textSearch, wayf, null, false );
+      tmpMixela.sort( function(a,b) {return a[0]>b[0]?1:-1;} );
+
+      // empty scroller due to duplicity
+      while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
+ 
+      for( var i=0;i<tmpMixela.length;i++ ) {
+        wayf.view.scroller.appendChild( tmpMixela[i][1] ); 
       }
 
+      searchAuto( textSearch, wayf, null, false );
       return;
     }
 
@@ -1219,7 +1205,9 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow, last) {
                     break;
             }
 
-            if( last ) { 
+            feedCount--;
+
+            if( feedCount == 0 ) { 
               // sort mixela
               var tmpMixela = [];
               for(var key in wayf.view.mixelaHash) tmpMixela.push( [key, wayf.view.mixelaHash[key] ] );
@@ -1284,16 +1272,8 @@ Wayf.prototype.listAllIdps = function(forceAll) {
         }
     }
 
-
-
-
-    var lastCount = Object.keys(allFeeds).length;
-    var last = false;
-    var i = 0;
+    feedCount = Object.keys(allFeeds).length;
     for(var feedId in allFeeds) {
-        i++;
-        if( i == lastCount ) last = true;
-
         if(feedId == "indexOf") {
             continue;
         }
@@ -1301,33 +1281,9 @@ Wayf.prototype.listAllIdps = function(forceAll) {
             continue;
         }
         var feedUrl = allFeeds[feedId];
-        this.getFeed(feedId, feedUrl, false, forceAll, false, last);
+        this.getFeed(feedId, feedUrl, false, forceAll, false );
     
     }
-
-/*
-    var useHostelIdp = false;
-    var allowHostelRegistration = false;
-    if(useFilter) {
-        if("allowHostel" in filter) {
-            useHostelIdp = filter.allowHostel;
-        }
-        if("allowHostelReg" in filter) {
-            allowHostelRegistration = filter.allowHostelReg;
-        }
-    }
-
-    if(useHostelIdp) {
-        var hostelLabel = { "en":this.view.getLabelText('IDP_HOSTEL') };
-        this.selectedIdps[ hostelEntityID ] = hostelLabel;
-        // this.view.addHostelIdp(this.view.getLabelText('IDP_HOSTEL'), false);
-        this.view.addHostelIdp('Hostel IdP', false);
-        if(allowHostelRegistration) {
-            this.view.addNewHostelAccountButton(this.view.getLabelText('BUTTON_HOSTEL'), this.view.getLabelText('TEXT_ACCOUNT'));
-        }
-    }
-*/
- 
 
     // jquery-ui
     var textSearch = this.lastSearch;
