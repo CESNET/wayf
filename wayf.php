@@ -254,9 +254,9 @@ else {
     echo($doctype);
     echo("<html><head><title>Discovery service</title>");
     echo($charset);
-    echo("<link rel=\"stylesheet\" href=\"jquery-ui.css\" />" );
-    echo("<script type=\"text/javascript\" src=\"jquery-2.0.0.js\"></script>");
-    echo("<script type=\"text/javascript\" src=\"jquery-ui.js\"></script>");
+    echo("<link rel=\"stylesheet\" href=\"jquery-ui.min.css\" />" );
+    echo("<script type=\"text/javascript\" src=\"jquery-2.2.4.min.js\"></script>");
+    echo("<script type=\"text/javascript\" src=\"jquery-ui.min.js\"></script>");
     echo($edge);
 
     if($mobile) {

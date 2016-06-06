@@ -1136,6 +1136,7 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
       while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
  
       for( var i=0;i<tmpMixela.length;i++ ) {
+        tmpMixela[i][1].style.height="42px";
         wayf.view.scroller.appendChild( tmpMixela[i][1] ); 
       }
 
@@ -1191,6 +1192,7 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
               while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
  
               for( var i=0;i<tmpMixela.length;i++ ) {
+                tmpMixela[i][1].style.height="42px";
                 wayf.view.scroller.appendChild( tmpMixela[i][1] ); 
               }
 
