@@ -323,7 +323,7 @@ sub get {
     $targetfile .= $self->{id} if ($targetfile =~ /\/$/);
     warn "tt: $targetfile\n";
 
-    my @cmdArgs = ('--retry', 1, '--max-time', 180, '--silent', '--show-error', '--insecure',
+    my @cmdArgs = ('--retry', 1, '--max-time', 180, '--silent', '--show-error', '--insecure --location',
 		   '--create-dirs',
 		   '--output', $targetfile.'.curl');
     push @cmdArgs, ('--time-cond', $targetfile) if ($opt eq 'conditional');
@@ -411,7 +411,7 @@ sub downloadLogo {
 			$storedFname);
   if ($self->{conf}->cmd_curl) {
     $self->{cmd} = getMD::Cmd->new($self->{conf}->cmd_curl,
-				   qw(--retry 1 --max-time 10 --silent --show-error --insecure),
+				   qw(--retry 1 --max-time 10 --silent --show-error --insecure --location),
 				   '--output', $targetfile.'.curl',
 				   '--time-cond', $targetfile,
 				   '--create-dirs',
