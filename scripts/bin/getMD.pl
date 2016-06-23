@@ -413,7 +413,7 @@ sub downloadLogo {
     $self->{cmd} = getMD::Cmd->new($self->{conf}->cmd_curl,
 				   qw(--retry 1 --max-time 10 --silent --show-error --insecure --location),
 				   '--output', $targetfile.'.curl',
-				   '--time-cond', $targetfile,
+				   #'--time-cond', $targetfile,
 				   '--create-dirs',
 				   $url);
   } else {
