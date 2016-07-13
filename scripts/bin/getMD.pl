@@ -323,7 +323,7 @@ sub get {
     $targetfile .= $self->{id} if ($targetfile =~ /\/$/);
     warn "tt: $targetfile\n";
 
-    my @cmdArgs = ('--retry', 1, '--max-time', 180, '--silent', '--show-error', '--insecure --location',
+    my @cmdArgs = ('--retry', 1, '--max-time', 180, '--silent', '--show-error', '--insecure', '--location',
 		   '--create-dirs',
 		   '--output', $targetfile.'.curl');
     push @cmdArgs, ('--time-cond', $targetfile) if ($opt eq 'conditional');
