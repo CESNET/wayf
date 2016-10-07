@@ -262,7 +262,7 @@ View.prototype.addHostelIdp = function(label, isSetup) {
 }
 
 View.prototype.createSetupList = function() {
-    wayf.listSavedIdps(true);
+    wayf.listSavedIdps(true,true);
 }
 
 /** function View.prototype.createContainer - generate <div> container for IdP list
@@ -286,7 +286,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
         var callback = (function() {
             return function() {
                 if(wayf.userHasSavedIdps()) {
-                    wayf.listSavedIdps(false);
+                    wayf.listSavedIdps(false,true);
                 } else {
                     wayf.listAllIdps(false);
                 }
@@ -721,7 +721,7 @@ Wayf.prototype.deleteUsedIdp = function(id) {
             if(haveData) {
                 this.persistor.setItem("usedIdps", JSON.stringify(newUsedIdpsObj));
                 this.usedIdps = newUsedIdpsObj;
-                this.listSavedIdps(true);
+                this.listSavedIdps(true,true);
             }
             else {
                 this.listAllIdps(false);
@@ -805,7 +805,7 @@ function listData() {
     wayf = new Wayf('wayf');
     if(wayf.userHasSavedIdps()) { 
         noSearchSavedIdps = true;
-        wayf.listSavedIdps(false);  // display saved IdPs
+        wayf.listSavedIdps(false,false);  // display saved IdPs
     }
     else {
         wayf.listAllIdps(false);  // display All IdPs in feeds
@@ -925,7 +925,7 @@ Wayf.prototype.getLabelFromLabels = function(labels) {
 
 /** function Wayf.prototype.listSavedIdps - display saved or all IdP
   */
-Wayf.prototype.listSavedIdps = function(isSetup) {
+Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
     var idpFilter = false;
     var feedFilter = false;
 
@@ -957,7 +957,7 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
     var usedIdps = this.usedIdps;
     this.view.deleteContainer();
     var langCallback = function() {
-        wayf.listSavedIdps(isSetup);
+        wayf.listSavedIdps(isSetup,true);
     }
     if(isSetup) {
         this.view.createContainer(this.view.getLabelText('SETUP'), false, true, true, langCallback);
@@ -1079,8 +1079,22 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
     }
 
     // vykresli ulozena Idp
-    for(var key in wayf.view.mixelaHash) {
-      wayf.view.scroller.appendChild( wayf.view.mixelaHash[ key ] );
+    if(displayIdps) {
+      // sort mixela
+      var tmpMixela = [];
+      for(var key in wayf.view.mixelaHash) tmpMixela.push( [key, wayf.view.mixelaHash[key] ] );
+
+      tmpMixela.sort( function(a,b) {return a[0]>b[0]?1:-1;} );
+
+      for( var i=0;i<tmpMixela.length;i++ ) {
+        tmpMixela[i][1].style.height="42px";
+        wayf.view.scroller.appendChild( tmpMixela[i][1] ); 
+      }
+
+
+      //for(var key in wayf.view.mixelaHash) {
+      //  wayf.view.scroller.appendChild( wayf.view.mixelaHash[ key ] );
+      //}
     }
 
     if(!isSetup) {
@@ -1133,7 +1147,7 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
       tmpMixela.sort( function(a,b) {return a[0]>b[0]?1:-1;} );
 
       // empty scroller due to duplicity
-      while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
+      // while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
  
       for( var i=0;i<tmpMixela.length;i++ ) {
         tmpMixela[i][1].style.height="42px";
