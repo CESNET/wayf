@@ -67,22 +67,14 @@ function regenerateFilter() {
     if(hostel.checked) {
         filter = filter + "true, \"allowHostelReg\": "
         if(hostelreg.checked) {
-            filter = filter + "true,"
+            filter = filter + "true"
         }
         else {
-            filter = filter + "false,";
+            filter = filter + "false";
         }
     }
     else {
-        filter = filter + "false, \"allowHostelReg\": false,";
-    }
-
-    filter = filter + "\"allowSocial\": ";
-    if(social.checked) {
-        filter = filter + "true"
-    }
-    else {
-        filter = filter + "false";
+        filter = filter + "false, \"allowHostelReg\": false";
     }
 
     filter = filter + "}";
@@ -173,14 +165,6 @@ function regenerateFilter() {
         kValue = kValue + "nepoužit.";
     }
 
-    kValue = kValue + "<br><br>Sociální poskytovatelé identity ";
-    if(social.checked) {
-        kValue = kValue + "povoleny.";
-    }
-    else {
-        kValue = kValue + "nepovoleny.";
-    }
-
     kontrola.innerHTML = kValue;
     $('#filterval').removeClass("errorfilter");
 }
@@ -229,6 +213,7 @@ function decodeFilter() {
         }
     }
     catch(err) {
+	alert(err);
         $("#errdialog").dialog("open");
         $('#filterval').addClass("errorfilter");
     }

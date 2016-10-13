@@ -17,7 +17,7 @@ $feeds  = file_get_contents("feeds.js");
 <script type="text/javascript">
 var feeds = <?= $feeds ?>;
 </script>
-<script type="text/javascript" src="filter.js"></script>
+<script type="text/javascript" src="filter2.js"></script>
 
 </head>
 <body onload="fillFeeds()">
@@ -71,16 +71,6 @@ umožnit založení účtu na <a href="http://hostel.eduid.cz/">Hostel IdP</a> p
 <input type="checkbox" name="Hostel" id="hostel" value="Use Hostel" class="oc">Umožnit použití Hostel IdP<br>
 <input type="checkbox" name="HostelReg" id="hostelreg" value="Use Hostel Reg" class="oc">Dovolit uživatelům vytvoření nového účtu na Hostel IdP
 </div>
-
-<h3>Social IdP</h3>
-<div>
-<div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span>
-Pokud chcete poskytnout přístup ke své službě uživatelům, kteří mají účet u sociálních služeb jako <a href="https://www.facebook.com">Facebook</a>
-nebo <a href="https://twitter.com/">Twitter</a>, použijte tuto volbu.
-</div>
-<input type="checkbox" name="Social" id="social" value="Použít social IdP" class="oc">Umožnit přihlašování pomocí sociálních IdP<br>
-</div>
-
 
 </div><!-- accordion -->
 <br><br>
