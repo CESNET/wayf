@@ -470,7 +470,7 @@ View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDel
     if(showDeleteIcon) {
         var trashIcon = document.createElement('img');
         trashIcon.className = "trashicon";
-        trashIcon.src = "trash_48.png";
+        trashIcon.src = "trash_40.png";
         idpDiv.appendChild(trashIcon);
     }
 
@@ -1079,23 +1079,14 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
     }
 
     // vykresli ulozena Idp
-    if(displayIdps) {
+    //if(displayIdps) {
       // sort mixela
-      var tmpMixela = [];
-      for(var key in wayf.view.mixelaHash) tmpMixela.push( [key, wayf.view.mixelaHash[key] ] );
-
-      tmpMixela.sort( function(a,b) {return a[0]>b[0]?1:-1;} );
-
-      for( var i=0;i<tmpMixela.length;i++ ) {
-        tmpMixela[i][1].style.height="42px";
-        wayf.view.scroller.appendChild( tmpMixela[i][1] ); 
+      var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
+              
+      for( var key in keySorted ) {
+        wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
       }
-
-
-      //for(var key in wayf.view.mixelaHash) {
-      //  wayf.view.scroller.appendChild( wayf.view.mixelaHash[ key ] );
-      //}
-    }
+    //}
 
     if(!isSetup) {
         this.view.addButton(this.view.getLabelText('BUTTON_NEXT'));
@@ -1140,21 +1131,20 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
       // data is in memory, so add it to list
       wayf.listAllData( id, wayf.feedData[id]["mdSet"]);
 
+      /*
       // sort mixela
-      var tmpMixela = [];
-      for(var key in wayf.view.mixelaHash) tmpMixela.push( [key, wayf.view.mixelaHash[key] ] );
-
-      tmpMixela.sort( function(a,b) {return a[0]>b[0]?1:-1;} );
+      var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
 
       // empty scroller due to duplicity
       // while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
- 
-      for( var i=0;i<tmpMixela.length;i++ ) {
-        tmpMixela[i][1].style.height="42px";
-        wayf.view.scroller.appendChild( tmpMixela[i][1] ); 
+              
+      for( var key in keySorted ) {
+        wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
       }
 
-      searchAuto( textSearch, wayf, null, false );
+      // searchAuto( textSearch, wayf, null, false );
+      */
+
       return;
     }
 
@@ -1197,17 +1187,13 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
 
             if( feedCount == 0 ) { 
               // sort mixela
-              var tmpMixela = [];
-              for(var key in wayf.view.mixelaHash) tmpMixela.push( [key, wayf.view.mixelaHash[key] ] );
-
-              tmpMixela.sort( function(a,b) {return a[0]>b[0]?1:-1;} );
+              var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
 
               // empty scroller due to duplicity
-              while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
- 
-              for( var i=0;i<tmpMixela.length;i++ ) {
-                tmpMixela[i][1].style.height="42px";
-                wayf.view.scroller.appendChild( tmpMixela[i][1] ); 
+              // while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
+              
+              for( var key in keySorted ) {
+                wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
               }
 
               searchAuto( textSearch, wayf, null, false );
@@ -1231,6 +1217,8 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     var langCallback = function() {
         wayf.listAllIdps(forceAll);
     }
+
+    var textSearch = this.lastSearch;
 
     noSearchSavedIdps = false;
 
@@ -1273,29 +1261,18 @@ Wayf.prototype.listAllIdps = function(forceAll) {
         this.getFeed(feedId, feedUrl, false, forceAll, false );
     
     }
-/*
-    var useHostelIdp = false;
-    var allowHostelRegistration = false;
-    if(useFilter) {
-        if("allowHostel" in filter) {
-            useHostelIdp = filter.allowHostel;
-        }
-        if("allowHostelReg" in filter) {
-            allowHostelRegistration = filter.allowHostelReg;
-        }
-    }
 
-    if(useHostelIdp) {
-        var hostelLabel = { "en":this.view.getLabelText('IDP_HOSTEL') };
-        this.selectedIdps[ hostelEntityID ] = hostelLabel;
-        // this.view.addHostelIdp(this.view.getLabelText('IDP_HOSTEL'), false);
-        this.view.addHostelIdp('Hostel IdP', false);
-        if(allowHostelRegistration) {
-            this.view.addNewHostelAccountButton(this.view.getLabelText('BUTTON_HOSTEL'), this.view.getLabelText('TEXT_ACCOUNT'));
-        }
-    }
-*/
- 
+      // sort mixela
+      var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
+
+      // empty scroller due to duplicity
+      // while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
+              
+      for( var key in keySorted ) {
+        wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
+      }
+
+    searchAuto( textSearch, wayf, null, false );
 
     // jquery-ui
     var textSearch = this.lastSearch;
