@@ -34,7 +34,6 @@ var labels = {
 var mobileVersion = true;
 var hostelEntityID = "https://idp.hostel.eduid.cz/idp/shibboleth";
 var inIframe = false;
-document.domain = "ds.eduid.cz";
 var feedCount = 0;
 
 // check if local storage is available
@@ -56,7 +55,7 @@ try {
 if (typeof JSON == 'undefined') {
   var fileref = document.createElement('script')
   fileref.setAttribute("type", "text/javascript")
-  fileref.setAttribute("src", "https://ds.eduid.cz/json2.js")
+  fileref.setAttribute("src", "/json2.js")
   document.getElementsByTagName("head")[0].appendChild(fileref)
 }
 
@@ -144,7 +143,7 @@ function isInIframe() {
   */
 function getAllFeeds() {
     var ret = Array();
-    base = "https://ds.eduid.cz/feed/";
+    base = "/feed/";
     feeds = {'ACONet':'https://wayf.aco.net/aconet-aai-metadata.xml', 'InCommon':'urn:mace:incommon', 'Kalmar2':'kalmarcentral2', 'SURFfederatie':'wayf.surfnet.nl', 'SWITCHAAI':'urn:mace:switch.ch:SWITCHaai', 
              'UKAccessFederation':'http://ukfederation.org.uk', 'eduGAIN':'http://edugain.org/', 'eduID.cz':'https://eduid.cz/metadata', 'Hostel':'https://hostel.eduid.cz/metadata',
              'LoginMuni':'https://login.ics.muni.cz/metadata', 'ExLibris':'ExLibris', 'Social':'Social'};
@@ -263,7 +262,7 @@ View.prototype.addHostelIdp = function(label, isSetup) {
 }
 
 View.prototype.createSetupList = function() {
-    wayf.listSavedIdps(true);
+    wayf.listSavedIdps(true,true);
 }
 
 /** function View.prototype.createContainer - generate <div> container for IdP list
@@ -287,7 +286,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
         var callback = (function() {
             return function() {
                 if(wayf.userHasSavedIdps()) {
-                    wayf.listSavedIdps(false);
+                    wayf.listSavedIdps(false,true);
                 } else {
                     wayf.listAllIdps(false);
                 }
@@ -494,32 +493,6 @@ View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDel
     /* first full hash array, sort and full list */
     this.mixelaHash[ upLabel ] = idpDiv;
 
-/*
-    var nodes = this.scroller.childNodes;
-    for (var i=0; i<nodes.length; i++) { 
-        var node = nodes.item(i);
-        if((node.className != "enabled") && (node.className != "disabled")) {
-            continue;
-        }
-        var nnodes = node.childNodes;
-        for(var j=0; j<nnodes.length; j++) {
-            var nnode = nnodes.item(j);
-            if(nnode.className != "title") {
-                continue;
-            }
-            var nLabel = toAscii(nnode.innerHTML.toUpperCase());
-            if(upLabel == nLabel) {
-                return;
-            }
-            else if(upLabel < nLabel) {
-                this.scroller.insertBefore(idpDiv, node);
-                return;
-            }
-        }
-    }
-
-    this.scroller.appendChild(idpDiv);
-*/
 }
 
 /** function View.prototype.addTopLabel - insert top label to container
@@ -748,7 +721,7 @@ Wayf.prototype.deleteUsedIdp = function(id) {
             if(haveData) {
                 this.persistor.setItem("usedIdps", JSON.stringify(newUsedIdpsObj));
                 this.usedIdps = newUsedIdpsObj;
-                this.listSavedIdps(true);
+                this.listSavedIdps(true,true);
             }
             else {
                 this.listAllIdps(false);
@@ -832,7 +805,7 @@ function listData() {
     wayf = new Wayf('wayf');
     if(wayf.userHasSavedIdps()) { 
         noSearchSavedIdps = true;
-        wayf.listSavedIdps(false);  // display saved IdPs
+        wayf.listSavedIdps(false,false);  // display saved IdPs
     }
     else {
         wayf.listAllIdps(false);  // display All IdPs in feeds
@@ -952,7 +925,7 @@ Wayf.prototype.getLabelFromLabels = function(labels) {
 
 /** function Wayf.prototype.listSavedIdps - display saved or all IdP
   */
-Wayf.prototype.listSavedIdps = function(isSetup) {
+Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
     var idpFilter = false;
     var feedFilter = false;
 
@@ -984,7 +957,7 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
     var usedIdps = this.usedIdps;
     this.view.deleteContainer();
     var langCallback = function() {
-        wayf.listSavedIdps(isSetup);
+        wayf.listSavedIdps(isSetup,true);
     }
     if(isSetup) {
         this.view.createContainer(this.view.getLabelText('SETUP'), false, true, true, langCallback);
@@ -1106,9 +1079,14 @@ Wayf.prototype.listSavedIdps = function(isSetup) {
     }
 
     // vykresli ulozena Idp
-    for(var key in wayf.view.mixelaHash) {
-      wayf.view.scroller.appendChild( wayf.view.mixelaHash[ key ] );
-    }
+    //if(displayIdps) {
+      // sort mixela
+      var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
+              
+      for( var key in keySorted ) {
+        wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
+      }
+    //}
 
     if(!isSetup) {
         this.view.addButton(this.view.getLabelText('BUTTON_NEXT'));
@@ -1153,20 +1131,20 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
       // data is in memory, so add it to list
       wayf.listAllData( id, wayf.feedData[id]["mdSet"]);
 
+      /*
       // sort mixela
-      var tmpMixela = [];
-      for(var key in wayf.view.mixelaHash) tmpMixela.push( [key, wayf.view.mixelaHash[key] ] );
-
-      tmpMixela.sort( function(a,b) {return a[0]>b[0]?1:-1;} );
+      var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
 
       // empty scroller due to duplicity
-      while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
- 
-      for( var i=0;i<tmpMixela.length;i++ ) {
-        wayf.view.scroller.appendChild( tmpMixela[i][1] ); 
+      // while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
+              
+      for( var key in keySorted ) {
+        wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
       }
 
-      searchAuto( textSearch, wayf, null, false );
+      // searchAuto( textSearch, wayf, null, false );
+      */
+
       return;
     }
 
@@ -1209,16 +1187,13 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
 
             if( feedCount == 0 ) { 
               // sort mixela
-              var tmpMixela = [];
-              for(var key in wayf.view.mixelaHash) tmpMixela.push( [key, wayf.view.mixelaHash[key] ] );
-
-              tmpMixela.sort( function(a,b) {return a[0]>b[0]?1:-1;} );
+              var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
 
               // empty scroller due to duplicity
-              while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
- 
-              for( var i=0;i<tmpMixela.length;i++ ) {
-                wayf.view.scroller.appendChild( tmpMixela[i][1] ); 
+              // while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
+              
+              for( var key in keySorted ) {
+                wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
               }
 
               searchAuto( textSearch, wayf, null, false );
@@ -1242,6 +1217,8 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     var langCallback = function() {
         wayf.listAllIdps(forceAll);
     }
+
+    var textSearch = this.lastSearch;
 
     noSearchSavedIdps = false;
 
@@ -1284,6 +1261,18 @@ Wayf.prototype.listAllIdps = function(forceAll) {
         this.getFeed(feedId, feedUrl, false, forceAll, false );
     
     }
+
+      // sort mixela
+      var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
+
+      // empty scroller due to duplicity
+      // while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
+              
+      for( var key in keySorted ) {
+        wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
+      }
+
+    searchAuto( textSearch, wayf, null, false );
 
     // jquery-ui
     var textSearch = this.lastSearch;

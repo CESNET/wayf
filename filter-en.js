@@ -83,18 +83,49 @@ function regenerateFilter() {
     var filterLen = filterValue.length;
     var rawFilterValue = filterKey + filter;
 
-    fPopis = "Následující hodnotu filtru použijte jako parametr poslaný WAYFu z vašeho SP." +
-             " To lze udělat <ul><li>Parametrem \"<i>filter</i>\", který obsahuje přímo hodnotu" +
-             " filtru uvedeného níže, nebo</li><li>Parametrem \"<i>efilter</i>\", který obsahuje URL," +
-             " na kterém je dostupná hodnota filtru níže.</li></ul><b>Příklady použití:</b>" +
+        
+    fPopis = "Use this filter value as a parameter sent to WAYF from your SP." +
+             " You can do it using <ul><li>Parameter \"<i>filter</i>\", which cantains directly filter value" +
+             " shown below, or by </li><li>Parameter \"<i>efilter</i>\", which contains URL " +
+             " of the file containing filter value.</li></ul><b>Examples:</b>" +
              "<ul><li>/wayf.php?filter=abcd</li><li>/wayf.php?efilter=www.example.com/someurl" +
-             " (na www.example.com/someurl je vygenerovaný filtr)</li></ul>Pro více informací pokračujte na" +
-             " dokumentaci WAYFu pro <a href=\"https://www.eduid.cz/wiki/eduid/admins/howto/wayf/wayf-sp\" target=\"_blank\">správce SP</a>" +
-             " nebo <a href=\"https://www.eduid.cz/wiki/eduid/admins/howto/wayf/index\" target=\"_blank\">uživatele</a>.<br><br>" +
-             " Maximální možná celková délka" +
-             " všech parametrů posílaných na WAYF je 512 bytů.<br><b>Vygenerovaný filtr má nyní " +
-             filterLen + " bytů.</b><br><br>" + 
-             "Pro konfiguraci Shibboleth SP můžete použít např. následující kód:<br><br>" +
+             " (on www.example.com/someurl is generated filter)</li></ul>For more info see " +
+             " WAYF documentation for <a href=\"https://www.eduid.cz/en/tech/wayf/sp\" target=\"_blank\">SP admins</a>" +
+             " or <a href=\"https://www.eduid.cz/en/tech/wayf\" target=\"_blank\">users</a>.<br><br>" +
+             " Maximal allowed length of all parameters sended to WAYF is 512 bytes.<br>Generated filter has now" +
+             filterLen + " bytes.</b><br><br>" + 
+             "For Shibboleth SP configuration you can use following code:<br><br>" +
+
+             "<div class=\"scroll nowrap\">&lt;<span class=\"tagname\">SessionInitiator</span> type=\"Chaining\" Location=\"/DS\" isDefault=\"false\" id=\"DS\"&gt;<br>" +
+             "    &lt;SessionInitiator type=\"SAML2\" template=\"bindingTemplate.html\"/&gt;<br>" +
+             "    &lt;SessionInitiator type=\"Shib1\"/&gt;<br>" + 
+             "    &lt;SessionInitiator type=\"SAMLDS\" URL=\"/wayf.php?filter=<span class=\"red\">" +
+             filterValue +
+             "</span>\"/&gt;<br>" +
+             "&lt;/<span class=\"tagname\">SessionInitiator</span>&gt;</div><br><br>" + 
+             
+             "Newer versions of Shibboleth SP allows simplified configuration:<br><br>" + 
+             
+             "<div class=\"scroll nowrap\">&lt;<span class=\"tagname\">SSO</span> discoveryProtocol=\"SAMLDS\"<br>" + 
+             "    discoveryURL=\"/wayf.php?filter=<span class=\"red\">" + 
+             filterValue +
+             "</span>\"&gt;<br>" + 
+             "    SAML2 SAML1<br>" +
+             "&lt;/<span class=\"tagname\">SSO</span>&gt;</div><br><br>" + 
+             
+             "If you are using <a href=\"https://simplesamlphp.org/\">SimpleSAMLphp</a> as a SP, copy followed configuration to config/authsources.php file" + 
+             " (note, that this is only part of configuration):<br><br>" +
+             
+             "<div class=\"scroll nowrap\">\'<span class=\"tagname\">default-sp</span>\' => array(<br>" + 
+             "    \'saml:SP\',<br>" + 
+             "    \'idp\' => NULL,<br>" + 
+             "    \'discoURL\' => \'/wayf.php?filter=<span class=\"red\">" +
+              filterValue + 
+             "</span>\',<br>" + 
+             "    ...<br>" + 
+             "),<div><br><br>" + 
+             "";
+
              
              "<div class=\"scroll nowrap\">&lt;<span class=\"tagname\">SessionInitiator</span> type=\"Chaining\" Location=\"/DS\" isDefault=\"false\" id=\"DS\"&gt;<br>" +
              "    &lt;SessionInitiator type=\"SAML2\" template=\"bindingTemplate.html\"/&gt;<br>" +
@@ -126,14 +157,14 @@ function regenerateFilter() {
              "),<div><br><br>" + 
              
              "";
-            
+
     filterInfo.innerHTML = fPopis;
     filterVal.value = Base64.encode(filter);
 
     var kValue = "";
 
     if(useFeeds) {
-        kValue = "Použité skupiny<ul>";
+        kValue = "Used groups<ul>";
         for (var i = 0; i < checkedFeeds.length; i++) {
             kValue = kValue + "<li>" + checkedFeeds[i].value + "</li>";
         }
@@ -141,7 +172,7 @@ function regenerateFilter() {
     }
 
     if(useIdps) {
-        kValue = kValue + "Použití poskytovatelé identit<ul>";
+        kValue = kValue + "Used IdPs<ul>";
         for (var i = 0; i < checkedIdps.length; i++) {
             var c = 'input[value="' + checkedIdps[i].value + '"]' ;
             var ff = $(c).next().html();
@@ -150,19 +181,19 @@ function regenerateFilter() {
         kValue = kValue + "</ul>";
     }
 
-    kValue = kValue + "Speciální poskytovatel identity <a href=\"http://hostel.eduid.cz/\">Hostel IdP</a> ";
+    kValue = kValue + "Special identity provider <a href=\"http://hostel.eduid.cz/\">Hostel IdP</a> ";
     if(hostel.checked) {
-        kValue = kValue + "použit.<br>Vytváření účtů na <a href=\"http://hostel.eduid.cz/\">Hostel IdP</a> ";
+        kValue = kValue + "used.<br>Account creation at <a href=\"http://hostel.eduid.cz/\">Hostel IdP</a> ";
         if(hostelreg.checked) {
-            kValue = kValue + "je";
+            kValue = kValue + "is";
         }
         else {
-            kValue = kValue + "není";
+            kValue = kValue + "is not";
         }
-        kValue = kValue + " povoleno.";
+        kValue = kValue + " allowed.";
     }
     else {
-        kValue = kValue + "nepoužit.";
+        kValue = kValue + "not used.";
     }
 
     kontrola.innerHTML = kValue;

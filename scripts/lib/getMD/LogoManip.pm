@@ -40,7 +40,14 @@ sub convert {
   my $logo  = new Image::Magick;
   $self->{err} = $logo->Read($self->{input});
   if ($self->{err}) {
-    carp "Can't read \"".$self->{input}."\": $self->{err}";
+      my $info = '';
+      if (-s $self->{input}) {
+	my $filetype = `file $self->{input}`; chomp($filetype);
+	carp "Can't read $filetype: ".$self->{err};
+      } else {
+	carp "Can't read \"".$self->{input}."\": $self->{err}";
+      };
+      #DEBUG `cp $self->{input} /tmp/err-example`; die;
     return;
   }
 
@@ -78,7 +85,7 @@ sub convert {
     };
     #print "$logow*$logoh -> $nlogow*$nlogoh\n";
   }
-  
+
   $logo->Resize(width => $nlogow,
 		height => $nlogoh,
 		filter => 'Catrom');
@@ -138,14 +145,23 @@ sub convert {
 
   $logo->Strip; # Odstraneni ICC color profilu, nekdy jsou ukrutne velke
 
-  $self->{err} = $logo->Write($self->{output});
-
+  $self->{err} = $logo->Write('png:'.$self->{output});
+  unless (-f $self->{output}) {
+      warn "Neexistuje: ".$self->{output}." nepovedlo se zapsat???";
+  };
+  
   if ($self->{err}) {
-    carp "Can't write \"".$self->{output}."\": ".$self->{err};
-    return;
-  }
+      carp "Can't convert from \"".$self->{input}."\" to \"".$self->{output}."\": ".$self->{err};
+      return;
+  };
 
-  `optipng $self->{output}` or carp "optipng failed: $!";
+  my $cmd = 'optipng '.$self->{output}.' >/dev/null 2>&1';
+  system($cmd); my $ret = $? >> 8;
+  
+  unless ($ret == 0) {
+      carp "$ret Failed to execute '$cmd': $!";
+  };
+
   $self;
 }
 

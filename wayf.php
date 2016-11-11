@@ -18,37 +18,15 @@ $charset = "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8
 
 $DEVEL = false;
 
-$wayfBase = "https://ds.eduid.cz";
-
 if(isset($DEVEL) && $DEVEL == true) {
-    $failbackWayf = "https://ds.eduid.cz/wayf-static-dev.php";
+    $failbackWayf = "/wayf-static-dev.php";
     $script = file_get_contents("wayf-dev.js");
-    $wayfURL = $wayfBase . "/wayf-dev.php";
-    $logFile = "/tmp/wayf-dev.log";
+    $wayfURL = "/wayf-dev.php";
 }
 else {
-    $failbackWayf = "https://ds.eduid.cz/wayf-static.php";
+    $failbackWayf = "/wayf-static.php";
     $script = file_get_contents("wayf.js");
-    $wayfURL = $wayfBase . "/wayf.php";
-    $logFile = "/tmp/wayf.log";
-}
-
-function wlog($data) {
-    global $logFile;
-    $d = date("Y m d H:i:s");
-    error_log("[" . $d . "] [DYNAMIC] ", 3, $logFile);
-    error_log($data, 3, $logFile);
-    error_log("\n", 3, $logFile);
-}
-
-function wdebug($data, $popis) {
-    global $logFile;
-//    $logFile = "/tmp/wayf-dev.log";
-    $d = date("Y m d H:i:s");
-    error_log("[" . $d . "] [DYNAMIC] ", 3, $logFile);
-    $a = print_r($data, true);
-    error_log($popis . $a, 3, $logFile);
-    error_log("\n", 3, $logFile);
+    $wayfURL = "/wayf.php";
 }
 
 function urldecodeToArray($url) {
@@ -99,7 +77,7 @@ function addVariable($varName, $varValue, $isRecursion=false) {
     }
 }
 
-$wayfBase = "https://$_SERVER[SERVER_NAME]";
+$wayfBase = "https://" . $_SERVER['HTTP_HOST'];
 $returnURL = $_GET['return'];
 
 if(isset($_GET["filter"])) {
@@ -113,21 +91,16 @@ else if(isset($_GET["efilter"])) {
     if(!curl_errno($ch)){
         $info = curl_getinfo($ch);
         $extFilter = $cdata;
-    } else {
-        wlog('Curl error: ' . curl_error($ch));
-    }
+    } 
     curl_close($ch);
 }
 
-//wdebug($_GET, "Request: ");
-//wdebug($extFilter, "External Filter: ");
 
 $useFilter = false;
 $useHostel = false;
 if(isset($extFilter)) {
     $rawFilter = $extFilter;
     $filter = base64_decode($rawFilter);
-//    wdebug($filter, "Decoded filter: ");
     $filter = str_replace("Array(", "[", $filter);
     $filter = str_replace(")", "]", $filter);
     $jFilter = json_decode($filter, true);
@@ -140,12 +113,7 @@ if(isset($extFilter)) {
             }
         }
     }
-    else {
-        wlog("Error decoding filter " . $filter);
-    }
-}
-else {
-//    wlog("External filter is not set.");
+    
 }
 
 $entityID = $_GET['entityID'];
@@ -182,32 +150,15 @@ if(isset($_GET['fromHostel'])) {
     $fromHostelRegistrar = $_GET['fromHostel'];
 }
 
-
-$browser = get_browser($_SERVER['HTTP_USER_AGENT'], true);
 $supportedBrowser = true;
-//wdebug($_SERVER['HTTP_USER_AGENT'], "User agent: ");
-//wdebug($browser, "Browser: ");
-
-if($browser["browser"] == "Firefox" || $browser["browser"] == "Chrome") {
-	$supportedBrowser = true;
-} else if($browser["browser"] == "IE") {
-	if($browser["majorver"] == 9 || $browser["majorver"] == 10) {
-		$supportedBrowser = true;
-	}
-} else if($browser["default"]) {
-    if(strpos($_SERVER['HTTP_USER_AGENT'], "Chrome/23")!==FALSE) {
-        $supportedBrowser = true;
-    }
+$server_http_agent = $_SERVER['HTTP_USER_AGENT'];
+if( strpos( $server_http_agent, 'MSIE 8' ) === TRUE ) {
+  $supportedBrowser = false;
+} else if( strpos( $server_http_agent, 'MSIE 7' ) === TRUE ) {
+  $supportedBrowser = false;
+} else if( strpos( $server_http_agent, 'MSIE 6' ) === TRUE ) {
+  $supportedBrowser = false;
 }
-
-wdebug($_GET, "Request: ");
-wdebug($_SERVER["HTTP_USER_AGENT"], "User agent: ");
-wdebug($_SERVER["REMOTE_ADDR"], "Remote address: ");
-wdebug($_SERVER["HTTP_REFERER"], "HTTP referrer: ");
-wdebug($browser["browser"], "Browser: ");
-wdebug($browser["majorver"], "Browser version: ");
-wlog("-----");
-
 
 if(isset($fromHostelRegistrar)) {
 
@@ -269,9 +220,6 @@ else {
     $mobile = false;
     $dumb = false;
 
-//    $a = print_r($detect, true);
-//    error_log($a . "\n", 3, "/tmp/mobile.log");
-
     if($detect->isMobile() || $detect->isTablet()) {
         $mobile = true;
         if($detect->isAndroidOS() && $detect->isSafari()) {
@@ -279,30 +227,14 @@ else {
         }
     }
 
-    if($mobile) {
-        wlog("Mobile browser");
-        if($dumb) {
-            wlog("Dumb browser");
-        }
-        else {
-            wlog("Smart browser");
-        }
-    }
-    else {
-        wlog("Computer browser");
-    }
-    wlog("-----");
-
     header("X-UA-Compatible: IE=edge");
 
     if(isset($_GET["returnIDParam"])) {
         $useIDParam = true;
         $idParam = $_GET["returnIDParam"];
-        error_log("ID_PARAM: true\n", 3, "/tmp/browser.log");
     }
     else {
         $useIDParam = false;
-        error_log("ID_PARAM: false\n", 3, "/tmp/browser.log");
     }
 
     $qs = $_SERVER['QUERY_STRING'];
@@ -322,9 +254,9 @@ else {
     echo($doctype);
     echo("<html><head><title>Discovery service</title>");
     echo($charset);
-    echo("<link rel=\"stylesheet\" href=\"jquery-ui.css\" />" );
-    echo("<script type=\"text/javascript\" src=\"jquery-2.0.0.js\"></script>");
-    echo("<script type=\"text/javascript\" src=\"jquery-ui.js\"></script>");
+    echo("<link rel=\"stylesheet\" href=\"jquery-ui.min.css\" />" );
+    echo("<script type=\"text/javascript\" src=\"jquery-2.2.4.min.js\"></script>");
+    echo("<script type=\"text/javascript\" src=\"jquery-ui.min.js\"></script>");
     echo($edge);
 
     if($mobile) {
@@ -338,11 +270,10 @@ else {
         }
     }
 
-//     wdebug($jFilter, "Filter value: ");
      if($useFilter && isset($jFilter['allowFeeds'])) {
         $f = '{';
         foreach($jFilter['allowFeeds'] as $feed) {
-            $f .= "\"$feed\":\"$wayfBase/feed/$feed.js\",";
+            $f .= "\"$feed\":\"/feed/$feed.js\",";
         }
         $feeds = rtrim($f,",")."}";
 
@@ -350,12 +281,10 @@ else {
     else {
         $f = '{';
         foreach($spInfo['feeds'] as $feed) {
-            $f .= "\"$feed\":\"$wayfBase/feed/$feed.js\",";
+            $f .= "\"$feed\":\"/feed/$feed.js\",";
         }
         $feeds = rtrim($f,",")."}";
     }
-
-//    wdebug($feeds, "FEEDS: ");
 
     echo("<script type=\"text/javascript\">\n");
 
@@ -437,7 +366,7 @@ else {
 
     if(isset($useHostel)) {
         echo("var useHostel = true;\n");
-        $hostelIdpParams = "https://ds.eduid.cz/Shibboleth.sso/Login?SAMLDS=1&" . $returnIDVariable . "=" . urlencode($hostelId);
+        $hostelIdpParams = "/Shibboleth.sso/Login?SAMLDS=1&" . $returnIDVariable . "=" . urlencode($hostelId);
         $hostelRegistrarParams = "?return=";
         $hostelReturnParam = $wayfURL . "?fromHostelRegistrar" . $getParams;
         $hostelRegistrarParams .= urlencode($hostelReturnParam);

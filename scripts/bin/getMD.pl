@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+# Dependencies: libappconfig-perl libproc-processtable-perl perlmagick  libjson-perl sqlite3 xsltproc xmlsec1 optipng
+
 use AppConfig qw(:expand);
 use Sys::Syslog;
 use Proc::ProcessTable;
@@ -8,7 +10,7 @@ use Data::Dumper;
 use lib qw(/opt/getMD/lib);
 use getMD::LogoManip;
 
-$cfgFile = '/opt/getMD/etc/getMDrc';
+my $cfgFile = '/opt/getMD/etc/getMDrc';
 
 openlog('getMD', 'pid', 'daemon');
 
@@ -108,7 +110,7 @@ sub run {
   $self->{errcode} = ($?>>8);
   if ($self->{errcode}) {
 # DBG
-    main::dbg "errcode: ".$self->{errcode}."\n";
+    #main::dbg "errcode: ".$self->{errcode}."\n";
     return;
   }
   $self;
@@ -245,12 +247,14 @@ sub logStatus {
 
 package getMD::Feed;
 
+use strict;
 use File::Copy;
 use File::Temp;
 use File::Spec::Functions;
 use MIME::Base64;
 use JSON;
 use Text::Iconv;
+use Data::Dumper;
 
 our $wget = '/usr/bin/wget';
 our $sqlite = '/usr/bin/sqlite3';
@@ -304,25 +308,58 @@ sub logStatus {
 sub get {
   my $self = shift;
   my ($src, $opt) = $self->getSrcURL;
-  my @cmdArgs = ('-P', $self->getDldDir);
-  if ($opt eq 'conditional') {
-    push @cmdArgs, qw(-N);
+
+  #my $srcfile = $src; $srcfile =~ s|.*/||;
+  my $targetfile = $self->getDldDir.'/'.$self->{id};
+  if ($self->{conf}->cmd_curl) {
+    warn "tt: $targetfile\n";
+    # defaultne je veskere stahovani podminene, jen hloupy eduGAINi
+    # server se stim nedovede vyrovat a tak je moznost pred stahovane
+    # url dat ! coz zpusobi ze se to stahuje vzdy znovu.
+    if ($opt eq 'conditional') {
+      $targetfile = $self->getDldDir.'/'.$self->{id};
+    };
+    # navic eduGAINi MDX nema zadny nazev souboru... no nejsou to dementi? ;)
+    $targetfile .= $self->{id} if ($targetfile =~ /\/$/);
+    warn "tt: $targetfile\n";
+
+    my @cmdArgs = ('--retry', 1, '--max-time', 180, '--silent', '--show-error', '--insecure', '--location',
+		   '--create-dirs',
+		   '--output', $targetfile.'.curl');
+    push @cmdArgs, ('--time-cond', $targetfile) if ($opt eq 'conditional');
+
+    warn "cmd:".join(' ', @cmdArgs);
+    $self->{cmd} = getMD::Cmd->new($self->{conf}->cmd_curl,
+				   @cmdArgs,
+				   $src);
   } else {
-    push @cmdArgs, ('-O', $self->getDldDir.'/'.$self->{id});
-    mkdir($self->getDldDir) unless -d $self->getDldDir;
+    # wget stahuje podle jmena ktery ma vzdalena strana, pote co jsem
+    # doimplementoval podporu pro curl kde se to vzdy stahuje pod
+    # nasim ID mi tohle prijde jako hloupy napad, ale nechavam to byt
+    # jak to bylo
+    my @cmdArgs = ('-P', $self->getDldDir);
+    if ($opt eq 'conditional') {
+      push @cmdArgs, qw(-N);
+    } else {
+      push @cmdArgs, ('-O', $self->getDldDir.'/'.$self->{id});
+      mkdir($self->getDldDir) unless -d $self->getDldDir;
+    };
+
+    $self->{cmd} = getMD::Cmd->new($wget, @cmdArgs, $src);
   };
 
-#  $self->{cmd} = getMD::Cmd->new($wget, @cmdArgs, qw(-P),				 $self->getDldDir, $src);
-  $self->{cmd} = getMD::Cmd->new($wget, @cmdArgs, $src);
-
-  $self->{cmd}->run() or do {
+  if ($self->{cmd}->run()) {
+    rename($targetfile.'.curl', $targetfile) if (-e $targetfile.'.curl');
+  } else {
     main::err "error downloading feed ".$self->{id}.": $!";
+    unlink $targetfile.'.curl' if (-e $targetfile.'.curl');
+    warn join(' ', @{$self->{cmd}->{cmd}});
     warn $self->{cmd}{errbuf}."\n";
     return;
   };
-  
+
   main::dbg "dldFile: ". $self->getDldFname."\n";
-  
+
   $self;
 }
 
@@ -342,12 +379,14 @@ sub verifyXML {
     push @cmdArgs, qw(--trusted);
     push @cmdArgs, $signerFname;
   };
+
   $self->{cmd}
     = getMD::Cmd->new($self->{conf}->cmd_xmlsec,
 		      @cmdArgs,
 #		      qw(--verify --id-attr:ID urn:oasis:names:tc:SAML:2.0:metadata:EntitiesDescriptor --enabled-key-data raw-x509-cert),
 		      $self->getDldFname);
   $self->{cmd}->run or do {
+    main::err join(' ', $self->{conf}->cmd_xmlsec, @cmdArgs, $self->getDldFname);
     main::err "error: XML signature verificaion failed: $!";
     main::err $self->{cmd}{errbuf}."\n";
     return;
@@ -363,10 +402,29 @@ sub downloadLogo {
   my ($self, $url) = @_;
   my $storedFname = $url;
   $storedFname =~ s|^[^:]*://||;
-  $self->{cmd} = getMD::Cmd->new($self->{conf}->cmd_wget,
-				 qw(-t 1 -T 10 -N -x --no-check-certificate),
-				 '-P', $self->{conf}->downloadLogoDir, $url);
-  $self->{cmd}->run or do {
+
+  main::info "Downloading logo from $url";
+
+  # preferujeme curl kdyz je nakonfigurovan
+  my $targetfile = join('/',
+			$self->{conf}->downloadLogoDir,
+			$storedFname);
+  if ($self->{conf}->cmd_curl) {
+    $self->{cmd} = getMD::Cmd->new($self->{conf}->cmd_curl,
+				   qw(--retry 1 --max-time 10 --silent --show-error --insecure --location),
+				   '--output', $targetfile.'.curl',
+				   #'--time-cond', $targetfile,
+				   '--create-dirs',
+				   $url);
+  } else {
+    $self->{cmd} = getMD::Cmd->new($self->{conf}->cmd_wget,
+				   qw(-t 1 -T 10 -N -x --no-check-certificate),
+				   '-P', $self->{conf}->downloadLogoDir, $url);
+  };
+  if ($self->{cmd}->run) {
+    rename($targetfile.'.curl', $targetfile) if (-e $targetfile.'.curl');
+  } else {
+    unlink($targetfile.'.curl') if (-e $targetfile.'.curl');
     warn "error downloading logo from $url: $!\n";
     warn join(' ', @{$self->{cmd}->{cmd}});
     warn $self->{cmd}{errbuf};
@@ -564,7 +622,7 @@ sub registerSPs {
     if (scalar(@ebuf)) {
       main::err "error registering SPs for feed ".$self->{id}.": $!\n";
 #    warn $self->{cmd}->{errbuf}."\n";
-      main::err "ebuf: ".join("\n", $ebuf)."\n";
+      main::err "ebuf: ".join("\n", @ebuf)."\n";
     }
   };
   
@@ -603,8 +661,8 @@ sub listLogos {
 
 sub getLogos {
   my $self = shift;
-  main::info "getLogos(".$self->{id}.")\n";
-  
+  main::info "getLogos(".$self->{id}."; ".$self->getLogoListFname.")\n";
+
   my $fh = IO::File->new($self->getLogoListFname,'r') or do {
     warn "error opening logolist file ".$self->getLogoListFname.":$!";
     return;
@@ -612,16 +670,18 @@ sub getLogos {
   while (my $l = $fh->getline) {
     my $tmpF;
     my $tmpFO;
-    
+
     chomp;
-    next if ($l =~ /^\s*$/);
-    my ($rem, $loc) = split(/\s+/, $l); 
+    next if ($l =~ /^\s*$/); # skip line if it is only whitespace
+    next unless ($l =~ /^(.*)\s+(\S+)$/);
+    my $rem = $1; my $loc = $2;
     my $locURIprefix = $self->{conf}->logoPubBaseURI;
     my $locDir = $self->{conf}->logoPubDir;
     $loc =~ s/^$locURIprefix/$locDir/;
 
     if ($rem =~ /^data:image(.*)$/) {
       my $u = $1;
+
       my (@parts) = split(/[:;,]/, $u);
       my $imgType = $parts[0];
       $imgType =~ s/\///;
@@ -631,20 +691,19 @@ sub getLogos {
 	return;
       };
       my $osel = select($tmpFO); $| = 1; select($osel);
-      print $tmpFO decode_base64($data);
+      $data =~ s/^\s*//;
+      my $decoded = decode_base64($data);
+      print $tmpFO $decoded;
       $tmpF = $tmpFO->filename;
 #      close $tmpFO;
     } else {
       $tmpF = $self->downloadLogo($rem);
     }
-#    if ($tmpF) {
-#      $self->processLogo($tmpF, $loc);
-#    }
     unless ($tmpF and $self->processLogo($tmpF, $loc)) {
       copy(catfile($self->{conf}->logoPredefDir,'missing.png'),$loc);
     }
     $self->b64Logo($loc);
-    close $tmpFO;
+    close $tmpFO if (defined $tmpFO);
   }
   $self;
 }
@@ -662,12 +721,12 @@ sub b64Logo {
   my ($self,$srcFname) = @_;
   my $tgtFname = $srcFname . "_b64";
 
-  $srcF = IO::File->new($srcFname, "r");
+  my $srcF = IO::File->new($srcFname, "r");
   if (defined($srcF)) {
-      $tgtF = IO::File->new($tgtFname, "w");
+      my $tgtF = IO::File->new($tgtFname, "w");
       my $src = join('',$srcF->getlines);
       $tgtF->print(encode_base64($src,''));
-  };  
+  };
 }
 
 package main;
@@ -707,6 +766,7 @@ my $conf = AppConfig->new({CASE	=> 1,
 			     cmd_sqlite
 			     cmd_xsltproc
 			     cmd_xmlsec
+			     cmd_curl
 			     logo_max_width
 			     logo_max_height
 			     logo_fill_width
@@ -736,6 +796,12 @@ sub doFeed {
   $f->get or do {
     $f->addToStatusMsg($f->{cmd}{errbuf});
     $f->status(getMD::Feed::Status::ERR_DOWNLOAD);
+    unless ( -e $f->getDldDir) {
+	# File with feed wasn't created and there is no cached version
+	# from past => terminate.
+	main::info "--Prematurely Finished feed $feedID\n";
+	return;
+    };
   };
   my $dlTime = (stat($f->getDldFname))[9] || -1;
   my $cnvTime = (stat($f->getPubJSFname))[9] || -1;
@@ -901,7 +967,7 @@ sub startLock {
 
     my $t = new Proc::ProcessTable;
     my $running = 0;
-    foreach $p ( @{$t->table} ){
+    foreach my $p ( @{$t->table} ){
 	$running++ if ($p->pid==$pid);
     };
 
@@ -921,11 +987,6 @@ sub finishUnlock {
   unlink $f;
 }
 
-# Semik: Tohle odstrani fail s lock file a ono to pak bezi Xkrat
-#END {
-#  finishUnlock();
-#}
-
 my $myId = time;
 $conf->define('myId');
 $conf->set('myId', $myId);
@@ -936,7 +997,7 @@ my $ret = $conf->file($cfgFile);
 
 info "getMD: Starting run $myId";
 
-startLock(); 
+startLock();
 createDirs() or die "Error creating directory structure: $!\n";
 
 createDB($conf->spdb_db, $conf->spdb_schema);

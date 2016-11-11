@@ -1,4 +1,4 @@
-<?
+<?php
 /* getSPInfo - returns an array with information about the SP $spid
    $spid - entityID of the searched SP
    returns an array (feeds => (feed1, feed2...),
