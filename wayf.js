@@ -470,7 +470,7 @@ View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDel
     if(showDeleteIcon) {
         var trashIcon = document.createElement('img');
         trashIcon.className = "trashicon";
-        trashIcon.src = "trash_40.png";
+        trashIcon.src = "trash_48.png";
         idpDiv.appendChild(trashIcon);
     }
 
