@@ -126,37 +126,6 @@ function regenerateFilter() {
              "),<div><br><br>" + 
              "";
 
-             
-             "<div class=\"scroll nowrap\">&lt;<span class=\"tagname\">SessionInitiator</span> type=\"Chaining\" Location=\"/DS\" isDefault=\"false\" id=\"DS\"&gt;<br>" +
-             "    &lt;SessionInitiator type=\"SAML2\" template=\"bindingTemplate.html\"/&gt;<br>" +
-             "    &lt;SessionInitiator type=\"Shib1\"/&gt;<br>" + 
-             "    &lt;SessionInitiator type=\"SAMLDS\" URL=\"/wayf.php?filter=<span class=\"red\">" +
-             filterValue +
-             "</span>\"/&gt;<br>" +
-             "&lt;/<span class=\"tagname\">SessionInitiator</span>&gt;</div><br><br>" + 
-             
-             "Novější verze Shibboleth SP umožnuje zjednodušenou konfiguraci:<br><br>" + 
-             
-             "<div class=\"scroll nowrap\">&lt;<span class=\"tagname\">SSO</span> discoveryProtocol=\"SAMLDS\"<br>" + 
-             "    discoveryURL=\"/wayf.php?filter=<span class=\"red\">" + 
-             filterValue +
-             "</span>\"&gt;<br>" + 
-             "    SAML2 SAML1<br>" +
-             "&lt;/<span class=\"tagname\">SSO</span>&gt;</div><br><br>" + 
-             
-             "Pokud jako SP používáte <a href=\"https://simplesamlphp.org/\">SimpleSAMLphp</a>, můžete použít v souboru config/authsources.php " + 
-             "následující konfiguraci (jedná se pouze o část konfigurace):<br><br>" +
-             
-             "<div class=\"scroll nowrap\">\'<span class=\"tagname\">default-sp</span>\' => array(<br>" + 
-             "    \'saml:SP\',<br>" + 
-             "    \'idp\' => NULL,<br>" + 
-             "    \'discoURL\' => \'/wayf.php?filter=<span class=\"red\">" +
-              filterValue + 
-             "</span>\',<br>" + 
-             "    ...<br>" + 
-             "),<div><br><br>" + 
-             
-             "";
 
     filterInfo.innerHTML = fPopis;
     filterVal.value = Base64.encode(filter);
