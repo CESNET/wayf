@@ -37,6 +37,7 @@ div#wayf > div.top {
 #wayf .toptitle {
     color: #666666;
     font-weight: normal;
+    width: 95%;
 }
 
 #wayf .content {
