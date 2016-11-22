@@ -1,5 +1,13 @@
 <?php 
-$feeds  = file_get_contents("feeds.js"); 
+$feeds  = file_get_contents("feeds.js");
+$l = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+if(strpos($l, "cs-CZ") !== false || strpos($l, "cs") !== false || strpos($l, "sk-SK") !== false || strpos($l, "sk") !== false) {
+    $locale = "cz";
+}
+else {
+    $locale = "en";
+}; 
+
 ?>
 <html>
 <head>
@@ -17,75 +25,139 @@ $feeds  = file_get_contents("feeds.js");
 <script type="text/javascript">
 var feeds = <?= $feeds ?>;
 </script>
-<script type="text/javascript" src="filter2.js"></script>
+
+<?php
+if($locale == "cz") {
+    $incl = "filter.js";
+}
+else {
+    $incl = "filter-en.js";
+}
+?>
+
+
+<script type="text/javascript" src="<?php echo $incl ?>"></script>
 
 </head>
 <body onload="fillFeeds()">
 
-<h1 class="entry-title">Vytvoření filtru pro službu WAYF</h1>
+<?php
+switch($locale) {
+    case "cz":
+	$str1 = "Vytvoření filtru pro službu WAYF";
+	$str2 = "Vytvořit nový filtr";
+	$str3 = "Ze seznamu níže vyberte skupiny, jejichž identity provideři budou zobrazeny uživatelům WAYFu. " . 
+	        "Pokud seznam necháte prázdný, bude použit defaultní seznam skupin, který obsahuje všechny " . 
+                "skupiny, v jejichž metadatech je váš SP.";
+	$str4 = "Ze seznamu níže vyberte poskytovatele identit, kteří budou zobrazeni uživatelům WAYFu. " .
+		"Pokud seznam necháte prázdný, bude zobrazený seznam obsahovat všechny poskytovatele " . 
+		"identity ze všech skupin vybraných v předchozí záložce. Pokud v předchozí záložce nebyla " . 
+		"vybrána žádná skupina, bude použit defaultní seznam skupin, který obsahuje všechny skupiny, " .
+		"v jejichž metadatech je váš SP. Poskytovatelé identity jsou rozděleni podle skupin, kam patří.";
+	$str5 = "Vyberte skupiny";
+	$str6 = "Vyberte IdP";
+	$str7 = "Přidejte Hostel IdP";
+	$str8 = "Pokud chcete poskytnout přístup ke své službě i uživatelům, kteří nemají účet u žádného poskytovatele ". 
+		"itentity výše, můžete použít speciálního poskytovatele identity <a href=\"http://hostel.eduid.cz/\">Hostel IdP</a>. " . 
+		"K založení účtu s nejnižším ověřením na <a href=\"http://hostel.eduid.cz/\">Hostel IdP</a> stačí uživateli platný email. Pokud chcete uživatelům " .
+		"umožnit založení účtu na <a href=\"http://hostel.eduid.cz/\">Hostel IdP</a> přímo z WAYFu, zaškrtněte volbu " .
+		"<i>Dovolit uživatelům vytvoření...</i>".
+	$str9 = "Umožnit použití Hostel IdP";
+	$str10 = "Dovolit uživatelům vytvoření nového účtu na Hostel IdP";
+	$str11 = "Filtr zatím nebyl vygenerován. Vygenerujte filtr vybráním některých voleb výše.";
+	$str12 = "Vygenerujte filtr vybráním některých voleb výše nebo sem zkopírujte váš existující filtr.";
+	$str13 = "Pokud již existující filtr používáte,<br>vložte jeho hodnotu do pole výše<br>a stiskněte toto tlačítko.";
+	$str14 = "Filtr v lidsky čitelné podobě pro kontrolu";
+	$str15 = "Filtr zatím nebyl vygenerován. Vygenerujte filtr vybráním některých voleb výše.";
+	$str16 = "Nastala chyba";
+	$str17 = "Při dekódování vašeho existujícího filtru nastala chyba. Ověřte, že jste filtr zkopírovali " .
+		 "do vstupního pole celý, případně že jste nepřidali znaky navíc.";
+	$str18 = "Vyčkejte";
+	$str19 = "Stránka komunikuje se vzdáleným serverem a načítá data. Trpělivost, prosím.";
+	$str20 = "Vygenerovaný filtr";
+	break;
+
+    case "en":
+    default:
+	$str1 = "WAYF filter creation";
+	$str2 = "Create new filter";
+	$str3 = "Choose groups of IdPs. If you select at least one group, WAYF will show only IdPs from this list." . 
+	        " If you leave this list empty, default list of groups will be used. Default list means all groups having your SP in metadata.";
+	$str4 = "Choose IdPs which will be shown to WAYF users. " .
+		"In case of empty list -  user will be offered all IdPs from all checked groups from previous tab. " . 
+		" If no group is selected in the previous tab, the default list of IdPs will be shown " . 
+		"Default list means all groups having your SP in metadata. IdPs are sorted by groups.";	
+	$str5 = "Choose groups";
+	$str6 = "Choose individual IdPs";
+	$str7 = "Add hostel IdP";
+	$str8 = "if you want to allow access to users out of federations, you can use special identity provider ". 
+		"<a href=\"http://hostel.eduid.cz/\">Hostel IdP</a>. " . 
+		"Only valid email is required on <a href=\"http://hostel.eduid.cz/\">Hostel IdP</a> for LoA 1 account. If you want to allow " .
+		"<a href=\"http://hostel.eduid.cz/\">Hostel IdP</a> account creation from WAYF, check option " .
+		"<i>Allow account creation on Hostel IdP</i>.";
+	$str9 = "Allow usage of Hostel IdP";
+	$str10 = "Allow account creation on Hostel IdP";
+	$str11 = "Filter was not generated yet. Generate filter using check boxes above.";;
+	$str12 = "Generate filter using checkboxes or copy existing filter.";
+	$str13 = "If you already have a filter, copy its value to the field above<br>and press this button.";
+	$str14 = "Human readable form of filter (just for checking)";
+	$str15 = "Filter was not generated yet. Generate filter using check boxes above.";
+	$str16 = "Error occured";
+	$str17 = "An error occured during the decoding of your existing filter. Make sure you copied whole filter.";
+	$str18 = "Wait, please";
+	$str19 = "Page is communicating with remote server. Please, be patient.";
+	$str20 = "Generated filter";
+	break;
+}
+?>
+
+<h1 class="entry-title"><?php echo $str1 ?></h1>
 
 <form>
 
 <div id="tabs">
 
 <ul>
-<li><a href="#tabs-1">Vytvořit nový filtr</a></li>
-<!-- <li><a href="#tabs-2">Upravit existující filtr</a></li> -->
+<li><a href="#tabs-1"><?php echo $str2 ?></a></li>
 </ul>
 
 <div id="tabs-1">
 
 <div id="accordion">
-<h3>Vyberte skupiny</h3>
+<h3><?php echo $str5 ?></h3>
 <div id="feedsDiv">
-<div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span>
-Ze seznamu níže vyberte skupiny, jejichž identity provideři budou zobrazeny uživatelům WAYFu.
-Pokud seznam necháte prázdný, bude použit defaultní seznam skupin, který obsahuje všechny skupiny,
-v jejichž metadatech je váš SP.
-</div><br>
+<div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str3 ?></div><br>
 </div>
 
-<h3>Vyberte IdP</h3>
+<h3><?php echo $str6 ?></h3>
 
 <div id="idpsDiv">
-<div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span>
-Ze seznamu níže vyberte poskytovatele identit, kteří budou zobrazeni uživatelům WAYFu.
-Pokud seznam necháte prázdný, bude zobrazený seznam obsahovat všechny poskytovatele
-identity ze všech skupin vybraných v předchozí záložce. Pokud v předchozí záložce nebyla
-vybrána žádná skupina, bude použit defaultní seznam skupin, který obsahuje všechny skupiny,
-v jejichž metadatech je váš SP. Poskytovatelé identity jsou rozděleni podle skupin, kam patří.
-</div>
+<div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str4 ?></div>
 <div id="idpaccordion">
 </div>
 </div>
 
-<h3>Přidejte Hostel IdP</h3>
+<h3><?php echo $str7 ?></h3>
 <div>
-<div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span>
-Pokud chcete poskytnout přístup ke své službě i uživatelům, kteří nemají účet u žádného poskytovatele
-itentity výše, můžete použít speciálního poskytovatele identity <a href="http://hostel.eduid.cz/">Hostel IdP</a>.
-K založení účtu s nejnižším ověřením na <a href="http://hostel.eduid.cz/">Hostel IdP</a> stačí uživateli platný email. Pokud chcete uživatelům
-umožnit založení účtu na <a href="http://hostel.eduid.cz/">Hostel IdP</a> přímo z WAYFu, zaškrtněte volbu
-"<i>Dovolit uživatelům vytvoření...</i>".
-</div>
-<input type="checkbox" name="Hostel" id="hostel" value="Use Hostel" class="oc">Umožnit použití Hostel IdP<br>
-<input type="checkbox" name="HostelReg" id="hostelreg" value="Use Hostel Reg" class="oc">Dovolit uživatelům vytvoření nového účtu na Hostel IdP
+<div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str8 ?></div>
+<input type="checkbox" name="Hostel" id="hostel" value="Use Hostel" class="oc"><?php echo $str9 ?><br>
+<input type="checkbox" name="HostelReg" id="hostelreg" value="Use Hostel Reg" class="oc"><?php echo $str10 ?>
 </div>
 
 </div><!-- accordion -->
 <br><br>
 <div class="info" id="filterinfo">
-Filtr zatím nebyl vygenerován. Vygenerujte filtr vybráním některých voleb výše.
+<?php echo $str11 ?>
 </div>
 
-<h4>Vygenerovaný filtr</h4>
-<textarea id="filterval" rows="6" cols="100">Vygenerujte filtr vybráním některých voleb výše nebo sem zkopírujte váš existující filtr.</textarea><br><br>
-<button>Pokud již existující filtr používáte,<br>vložte jeho hodnotu do pole výše<br>a stiskněte toto tlačítko</button>
+<h4><?php echo $str20 ?></h4>
+<textarea id="filterval" rows="6" cols="100"><?php echo $str12 ?></textarea><br><br>
+<button><?php echo $str13 ?></button>
 <br><br>
 
 <div class="info" id="filterinfo">
-<b>Filtr v lidsky čitelné podobě pro kontrolu</b><br><br>
-<div id="kontrola">Filtr zatím nebyl vygenerován. Vygenerujte filtr vybráním některých voleb výše.</div>
+<b><?php echo $str14 ?></b><br><br>
+<div id="kontrola"><?php echo $str15 ?></div>
 </div>
 
 </div><!-- tabs-1 -->
@@ -99,13 +171,12 @@ Filtr zatím nebyl vygenerován. Vygenerujte filtr vybráním některých voleb 
 
 </form>
 
-<div id="errdialog" title="Nastala chyba">
-Při dekódování vašeho existujícího filtru nastala chyba. Ověřte, že jste filtr zkopírovali
-do vstupního pole celý, případně že jste nepřidali znaky navíc.
+<div id="errdialog" title="<?php echo $str16 ?>">
+<?php echo $str17 ?>
 </div>
 
-<div id="gendialog" title="Vyčkejte">
-Stránka komunikuje se vzdáleným serverem a načítá data. Trpělivost, prosím.
+<div id="gendialog" title="<?php echo $str18 ?>">
+<?php echo $str19 ?>
 </div>
 
 </body></html>
