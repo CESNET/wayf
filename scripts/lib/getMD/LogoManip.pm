@@ -57,6 +57,14 @@ sub convert {
   my ($logow, $logoh) = $logo->Get('width', 'height');
   my ($nlogow, $nlogoh) = ($logow, $logoh);
 
+  # Po upgrade imagemagick:amd64 8:6.8.9.9-5+deb8u5 8:6.8.9.9-5+deb8u6
+  # prestala uspokojive chodit detekce korektniho otevreni
+  # obrazku. Takovahle kontrola tady ale stejne chybela.
+  if (($nlogow == 0) or ($nlogoh == 0)) {
+    carp "Logo ".$self->{input}." with=$nlogow height=$nlogoh, how can image have zero size?";
+    return ;
+  };
+
   # Pokud je obrazek prilis malicky, tak ho zvetsime ale jen pokud mame
   # k dispozici oba rozmery. Mno... proc? Intuitivne?
   if (defined($config->logo_max_width)
