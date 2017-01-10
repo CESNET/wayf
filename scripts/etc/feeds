@@ -26,7 +26,7 @@
 
 https://metadata.eduid.cz/entities/eduid eduID.cz metadata.eduid.cz.crt.pem eduID.cz
 https://metadata.eduid.cz/entities/hostel Hostel metadata.eduid.cz.crt.pem Hostel
-https://metadata.eduid.cz/entities/StandaloneIdP StandaloneIdP metadata.eduid.cz.crt.pem StandaloneIdP
+https://metadata.eduid.cz/entities/standaloneidps StandaloneIdP metadata.eduid.cz.crt.pem StandaloneIdP
 https://metadata.eduid.cz/static/social Social metadata.eduid.cz.crt.pem Social
 !http://mds.edugain.org/ eduGAIN edugain-cert.pem eduGAIN 
 https://login.ics.muni.cz/metadata/metadata-signed.xml LoginMuni login.ics.muni.cz.pem LoginMuni
