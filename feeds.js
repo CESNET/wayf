@@ -1,1 +1,1 @@
-{"eduID.cz":"/feed/eduID.cz.js", "InCommon":"/feed/InCommon.js","Kalmar2":"/feed/Kalmar2.js","SURFfederatie":"/feed/SURFfederatie.js", "UKAccessFederation":"/feed/UKAccessFederation.js", "eduGAIN":"/feed/eduGAIN.js", "LoginMuni":"/feed/LoginMuni.js", "Social":"/feed/Social.js"}
+{"eduID.cz":"/feed/eduID.cz.js", "eduGAIN":"/feed/eduGAIN.js", "LoginMuni":"/feed/LoginMuni.js", "Social":"/feed/Social.js", "StandaloneIdP":"/feed/StandaloneIdP.js"}
