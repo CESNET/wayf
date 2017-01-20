@@ -34,3 +34,5 @@ https://idp-ext.cuni.cz/idp/profile/Metadata/SAML ExLibris ExLibris.pem ExLibris
 
 # Semik 15.12.2016 - docasny feed mojeID, do doby nez to budou publikovat u sebe
 https://metadata.eduid.cz/entities/mojeid mojeID metadata.eduid.cz.crt.pem mojeID
+
+https://haka.funet.fi/metadata/haka-metadata.xml Haka Haka.pem Haka
