@@ -12,7 +12,9 @@ logo
 libraries.dat
 json2.js
 jquery-ui.min.js
+jquery-ui.js
 jquery-ui.min.css
+jquery-ui.css
 jquery-2.2.4.min.js
 jquery.js
 help.png
