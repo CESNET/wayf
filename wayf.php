@@ -255,7 +255,7 @@ else {
     echo("<html><head><title>Discovery service</title>");
     echo($charset);
     echo("<link rel=\"stylesheet\" href=\"jquery-ui.min.css\" />" );
-    echo("<script type=\"text/javascript\" src=\"jquery-2.2.4.min.js\"></script>");
+    echo("<script type=\"text/javascript\" src=\"jquery.js\"></script>");
     echo("<script type=\"text/javascript\" src=\"jquery-ui.min.js\"></script>");
     echo($edge);
 

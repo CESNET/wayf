@@ -20,7 +20,7 @@ else {
 <script type="text/javascript" src="base64.js"></script>
 <link rel="stylesheet" href="jquery-ui.css" />
 <link rel="stylesheet" href="filter.css" />
-<script type="text/javascript" src="jquery-2.0.0.js"></script>
+<script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="jquery-ui.js"></script>
 <script type="text/javascript">
 var feeds = <?= $feeds ?>;
