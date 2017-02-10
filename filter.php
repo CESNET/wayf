@@ -19,7 +19,7 @@ else {
 </style>
 <script type="text/javascript" src="base64.js"></script>
 <link rel="stylesheet" href="jquery-ui.min.css" />
-<link rel="stylesheet" href="filter.css" />
+<!--link rel="stylesheet" href="filter.css" /-->
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="jquery-ui.min.js"></script>
 <script type="text/javascript">
