@@ -98,11 +98,13 @@ else if(isset($_GET["efilter"])) {
 
 $useFilter = false;
 $useHostel = false;
+$filterVersion = 1;
 if(isset($extFilter)) {
     $rawFilter = $extFilter;
     $filter = base64_decode($rawFilter);
     $filter = str_replace("Array(", "[", $filter);
     $filter = str_replace(")", "]", $filter);
+    echo $filter ."\n";
     $jFilter = json_decode($filter, true);
     if($jFilter !== NULL) {
         $useFilter = true;
@@ -112,7 +114,12 @@ if(isset($extFilter)) {
                 $useHostel = true;
             }
         }
-    }
+        if(isset($jFilter['ver']) && $jFilter['ver'] == "2" ) {
+          $filterVersion = 2;
+        }
+    } else {
+      echo "Nepodarilo se dekodova<br>\n";
+    }    
     
 }
 
@@ -270,21 +277,43 @@ else {
         }
     }
 
-     if($useFilter && isset($jFilter['allowFeeds'])) {
+        print_r($jFilter);
+    if( $filterVersion == "2" ) {
+      if($useFilter && isset($jFilter['allowFeeds'])) {
+        $f = '{';
+        foreach($jFilter['allowFeeds'] as $feed => $tmpF) {
+            $f .= "\"$feed\":\"/feed/$feed.js\",";
+        }
+        $feeds = rtrim($f,",")."}";
+
+      }
+      else {
+        $f = '{';
+        foreach($spInfo['feeds'] as $feed => $tmpF) {
+            $f .= "\"$feed\":\"/feed/$feed.js\",";
+        }
+        $feeds = rtrim($f,",")."}";
+      }
+
+    } else {
+      if($useFilter && isset($jFilter['allowFeeds'])) {
         $f = '{';
         foreach($jFilter['allowFeeds'] as $feed) {
             $f .= "\"$feed\":\"/feed/$feed.js\",";
         }
         $feeds = rtrim($f,",")."}";
 
-    }
-    else {
+      }
+      else {
         $f = '{';
         foreach($spInfo['feeds'] as $feed) {
             $f .= "\"$feed\":\"/feed/$feed.js\",";
         }
         $feeds = rtrim($f,",")."}";
+      }
     }
+
+    print_r($feeds);
 
     echo("<script type=\"text/javascript\">\n");
 

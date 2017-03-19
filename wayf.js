@@ -35,6 +35,7 @@ var mobileVersion = true;
 var hostelEntityID = "https://idp.hostel.eduid.cz/idp/shibboleth";
 var inIframe = false;
 var feedCount = 0;
+var filterVersion = 1;  // default original version, not suitable for all cases
 
 // check if local storage is available
 
@@ -763,16 +764,30 @@ Wayf.prototype.getUrlFromFeedId = function(feedId) {
 
 Wayf.prototype.listAllData = function(feedId, mdSet) {
     var idpFilter = false;
-    if(useFilter && ("allowIdPs" in filter)) {
+
+    if( useFilter ) {
+      if( filterVersion == "2" && filter.allowFeeds[feedId].allowIdPs !== "undefined" ) {
         idpFilter = true;
+      } else {
+        // filter v1
+        if( ("allowIdPs" in filter)) {
+          idpFilter = true;
+        }
+      }
     }
 
     for(var eid in mdSet.entities) {
         if(eid == "indexOf") {
             continue;
         }
-        if(idpFilter && filter.allowIdPs.indexOf(eid)<0) {
+
+        if( filterVersion == "2" ) {
+          if(idpFilter && filter.allowFeeds[feedId].allowIdPs.indexOf(eid)<0)
             continue;
+        } else {
+          if(idpFilter && filter.allowIdPs.indexOf(eid)<0) {
+            continue;
+          }
         }
         var entity = mdSet.entities[eid];
         var logoSource = entity.logo;
@@ -798,10 +813,22 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
 
 }
 
+/** function getFilterVersion - return version of filter
+  */
+function getFilterVersion() {
+  if( typeof filter !== "undefined" ) { 
+    if( typeof(filter.ver) !== "undefined" && filter.ver == "2" ) {
+      return 2;
+    }    
+  }
+  return 1;  // default version
+}
+
 /** function listData - starts here - onload page
   */
 function listData() {
     inIframe = isInIframe();  // running in IFRAME?
+    filterVersion = getFilterVersion();
     wayf = new Wayf('wayf');
     if(wayf.userHasSavedIdps()) { 
         noSearchSavedIdps = true;
@@ -930,9 +957,11 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
     var feedFilter = false;
 
     if(useFilter) {
-        if("allowIdPs" in filter) {
-            idpFilter = true;
+        // filter v1
+        if( ("allowIdPs" in filter)) {
+          idpFilter = true;
         }
+
         if("allowFeeds" in filter) {
             feedFilter = true;
             if(!isSetup) {
@@ -1074,19 +1103,14 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
         }
         catch(err) {
         }
-
-
     }
 
-    // vykresli ulozena Idp
-    //if(displayIdps) {
-      // sort mixela
-      var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
+    // show saved Idp
+    var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
               
-      for( var key in keySorted ) {
-        wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
-      }
-    //}
+    for( var key in keySorted ) {
+      wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
+    }
 
     if(!isSetup) {
         this.view.addButton(this.view.getLabelText('BUTTON_NEXT'));
@@ -1130,21 +1154,6 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
     if(typeof wayf.feedData[id] != 'undefined' ) {
       // data is in memory, so add it to list
       wayf.listAllData( id, wayf.feedData[id]["mdSet"]);
-
-      /*
-      // sort mixela
-      var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
-
-      // empty scroller due to duplicity
-      // while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
-              
-      for( var key in keySorted ) {
-        wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
-      }
-
-      // searchAuto( textSearch, wayf, null, false );
-      */
-
       return;
     }
 
@@ -1254,8 +1263,17 @@ Wayf.prototype.listAllIdps = function(forceAll) {
         if(feedId == "indexOf") {
             continue;
         }
-        if(feedFilter && filter.allowFeeds.indexOf(feedId)<0) {
-            continue;
+        console.log(filter.allowFeeds);
+        if( feedFilter ) {
+          if( filterVersion == "2" ) {
+            if(filter.allowFeeds[feedId] === "undefined" ) {
+              continue;
+            }
+          } else {
+            if(filter.allowFeeds.indexOf(feedId)<0) {
+              continue;
+            }
+          }
         }
         var feedUrl = allFeeds[feedId];
         this.getFeed(feedId, feedUrl, false, forceAll, false );
