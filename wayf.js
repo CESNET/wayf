@@ -766,9 +766,7 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
     var idpFilter = false;
 
     if( useFilter ) {
-      if( filterVersion == "2" && filter.allowFeeds[feedId].allowIdPs !== "undefined" ) {
-        idpFilter = true;
-      } else {
+      if( filterVersion == "1" ) {
         // filter v1
         if( ("allowIdPs" in filter)) {
           idpFilter = true;
@@ -782,8 +780,12 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
         }
 
         if( filterVersion == "2" ) {
-          if(idpFilter && filter.allowFeeds[feedId].allowIdPs.indexOf(eid)<0)
-            continue;
+          // allowIdPs per feed
+          if( typeof filter.allowFeeds[feedId].allowIdPs !== "undefined" ) {
+            if( filter.allowFeeds[feedId].allowIdPs.indexOf(eid)<0) {
+              continue;
+            }
+          }
         } else {
           if(idpFilter && filter.allowIdPs.indexOf(eid)<0) {
             continue;
@@ -957,6 +959,24 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
     var feedFilter = false;
 
     if(useFilter) {
+      if( filterVersion == "2" ) { 
+        for(var f in filter.allowFeeds) {
+          if( typeof filter.allowFeeds[f] !== "undefined" ) {
+            idpFilter = true;
+            break;
+          }
+        }
+        feedFilter = true;
+        if(!isSetup) {
+          var af = getAllFeeds();
+          feedCount = Object.keys(filter.allowFeeds).length;
+          for(feed in filter.allowFeeds) {
+            feedUrl = af[feed];
+            wayf.getFeed(feed, feedUrl, false, false, true );
+          }
+
+        }
+      } else {
         // filter v1
         if( ("allowIdPs" in filter)) {
           idpFilter = true;
@@ -973,6 +993,7 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                 }
             }
         }
+      }
     }
     else {
         feedCount = Object.keys(allFeeds).length;
@@ -1009,9 +1030,9 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
             var label = this.getLabelFromLabels(entity.entity.label);
             var logoSource = 'data:image/png;base64,' + entity.logo;
             var enabled = true;
-            var enabledIdp = false;
             var alert_na= this.view.getLabelText( "NOT_AVAILABLE" );
             var callback = null;
+            var tempFeed = null;
             if(isSetup) {
                 callback = (function() {
                     var meid = eid;
@@ -1030,9 +1051,10 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
 
                     if(feedFilter) {
                         enableIdp = false;
-                        for(feed in filter["allowFeeds"]) {
-                            if(wayf.isIdpInFeed(eid, filter["allowFeeds"][feed])) {
+                        for(feed in filter.allowFeeds) {
+                            if(wayf.isIdpInFeed(eid, feed)) {
                                 enableIdp = true;
+                                tempFeed = feed;
                                 break;
                             }
                         }
@@ -1040,8 +1062,14 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
 
                     if(idpFilter) {
                         enableIdp = false;
-                        if(filter["allowIdPs"].indexOf(eid)>=0) {
+                        if( filterVersion == "2" ) {
+                          if( tempFeed != null ) {
                             enableIdp = true;
+                          }
+                        } else {
+                          if(filter["allowIdPs"].indexOf(eid)>=0) {
+                              enableIdp = true;
+                          }
                         }
                     }
 
@@ -1263,10 +1291,9 @@ Wayf.prototype.listAllIdps = function(forceAll) {
         if(feedId == "indexOf") {
             continue;
         }
-        console.log(filter.allowFeeds);
         if( feedFilter ) {
           if( filterVersion == "2" ) {
-            if(filter.allowFeeds[feedId] === "undefined" ) {
+            if(typeof filter.allowFeeds[feedId] === "undefined" ) {
               continue;
             }
           } else {
