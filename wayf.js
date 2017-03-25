@@ -764,9 +764,20 @@ Wayf.prototype.getUrlFromFeedId = function(feedId) {
 
 Wayf.prototype.listAllData = function(feedId, mdSet) {
     var idpFilter = false;
+    var filterDenyIdps = false;
+    var filterAllowIdps = false; 
 
     if( useFilter ) {
-      if( filterVersion == "1" ) {
+      if( filterVersion == "2" ) {
+        if( typeof filter.allowFeeds[feedId].denyIdPs !== "undefined" ) {
+          filterDenyIdps = true;
+        } else {
+          // deny has higher priority
+          if( typeof filter.allowFeeds[feedId].allowIdPs !== "undefined" ) {
+            filterAllowIdps = true;
+          }
+       }
+      } else {
         // filter v1
         if( ("allowIdPs" in filter)) {
           idpFilter = true;
@@ -780,13 +791,17 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
         }
 
         if( filterVersion == "2" ) {
-          // allowIdPs per feed
-          if( typeof filter.allowFeeds[feedId].allowIdPs !== "undefined" ) {
-            if( filter.allowFeeds[feedId].allowIdPs.indexOf(eid)<0) {
+          // denyIdPs is used
+          if( filterDenyIdps && filter.allowFeeds[feedId].denyIdPs.indexOf(eid) >= 0 ) {
               continue;
+          } else {
+            // allowIdPs per feed
+            if( filterAllowIdps && filter.allowFeeds[feedId].allowIdPs.indexOf(eid)<0) {
+              continue;            
             }
           }
         } else {
+          // filter v1
           if(idpFilter && filter.allowIdPs.indexOf(eid)<0) {
             continue;
           }
@@ -956,7 +971,7 @@ Wayf.prototype.getLabelFromLabels = function(labels) {
   */
 Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
     var idpFilter = false;
-    var feedFilter = false;
+    var filterAllowFeeds = false;
 
     if(useFilter) {
       if( filterVersion == "2" ) { 
@@ -966,7 +981,7 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
             break;
           }
         }
-        feedFilter = true;
+        filterAllowFeeds = true;
         if(!isSetup) {
           var af = getAllFeeds();
           feedCount = Object.keys(filter.allowFeeds).length;
@@ -983,7 +998,7 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
         }
 
         if("allowFeeds" in filter) {
-            feedFilter = true;
+            filterAllowFeeds = true;
             if(!isSetup) {
                 var af = getAllFeeds();
                 feedCount = Object.keys(filter["allowFeeds"]).length;
@@ -1049,7 +1064,7 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                 }
                 else {
 
-                    if(feedFilter) {
+                    if(filterAllowFeeds) {
                         enableIdp = false;
                         for(feed in filter.allowFeeds) {
                             if(wayf.isIdpInFeed(eid, feed)) {
@@ -1060,20 +1075,27 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                         }
                     }
 
-                    if(idpFilter) {
+
+                    if( filterVersion == "2" && tempFeed != null && typeof filter.allowFeeds[tempFeed].denyIdPs !== "undefined" && filter.allowFeeds[tempFeed].denyIdPs.indexOf(eid) >= 0 ) {
+                      // disable IdP in denyIdPs list
+                      enableIdp = false; 
+                    } else {         
+                      if(idpFilter) {
                         enableIdp = false;
                         if( filterVersion == "2" ) {
                           if( tempFeed != null ) {
                             enableIdp = true;
                           }
                         } else {
+                          // filter v1
                           if(filter["allowIdPs"].indexOf(eid)>=0) {
                               enableIdp = true;
                           }
                         }
+                      }
                     }
 
-                    if((!feedFilter) && (!idpFilter)) {
+                    if((!filterAllowFeeds) && (!idpFilter)) {
                         enableIdp = false;
                         for(feed in allFeeds) {
                             if(wayf.isIdpInFeed(eid, feed)) {
@@ -1249,7 +1271,7 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
 }
 
 Wayf.prototype.listAllIdps = function(forceAll) {
-    var feedFilter = false;
+    var filterAllowFeeds = false;
     var idpFilter = false;
     var langCallback = function() {
         wayf.listAllIdps(forceAll);
@@ -1262,7 +1284,7 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     this.view.deleteContainer();
     this.view.createContainer(this.view.getLabelText('TEXT_ALL_IDPS'), false, inIframe, false, langCallback);
     if(useFilter &&  "allowFeeds" in filter) {
-        feedFilter = true;
+        filterAllowFeeds = true;
     }
 
     var useHostelIdp = false;
@@ -1291,7 +1313,7 @@ Wayf.prototype.listAllIdps = function(forceAll) {
         if(feedId == "indexOf") {
             continue;
         }
-        if( feedFilter ) {
+        if( filterAllowFeeds ) {
           if( filterVersion == "2" ) {
             if(typeof filter.allowFeeds[feedId] === "undefined" ) {
               continue;
