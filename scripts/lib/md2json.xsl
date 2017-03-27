@@ -4,6 +4,8 @@
                 xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
                 xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui"
 		xmlns:eduidmd="http://eduid.cz/schema/metadata/1.0"
+		xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+		xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute"
                 version="1.0">
   <!-- Feed Label -->
   <xsl:param name="label">Unknown</xsl:param>
@@ -71,12 +73,11 @@
       </xsl:apply-templates> 
       <xsl:text>,
       </xsl:text> -->
-	  <xsl:call-template name="entityDisplayName">
-	  </xsl:call-template>
+	  <xsl:call-template name="entityDisplayName"/>
 	  <xsl:text>,
 	  </xsl:text>
-	  <xsl:call-template name="entityLogo">
-	  </xsl:call-template>
+	  <xsl:call-template name="entityLogo"/>
+	  <xsl:call-template name="entityCategories"/>
 	  <xsl:call-template name="specialEntityParams"/>
 	  <xsl:text>}</xsl:text>
 	  <xsl:if test="position()!=last()">
@@ -88,10 +89,26 @@
     </xsl:choose>
   </xsl:template>
 
+  <xsl:template name="entityCategories">
+    <xsl:if test="md:Extensions/mdattr:EntityAttributes/saml:Attribute/saml:AttributeValue">
+      <xsl:text>, "EC": [</xsl:text>
+      <xsl:apply-templates select="md:Extensions/mdattr:EntityAttributes/saml:Attribute/saml:AttributeValue"/>
+      <xsl:text>]</xsl:text>
+    </xsl:if>
+  </xsl:template>
+
+  <xsl:template match="saml:AttributeValue">
+    <xsl:text>"</xsl:text><xsl:value-of select="."/><xsl:text>"</xsl:text>
+    <xsl:if test="position()!=last()">
+      <xsl:text>,
+      </xsl:text>
+    </xsl:if>
+  </xsl:template>
+
   <xsl:template name="specialEntityParams">
     <xsl:if test="@eduidmd:authnContextClassRef">
       <xsl:text>
-,   "extraArgs": "authnContextClassRef=</xsl:text><xsl:value-of select="@eduidmd:authnContextClassRef"/><xsl:text>"
+,   ", extraArgs": "authnContextClassRef=</xsl:text><xsl:value-of select="@eduidmd:authnContextClassRef"/><xsl:text>"
       </xsl:text>
     </xsl:if>
   </xsl:template>
