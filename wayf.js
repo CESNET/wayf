@@ -52,6 +52,14 @@ try {
        window.location.href = noHTML5URL;
 } 
 
+/*
+try {
+  localStorage.test = 1;
+} catch (e) {
+  alert('safari');
+}
+*/
+
 // check support of json, otherwise use 3rd implementation
 if (typeof JSON == 'undefined') {
   var fileref = document.createElement('script')
@@ -158,15 +166,22 @@ function Persistor() {
 }
 
 Persistor.prototype.getItem = function(key) {
-    return localStorage.getItem(key);
+    try {
+      return localStorage.getItem(key);
+    } catch (e) {
+    }
 }
 
 Persistor.prototype.setItem = function(key, value) {
+  try {
     localStorage.setItem(key, value);
+  } catch (e) {}
 }
 
 Persistor.prototype.removeItem = function(key) {
+  try {
     localStorage.removeItem(key);
+  } catch (e) {}
 }
 
 /** Object View - what user see

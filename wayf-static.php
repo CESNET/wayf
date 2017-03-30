@@ -20,6 +20,7 @@ include '/opt/getMD/lib/SPInfo.php';  // Feed preparation
 $DEVEL = false;
 
 if(isset($DEVEL) && $DEVEL == true) {
+    // error_reporting(E_ALL);
     $wayfURL = "/wayf-static-dev.php";
 }
 else {
@@ -236,21 +237,28 @@ else if(isset($_GET["efilter"])) {
 
 $useFilter = false;
 $useHostel = false;
+$filterVersion = 1;
 if(isset($extFilter)) {
     $rawFilter = $extFilter;
     $filter = base64_decode($rawFilter);
     $filter = str_replace("Array(", "[", $filter);
     $filter = str_replace(")", "]", $filter);
+    // echo $filter ."\n";
     $jFilter = json_decode($filter, true);
     if($jFilter !== NULL) {
         $useFilter = true;
         if(isset($jFilter['allowHostel']) && $jFilter['allowHostel'] == true) {
             $useHostel = true;
             if(isset($jFilter['allowHostelReg']) && $jFilter['allowHostelReg'] == true) {
-                $allowHostelReg = true;
+                $useHostel = true;
             }
         }
-    }
+        if(isset($jFilter['ver']) && $jFilter['ver'] == "2" ) {
+          $filterVersion = 2;
+        }
+    } else {
+      echo "Unable decode filter.<br>\n";
+    }    
     
 }
 
@@ -337,10 +345,77 @@ else {
 
     $entities = array();
 
+    // echo "print_r<br";
+    // print_r($jFilter);
+    // echo "<br><br>";
 
-    if($useFilter && isset($jFilter['allowFeeds'])) {
+    if( $filterVersion == "2" ) {
+      // filter v2
+      $feedSet = $spInfo['feeds'];  // read All available feeds
+      if($useFilter && isset($jFilter['allowFeeds'])) {
+        $feedSet = array_keys( $jFilter['allowFeeds'] );  // read only allow feeds in filter
+      }
 
-        foreach($jFilter['allowFeeds'] as $feed) {
+      // echo "feedSet - ";
+      // print_r( $feedSet );
+      // echo " <br>\n";
+
+      foreach($feedSet as $feed) {
+
+            echo "aktualni feed - ". $feed ." xxx ";
+            $feedPath = "/opt/getMD/var/pub/current/feed/" . $feed . ".js";
+            $feedFile = file_get_contents($feedPath);
+            $fd = json_decode($feedFile, true);
+            $c_entities = $fd["entities"];
+
+            $filterEntities = $c_entities;
+
+            // print_r( $c_entities );
+
+            // filtering per feed, allowIdPs or denyIdPs
+            if( isset( $jFilter['allowFeeds'][ $feed ]['denyIdPs'] )) {
+              $filterEntities = null;
+              //echo "DENY FILTER <br>\n";
+              //print_r( $jFilter['allowFeeds'][ $feed ]['denyIdPs'] );
+              foreach($c_entities as $key => $value) {
+                if(!in_array($key, $jFilter['allowFeeds'][ $feed ]['denyIdPs'])) {
+                  $filterEntities[$key] = $value;
+                }
+              }
+              
+            } else {
+
+              if( isset( $jFilter['allowFeeds'][ $feed ]['allowIdPs'] )) {
+                $filterEntities = null;
+                //echo "ALLOW FILTER <br>\n";
+                //print_r( $jFilter['allowFeeds'][ $feed ]['allowIdPs'] );
+                foreach($c_entities as $key => $value) {
+                  if(in_array($key, $jFilter['allowFeeds'][ $feed ]['allowIdPs'])) {
+                    $filterEntities[$key] = $value;
+                  }
+                }
+              }
+            }
+
+            //echo $feed. "<br>";
+            //print_r( $filterEntities );
+            //echo $feed. "<br><br><br>";
+      
+            if(is_array($filterEntities)) {
+                //echo "MERGUJU do entities <br>\n";
+                $entities = array_merge($entities, $filterEntities);
+            }
+            
+        }
+
+    } else { 
+      // filter v1
+      $feedSet = $spInfo['feeds'];  // read All available feeds
+      if($useFilter && isset($jFilter['allowFeeds'])) {
+        $feedSet = $jFilter['allowFeeds'];  // read only allow feeds in filter
+      }
+
+        foreach($feedSet as $feed) {
 
             $feedPath = "/opt/getMD/var/pub/current/feed/" . $feed . ".js";
             $feedFile = file_get_contents($feedPath);
@@ -351,8 +426,9 @@ else {
             }
             
         }
-    }
-    else {
+/*      }
+
+      else {
 
         foreach($spInfo['feeds'] as $feed) {
             $feedPath = "/opt/getMD/var/pub/current/feed/" . $feed . ".js";
@@ -361,9 +437,9 @@ else {
             $c_entities = $fd["entities"];
             $entities = array_merge($entities, $c_entities);
         }
-    }
-
-    if($useFilter && isset($jFilter['allowIdPs'])) {
+      }
+*/
+      if($useFilter && isset($jFilter['allowIdPs'])) {
         $fentities = Array();
         foreach($entities as $key => $value) {
             if(in_array($key, $jFilter['allowIdPs'])) {
@@ -371,6 +447,7 @@ else {
             }
         }
         $entities = $fentities;
+      }
     }
 
     $sorted_entities = uasort($entities, 'idpCmp');

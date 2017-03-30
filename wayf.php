@@ -104,7 +104,7 @@ if(isset($extFilter)) {
     $filter = base64_decode($rawFilter);
     $filter = str_replace("Array(", "[", $filter);
     $filter = str_replace(")", "]", $filter);
-    echo $filter ."\n";
+    // echo $filter ."\n";
     $jFilter = json_decode($filter, true);
     if($jFilter !== NULL) {
         $useFilter = true;
@@ -118,7 +118,7 @@ if(isset($extFilter)) {
           $filterVersion = 2;
         }
     } else {
-      echo "Nepodarilo se dekodova<br>\n";
+      echo "Unable decode filter.<br>\n";
     }    
     
 }
@@ -277,7 +277,7 @@ else {
         }
     }
 
-        print_r($jFilter);
+        // print_r($jFilter);
     if( $filterVersion == "2" ) {
       if($useFilter && isset($jFilter['allowFeeds'])) {
         $f = '{';
@@ -313,7 +313,7 @@ else {
       }
     }
 
-    print_r($feeds);
+    // print_r($feeds);
 
     echo("<script type=\"text/javascript\">\n");
 
