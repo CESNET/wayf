@@ -1082,11 +1082,17 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                     if(filterAllowFeeds) {
                         enableIdp = false;
                         for(feed in filter.allowFeeds) {
+                          if(filterVersion == "1" && wayf.isIdpInFeed(eid, filter.allowFeeds[feed] )) {
+                              enableIdp = true;
+                              tempFeed = filter.allowFeeds[feed];
+                              break;
+                          } else {
                             if(wayf.isIdpInFeed(eid, feed)) {
                                 enableIdp = true;
                                 tempFeed = feed;
                                 break;
                             }
+                          }
                         }
                     }
 
