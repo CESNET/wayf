@@ -28,10 +28,10 @@ var feeds = <?= $feeds ?>;
 
 <?php
 if($locale == "cz") {
-    $incl = "filter.js";
+    $incl = "filter2.js";
 }
 else {
-    $incl = "filter-en.js";
+    $incl = "filter2-en.js";
 }
 ?>
 
@@ -75,6 +75,8 @@ switch($locale) {
 	$str18 = "Vyčkejte";
 	$str19 = "Stránka komunikuje se vzdáleným serverem a načítá data. Trpělivost, prosím.";
 	$str20 = "Vygenerovaný filtr";
+    $str21 = "Varování";
+    $str22 = "Vámi vložený filtr neodpovídá přegenerovanému filtru. To může být způsobeno například použitím IdP, které už v příslušné federaci není. Prosím, překontrolujte funkčnost vygenerovaného filtru.";
 	break;
 
     case "en":
@@ -107,6 +109,8 @@ switch($locale) {
 	$str18 = "Wait, please";
 	$str19 = "Page is communicating with remote server. Please, be patient.";
 	$str20 = "Generated filter";
+    $str21 = "Warning";
+    $str22 = "Entered filter differs from the builded one. It can be caused by using IdP, which is not in federation any more. Please, check filter's proper functionality.";
 	break;
 }
 ?>
@@ -173,6 +177,10 @@ switch($locale) {
 
 <div id="errdialog" title="<?php echo $str16 ?>">
 <?php echo $str17 ?>
+</div>
+
+<div id="dfdialog" title="<?php echo $str21 ?>">
+<?php echo $str22 ?>
 </div>
 
 <div id="gendialog" title="<?php echo $str18 ?>">

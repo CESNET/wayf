@@ -1,3 +1,5 @@
+var parsingError = "";
+
 function normalizeFeeds() {
     for(var feed in feeds)  {
         var checked = $("input[name='" + feed + "-idp[]']:checked");
@@ -140,7 +142,9 @@ function decodeFilter() {
         var filterArea = document.getElementById('filterval');
         var base64Filter = filterArea.value;
         var decoded = Base64.decode(base64Filter);
+        var encoded = Base64.encode(decoded);
         var filter = JSON.parse(decoded);
+        var kontrola = document.getElementById('kontrola');
         if(filter.ver == null) {
             throw "This is not compatible filter version.";
         }
@@ -182,9 +186,12 @@ function decodeFilter() {
                 }
             }
         }
+        if(kontrola.innetText !== decoded) {
+            $("#dfdialog").dialog("open");
+        }
     }
     catch(err) {
-        alert(err);
+        parsingError = err;
         $("#errdialog").dialog("open");
         $('#filterval').addClass("errorfilter");
     }
@@ -357,6 +364,12 @@ function fillFeeds() {
         decodeFilter();
     });
     $("#errdialog").dialog({
+        autoOpen: false,
+        buttons: [ {text: "Ok", click: function(){ $(this).dialog("close"); } } ],
+        dialogClass: "alert",
+        modal: true
+    });
+    $("#dfdialog").dialog({
         autoOpen: false,
         buttons: [ {text: "Ok", click: function(){ $(this).dialog("close"); } } ],
         dialogClass: "alert",
