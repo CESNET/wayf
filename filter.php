@@ -28,10 +28,10 @@ var feeds = <?= $feeds ?>;
 
 <?php
 if($locale == "cz") {
-    $incl = "filter2.js";
+    $incl = "filter.js";
 }
 else {
-    $incl = "filter2-en.js";
+    $incl = "filter-en.js";
 }
 ?>
 
