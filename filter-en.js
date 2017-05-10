@@ -186,7 +186,7 @@ function decodeFilter() {
                 }
             }
         }
-        if(kontrola.innetText !== decoded) {
+        if(kontrola.innerText !== decoded) {
             $("#dfdialog").dialog("open");
         }
     }
