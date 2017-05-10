@@ -98,20 +98,20 @@ function regenerateFilter() {
              "<div class=\"scroll nowrap\">&lt;<span class=\"tagname\">SessionInitiator</span> type=\"Chaining\" Location=\"/DS\" isDefault=\"false\" id=\"DS\"&gt;<br>" +
              "    &lt;SessionInitiator type=\"SAML2\" template=\"bindingTemplate.html\"/&gt;<br>" +
              "    &lt;SessionInitiator type=\"Shib1\"/&gt;<br>" + 
-             "    &lt;SessionInitiator type=\"SAMLDS\" URL=\"/wayf.php?filter=<span class=\"red\">" +
+             "    &lt;SessionInitiator type=\"SAMLDS\" URL=\"/wayf.php?filter=<span class=\"red\"><br>" +
 
             "<span style=\"width:80em; word-wrap:break-word; display:inline-block;\">" +
              filterValue +
-             "</span></span>\"/&gt;<br>" +
+             "</span><br></span>\"/&gt;<br>" +
              "&lt;/<span class=\"tagname\">SessionInitiator</span>&gt;</div><br><br>" + 
              
              "Novější verze Shibboleth SP umožnuje zjednodušenou konfiguraci:<br><br>" + 
              
              "<div class=\"scroll nowrap\">&lt;<span class=\"tagname\">SSO</span> discoveryProtocol=\"SAMLDS\"<br>" + 
-             "    discoveryURL=\"/wayf.php?filter=<span class=\"red\">" + 
+             "    discoveryURL=\"/wayf.php?filter=<span class=\"red\"><br>" + 
             "<span style=\"width:80em; word-wrap:break-word; display:inline-block;\">" +
              filterValue +
-             "</span></span>\"&gt;<br>" + 
+             "</span><br></span>\"&gt;<br>" + 
              "    SAML2 SAML1<br>" +
              "&lt;/<span class=\"tagname\">SSO</span>&gt;</div><br><br>" + 
              
@@ -121,10 +121,10 @@ function regenerateFilter() {
              "<div class=\"scroll nowrap\">\'<span class=\"tagname\">default-sp</span>\' => array(<br>" + 
              "    \'saml:SP\',<br>" + 
              "    \'idp\' => NULL,<br>" + 
-             "    \'discoURL\' => \'/wayf.php?filter=<span class=\"red\">" +
+             "    \'discoURL\' => \'/wayf.php?filter=<span class=\"red\"><br>" +
             "<span style=\"width:80em; word-wrap:break-word; display:inline-block;\">" +
               filterValue + 
-             "</span></span>\',<br>" + 
+             "</span><br></span>\',<br>" + 
              "    ...<br>" + 
              "),<div><br><br>" + 
              
@@ -143,8 +143,10 @@ function decodeFilter() {
         var base64Filter = filterArea.value;
         var decoded = Base64.decode(base64Filter);
         var filter = JSON.parse(decoded);
+        var encoded = Base64.encode(decoded);
+        var kontrola = document.getElementById('kontrola');
         if(filter.ver == null) {
-            throw "Verze filtru neni kompatibilni s touto aplikaci.";
+            throw "This is not compatible filter version.";
         }
         $(':checkbox').attr('checked', false);
         $("input[value='whitelist']").click();
@@ -153,12 +155,13 @@ function decodeFilter() {
                 $("input[value='" + feed + "']").click();
                 if(filter.allowFeeds[feed].allowIdPs != null) {
                     for(idp in filter.allowFeeds[feed].allowIdPs) {
-                        $("input[value='" + idp + "']").click();
+                        $("input[value='" + filter.allowFeeds[feed].allowIdPs[idp] + "']").click();
                     }
                 }
                 else if(filter.allowFeeds[feed].denyIdPs != null) {
+                    $("[name='" + feed + "-filterType'][value='blacklist']").click();
                     for(idp in filter.allowFeeds[feed].denyIdPs) {
-                        $("input[value='" + idp + "']").click();
+                        $("input[value='" + filter.allowFeeds[feed].denyIdPs[idp] + "']").click();
                     }
                 }
             }
@@ -182,6 +185,9 @@ function decodeFilter() {
                     }
                 }
             }
+        }
+        if(kontrola.innetText !== decoded) {
+            $("#dfdialog").dialog("open");
         }
     }
     catch(err) {
@@ -358,6 +364,12 @@ function fillFeeds() {
         decodeFilter();
     });
     $("#errdialog").dialog({
+        autoOpen: false,
+        buttons: [ {text: "Ok", click: function(){ $(this).dialog("close"); } } ],
+        dialogClass: "alert",
+        modal: true
+    });
+    $("#dfdialog").dialog({
         autoOpen: false,
         buttons: [ {text: "Ok", click: function(){ $(this).dialog("close"); } } ],
         dialogClass: "alert",
