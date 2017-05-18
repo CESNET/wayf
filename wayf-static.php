@@ -213,11 +213,14 @@ if(isset($_GET['LoA'])) {
 if(isset($_GET['kerberos'])) {
     $kerberos = $_GET['kerberos'];
 }
+if(isset($_GET['fromHostel'])) {
+  $fromHostelRegistrar = $_GET['fromHostel'];  // after registration on Hostel
+}
+
 $hostelRegistrarURL = 'https://adm.hostel.eduid.cz/registrace';
 $hostelId = "https://idp.hostel.eduid.cz/idp/shibboleth";
 $hostelLabel = "Hostel IdP";
 $hostelLogo = "/logo/idp.hostel.eduid.cz.idp.shibboleth.png";
-$fromHostelRegistrar = $_GET['fromHostel'];  // after registration on Hostel
 $allowHostel = false;
 $allowHostelReg = false;
 

@@ -78,7 +78,9 @@ function addVariable($varName, $varValue, $isRecursion=false) {
 }
 
 $wayfBase = "https://" . $_SERVER['HTTP_HOST'];
-$returnURL = $_GET['return'];
+if(isset($_GET['return'])) {
+  $returnURL = $_GET['return'];
+}
 
 if(isset($_GET["filter"])) {
     $extFilter = $_GET["filter"];
