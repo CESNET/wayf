@@ -123,7 +123,6 @@ if(isset($extFilter)) {
     
 }
 
-$entityID = $_GET['entityID'];
 if(isset($_GET['returnIDParam'])) {
     $returnIDVariable = $_GET['returnIDParam'];
 }
@@ -132,6 +131,7 @@ else {
 }
 
 if(isset($_GET['entityID'])) {
+    $entityID = $_GET['entityID'];
     if(($useFilter && isset($jFilter['allowFeeds']) && $jFilter['allowFeeds'] !== "") || ($useFilter && isset($jFilter['allowIdPs']) && $jFilter['allowIdPs'] !== "")) {
 //    if($useFilter && isset($jFilter['allowFeeds']) && $jFilter['allowFeeds'] !== "") {
         $spInfo = getSPInfoAllFeeds($entityID);
@@ -214,7 +214,7 @@ else if(!isset($entityID) || !isset($returnURL)) {
     else {
         echo("<div id=\"paramlist\"><h2>Seznam parametrů / List of parameters</h2>");
         foreach($_GET as $key => $value) {
-            $gval = $_GET[$gparam];
+//            $gval = $_GET[$gparam];
             echo("[$key] = [$value]<br>\n");
         }
         echo("</div><div class=\"roztah\"></div>");

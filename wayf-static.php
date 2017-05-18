@@ -207,8 +207,12 @@ $entityID = $_GET['entityID'];
 $lang = "cs";
 
 // Hostel
-$loa = $_GET['LoA'];
-$kerberos = $_GET['kerberos'];
+if(isset($_GET['LoA'])) {
+    $loa = $_GET['LoA'];
+}
+if(isset($_GET['kerberos'])) {
+    $kerberos = $_GET['kerberos'];
+}
 $hostelRegistrarURL = 'https://adm.hostel.eduid.cz/registrace';
 $hostelId = "https://idp.hostel.eduid.cz/idp/shibboleth";
 $hostelLabel = "Hostel IdP";
