@@ -38,7 +38,7 @@ var feedCount = 0;
 var filterVersion = 1;  // default original version, not suitable for all cases
 
 // check if local storage is available
-
+/*
 try {
     if(localStorage === undefined || localStorage === null) {
 	try {
@@ -51,6 +51,7 @@ try {
 } catch (e2) {
        window.location.href = noHTML5URL;
 } 
+*/
 
 /*
 try {
