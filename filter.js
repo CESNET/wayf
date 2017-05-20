@@ -1,4 +1,35 @@
+function normalizeFeeds() {
+    for(var feed in feeds)  {
+        var checked = $("input[name='" + feed + "-idp[]']:checked");
+        if(checked.length > 0) {
+            var ft = ($("input[value='" + feed + "']"))[0];
+            if(!ft.checked) {
+                ft.click();
+            }
+        }
+    }
+}
+
+
+function colorIdPs() {
+    for(var feed in feeds)  {
+        var ft = ($("input[name='" + feed + "-filterType']:checked"))[0];
+        var checked = $("input[name='" + feed + "-idp[]']:checked").next();
+        var unchecked = $("input[name='" + feed + "-idp[]']:not(:checked)").next();
+        if(ft.value == "whitelist") {
+            checked.removeClass("black red").addClass("green");
+            unchecked.removeClass("green red").addClass("black");
+        }
+        else {
+            checked.removeClass("black green").addClass("red");
+            unchecked.removeClass("green red").addClass("black");
+        }
+    }
+}
+
+
 function regenerateFilter() {
+
     var filterInfo = document.getElementById('filterinfo');
     var filterVal = document.getElementById('filterval');
     var rawFilterArea = document.getElementById('rawfilter');
@@ -8,80 +39,48 @@ function regenerateFilter() {
     var hostelreg = document.getElementById('hostelreg');
     var kontrola = document.getElementById('kontrola');
     var filter = "";
-    filter = filter + "{";
-    var useFeeds = false;
     var checkedFeeds = new Array();
-    var feeds = document.getElementsByName('feed[]');
-    for (var i=0; i<feeds.length; i++) {
-        var feed = feeds[i];
-        if(!feed.checked) {
-            continue;
-        }
-        else {
-            if(!useFeeds) {
-                useFeeds = true;
-            }
-            checkedFeeds.push(feed);
-        }
-    }
-    if(useFeeds) {
-        filter = filter + "\"allowFeeds\": [";
-        for (var i = 0; i < checkedFeeds.length; i++) {
+    var useFeeds = false;
+    var fo = {};
+    fo.ver = "2";
+
+    colorIdPs();
+    normalizeFeeds();
+    var checkedFeeds = $("input[name='feed[]']:checked");
+    if(checkedFeeds.length>0) {
+        fo.allowFeeds = {};
+        for(var i=0; i<checkedFeeds.length; i++) {
             var feed = checkedFeeds[i];
-            filter = filter + "\"" + feed.value + "\"";
-            if(i < checkedFeeds.length - 1) {
-                filter = filter + ",";
+            fo.allowFeeds[feed.value] = {};
+            var checkedIdPs = $("input[name='" + feed.value + "-idp[]']:checked");
+            if(checkedIdPs.length>0) {
+                var fds = Array();
+                for(var j=0; j<checkedIdPs.length; j++) {
+                    var idp = checkedIdPs[j];
+                    var idpVal = idp.value;
+                    fds.push(idpVal);
+                }
+                var ft = $("input[name='" + feed.value + "-filterType']:checked");
+                var filterType = ft[0];
+                var fts = filterType.value == "whitelist" ? "allowIdPs" : "denyIdPs";
+                fo.allowFeeds[feed.value][fts] = fds;
+            }
+            else {
+                fo.allowFeeds[feed.value] = {};
             }
         }
-        filter = filter + "], ";
     }
 
-    var useIdps = false;
-    var checkedIdps = new Array();
-    var idps = document.getElementsByName('idp[]');
-    for (var i=0; i<idps.length; i++) {
-        var idp = idps[i];
-        if(!idp.checked) {
-            continue;
-        }
-        else {
-            if(!useIdps) {
-                useIdps = true;
-            }
-            checkedIdps.push(idp);
-        }
-    }
-    if(useIdps) {
-        filter = filter + "\"allowIdPs\": [";
-        for (var i = 0; i < checkedIdps.length; i++) {
-            var idp = checkedIdps[i];
-            filter = filter + "\"" + idp.value + "\"";
-            if(i < checkedIdps.length - 1) {
-                filter = filter + ",";
-            }
-        }
-        filter = filter + "], ";
-    }
-
-    filter = filter + "\"allowHostel\": ";
+    fo.allowHostel = hostel.checked;
     if(hostel.checked) {
-        filter = filter + "true, \"allowHostelReg\": "
-        if(hostelreg.checked) {
-            filter = filter + "true"
-        }
-        else {
-            filter = filter + "false";
-        }
-    }
-    else {
-        filter = filter + "false, \"allowHostelReg\": false";
+        fo.allowHostelReg = hostelreg.checked;
     }
 
-    filter = filter + "}";
-
+    var filter = JSON.stringify(fo);
     var filterValue = Base64.encode(filter);
     var filterLen = filterValue.length;
     var rawFilterValue = filterKey + filter;
+    kontrola.innerText = filter;
 
     fPopis = "Následující hodnotu filtru použijte jako parametr poslaný WAYFu z vašeho SP." +
              " To lze udělat <ul><li>Parametrem \"<i>filter</i>\", který obsahuje přímo hodnotu" +
@@ -99,17 +98,20 @@ function regenerateFilter() {
              "<div class=\"scroll nowrap\">&lt;<span class=\"tagname\">SessionInitiator</span> type=\"Chaining\" Location=\"/DS\" isDefault=\"false\" id=\"DS\"&gt;<br>" +
              "    &lt;SessionInitiator type=\"SAML2\" template=\"bindingTemplate.html\"/&gt;<br>" +
              "    &lt;SessionInitiator type=\"Shib1\"/&gt;<br>" + 
-             "    &lt;SessionInitiator type=\"SAMLDS\" URL=\"/wayf.php?filter=<span class=\"red\">" +
+             "    &lt;SessionInitiator type=\"SAMLDS\" URL=\"/wayf.php?filter=<span class=\"red\"><br>" +
+
+            "<span style=\"width:80em; word-wrap:break-word; display:inline-block;\">" +
              filterValue +
-             "</span>\"/&gt;<br>" +
+             "</span><br></span>\"/&gt;<br>" +
              "&lt;/<span class=\"tagname\">SessionInitiator</span>&gt;</div><br><br>" + 
              
              "Novější verze Shibboleth SP umožnuje zjednodušenou konfiguraci:<br><br>" + 
              
              "<div class=\"scroll nowrap\">&lt;<span class=\"tagname\">SSO</span> discoveryProtocol=\"SAMLDS\"<br>" + 
-             "    discoveryURL=\"/wayf.php?filter=<span class=\"red\">" + 
+             "    discoveryURL=\"/wayf.php?filter=<span class=\"red\"><br>" + 
+            "<span style=\"width:80em; word-wrap:break-word; display:inline-block;\">" +
              filterValue +
-             "</span>\"&gt;<br>" + 
+             "</span><br></span>\"&gt;<br>" + 
              "    SAML2 SAML1<br>" +
              "&lt;/<span class=\"tagname\">SSO</span>&gt;</div><br><br>" + 
              
@@ -119,53 +121,18 @@ function regenerateFilter() {
              "<div class=\"scroll nowrap\">\'<span class=\"tagname\">default-sp</span>\' => array(<br>" + 
              "    \'saml:SP\',<br>" + 
              "    \'idp\' => NULL,<br>" + 
-             "    \'discoURL\' => \'/wayf.php?filter=<span class=\"red\">" +
+             "    \'discoURL\' => \'/wayf.php?filter=<span class=\"red\"><br>" +
+            "<span style=\"width:80em; word-wrap:break-word; display:inline-block;\">" +
               filterValue + 
-             "</span>\',<br>" + 
+             "</span><br></span>\',<br>" + 
              "    ...<br>" + 
              "),<div><br><br>" + 
              
-             "";
+             "Funkčnost vašeho filtru můžete ověřit na <a target=\"_blank\" href=\"https://ds.eduid.cz/wayf.php?filter=" + filterValue + "&entityID=sample&return=www.example.org\">tomto odkazu</a>.<br><br>";
             
     filterInfo.innerHTML = fPopis;
-    filterVal.value = Base64.encode(filter);
+    filterVal.value = filterValue;
 
-    var kValue = "";
-
-    if(useFeeds) {
-        kValue = "Použité skupiny<ul>";
-        for (var i = 0; i < checkedFeeds.length; i++) {
-            kValue = kValue + "<li>" + checkedFeeds[i].value + "</li>";
-        }
-        kValue = kValue + "</ul>";
-    }
-
-    if(useIdps) {
-        kValue = kValue + "Použití poskytovatelé identit<ul>";
-        for (var i = 0; i < checkedIdps.length; i++) {
-            var c = 'input[value="' + checkedIdps[i].value + '"]' ;
-            var ff = $(c).next().html();
-            kValue = kValue + "<li>" + ff + "</li>";
-        }
-        kValue = kValue + "</ul>";
-    }
-
-    kValue = kValue + "Speciální poskytovatel identity <a href=\"http://hostel.eduid.cz/\">Hostel IdP</a> ";
-    if(hostel.checked) {
-        kValue = kValue + "použit.<br>Vytváření účtů na <a href=\"http://hostel.eduid.cz/\">Hostel IdP</a> ";
-        if(hostelreg.checked) {
-            kValue = kValue + "je";
-        }
-        else {
-            kValue = kValue + "není";
-        }
-        kValue = kValue + " povoleno.";
-    }
-    else {
-        kValue = kValue + "nepoužit.";
-    }
-
-    kontrola.innerHTML = kValue;
     $('#filterval').removeClass("errorfilter");
 }
 
@@ -176,19 +143,27 @@ function decodeFilter() {
         var base64Filter = filterArea.value;
         var decoded = Base64.decode(base64Filter);
         var filter = JSON.parse(decoded);
-        $(':checkbox').attr('checked', false);
-        if(filter.allowFeeds != null) {
-            for (var i in filter.allowFeeds) {
-                var feed = filter.allowFeeds[i];
-                var c = 'input[value="' + feed + '"]';
-                $(c).click();
-            }
+        var encoded = Base64.encode(decoded);
+        var kontrola = document.getElementById('kontrola');
+        if(filter.ver == null) {
+            throw "This is not compatible filter version.";
         }
-        if(filter.allowIdPs != null) {
-            for (var i in filter.allowIdPs) {
-                var idp = filter.allowIdPs[i];
-                var c = 'input[value="' + idp + '"]';
-                $(c).click();
+        $(':checkbox').attr('checked', false);
+        $("input[value='whitelist']").click();
+        if(filter.allowFeeds != null) {
+            for(var feed in filter.allowFeeds) {
+                $("input[value='" + feed + "']").click();
+                if(filter.allowFeeds[feed].allowIdPs != null) {
+                    for(idp in filter.allowFeeds[feed].allowIdPs) {
+                        $("input[value='" + filter.allowFeeds[feed].allowIdPs[idp] + "']").click();
+                    }
+                }
+                else if(filter.allowFeeds[feed].denyIdPs != null) {
+                    $("[name='" + feed + "-filterType'][value='blacklist']").click();
+                    for(idp in filter.allowFeeds[feed].denyIdPs) {
+                        $("input[value='" + filter.allowFeeds[feed].denyIdPs[idp] + "']").click();
+                    }
+                }
             }
         }
         if(filter.allowHostel != null) {
@@ -211,9 +186,12 @@ function decodeFilter() {
                 }
             }
         }
+        if(kontrola.innerText !== decoded) {
+            $("#dfdialog").dialog("open");
+        }
     }
     catch(err) {
-	alert(err);
+        alert(err);
         $("#errdialog").dialog("open");
         $('#filterval').addClass("errorfilter");
     }
@@ -256,17 +234,16 @@ function sortIdps(a, b) {
     return idpNameA.localeCompare(idpNameB);
 }
 
-function showIdps(url, content) {
+function showIdps(url, content, feed) {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
-        return function(cont) {
+        return function(cont, fd) {
             if(xmlhttp.readyState == 4 ) {
                 switch(xmlhttp.status) {
                     case 200:
                         var feedData = JSON.parse(xmlhttp.responseText);
                         var eArray = feedData.entities;
                         ea = eArray;
-//                        alert(JSON.stringify(eArray));
                         var keys = [];
                         for (var key in eArray) {
                             if (eArray.hasOwnProperty(key)) {
@@ -281,13 +258,13 @@ function showIdps(url, content) {
                             var i = document.createElement("input");
                             var l = document.createElement("label");
                             i.type = "checkbox";
-                            i.name = "idp[]";
+                            i.name = fd + "-idp[]";
                             i.value = ent;
-                            i.className = "oc";
+                            i.classList.add("oc");
                             var s = document.createElement("span");
                             s.innerHTML = idpName + " (" + ent + ")";
                             var b = document.createElement("br");
-                            
+
                             l.appendChild(i);
                             l.appendChild(s);
                             
@@ -301,7 +278,7 @@ function showIdps(url, content) {
                         break;
                 }
             }
-        }(content);
+        }(content, feed);
     };
     xmlhttp.open("GET", url, false);
     xmlhttp.send();
@@ -314,20 +291,6 @@ function fillFeeds() {
         modal: true,
         closeOnEscape: false,
     });
-//    $('textarea').each(function() {
-//        $.data(this, 'default', this.value);
-//    }).focus(function() {
-//        if(!$.data(this, 'edited')) {
-//            this.value = '';
-//        }
-//    }).change(function() {
-//        $.data(this, 'edited', this.value != "");
-//    }).blur(function() {
-//        if(!$.data(this, 'edited')) {
-//            this.value = $.data(this, 'default');
-//        }
-//    });
-
     var feedsDiv = document.getElementById("feedsDiv");
     for(var key in feeds)  {
         var i = document.createElement("input");
@@ -335,6 +298,32 @@ function fillFeeds() {
         i.name = "feed[]";
         i.value = key;
         i.className = "oc";
+
+        var i1 = document.createElement("input");
+        var l1 = document.createElement("label");
+        i1.type = "radio";
+        i1.name = key + "-filterType";
+        i1.value = "whitelist";
+        i1.checked = "checked";
+        i1.className = "oc";
+        var s1 = document.createElement("span");
+        s1.innerHTML = "Vybraná IdP budou viditelná, ostatní budou skrytá";
+        var b1 = document.createElement("br");
+        l1.appendChild(i1);
+        l1.appendChild(s1);
+
+        var i2 = document.createElement("input");
+        var l2 = document.createElement("label");
+        i2.type = "radio";
+        i2.name = key + "-filterType";
+        i2.value = "blacklist";
+        i2.className = "oc";
+        var s2 = document.createElement("span");
+        s2.innerHTML = "Vybraná IdP nebudou viditelná, všechna ostatní budou viditelná";
+        var b2 = document.createElement("br");
+        l2.appendChild(i2);
+        l2.appendChild(s2);
+
         var l = document.createElement("label");
         var s = document.createElement("span");
         s.innerHTML = key;
@@ -351,8 +340,19 @@ function fillFeeds() {
         title.innerHTML = key;
         idpAcc.appendChild(title);
         idpAcc.appendChild(cont);
-        showIdps(value, cont);
+
+        cont.appendChild(l1);
+        cont.appendChild(b1);
+
+        cont.appendChild(l2);
+        cont.appendChild(b2);
+
+        var bb = document.createElement("br");
+        cont.appendChild(bb);
+
+        showIdps(value, cont, key);
     }
+
     $('.oc').change(function(){ regenerateFilter(); });
     $("#accordion,#idpaccordion").accordion({
         heightStyle: "content"
@@ -364,6 +364,12 @@ function fillFeeds() {
         decodeFilter();
     });
     $("#errdialog").dialog({
+        autoOpen: false,
+        buttons: [ {text: "Ok", click: function(){ $(this).dialog("close"); } } ],
+        dialogClass: "alert",
+        modal: true
+    });
+    $("#dfdialog").dialog({
         autoOpen: false,
         buttons: [ {text: "Ok", click: function(){ $(this).dialog("close"); } } ],
         dialogClass: "alert",
