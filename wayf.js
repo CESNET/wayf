@@ -778,21 +778,44 @@ Wayf.prototype.getUrlFromFeedId = function(feedId) {
     }
 }
 
+/** function Wayf.prototype.isInEc - exist EC in allowEC/denyEC?
+  */
+Wayf.prototype.isInEc = function( allowOrDenyEcArray, ecArray ) {
+  for( var ec in ecArray ) {
+    if( allowOrDenyEcArray.indexOf(ecArray[ec])>=0) {
+      return true;
+    }
+  }
+  return false;
+}
+
 Wayf.prototype.listAllData = function(feedId, mdSet) {
     var idpFilter = false;
     var filterDenyIdps = false;
     var filterAllowIdps = false; 
+    var filterAllowEC = false;
+    var filterDenyEC = false;
 
     if( useFilter ) {
       if( filterVersion == "2" ) {
+        // exist denyIdPs?
         if( typeof filter.allowFeeds[feedId].denyIdPs !== "undefined" ) {
           filterDenyIdps = true;
         } else {
+          // exist allowIdPs?
           // deny has higher priority
           if( typeof filter.allowFeeds[feedId].allowIdPs !== "undefined" ) {
             filterAllowIdps = true;
           }
-       }
+        }
+        // exist denyEC?
+        if( typeof filter.allowFeeds[feedId].denyEC !== "undefined" ) {
+          filterDenyEC = true;
+        }
+        // exist allowEC?
+        if( typeof filter.allowFeeds[feedId].allowEC !== "undefined" ) {
+          filterAllowEC = true;
+        }
       } else {
         // filter v1
         if( ("allowIdPs" in filter)) {
@@ -815,6 +838,14 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
             if( filterAllowIdps && filter.allowFeeds[feedId].allowIdPs.indexOf(eid)<0) {
               continue;            
             }
+          }
+
+          // entity category, first remove denyEC, then add allowEC
+          if( filterDenyEC && wayf.isInEc( filter.allowFeeds[feedId].denyEC, mdSet.entities[eid].EC )) {
+            continue;
+          }
+          if( filterAllowEC && wayf.isInEc( filter.allowFeeds[feedId].allowEC, mdSet.entities[eid].EC )==false) {
+            continue;
           }
         } else {
           // filter v1
@@ -1034,7 +1065,6 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
         }
     }
 
-
     var usedIdps = this.usedIdps;
     this.view.deleteContainer();
     var langCallback = function() {
@@ -1082,12 +1112,14 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
 
                     if(filterAllowFeeds) {
                         enableIdp = false;
+                        // find first feed where eid is
                         for(feed in filter.allowFeeds) {
                           if(filterVersion == "1" && wayf.isIdpInFeed(eid, filter.allowFeeds[feed] )) {
                               enableIdp = true;
                               tempFeed = filter.allowFeeds[feed];
                               break;
                           } else {
+                            // filter version 2 and newer
                             if(wayf.isIdpInFeed(eid, feed)) {
                                 enableIdp = true;
                                 tempFeed = feed;
