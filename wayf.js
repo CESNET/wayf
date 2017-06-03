@@ -1020,6 +1020,7 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
     var idpFilter = false;
     var filterAllowFeeds = false;
 
+    /* load feeds */
     if(useFilter) {
       if( filterVersion == "2" ) { 
         for(var f in filter.allowFeeds) {
@@ -1058,6 +1059,7 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
       }
     }
     else {
+        /* load all feeds, filter is not set */
         feedCount = Object.keys(allFeeds).length;
         for(var feed in allFeeds) {
             var feedUrl = allFeeds[feed];
@@ -1077,9 +1079,10 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
         this.view.createContainer(this.view.getLabelText('TEXT_SAVED_IDPS'), true, inIframe, false, langCallback);
     }
 
+    /* foreach saved idp */
     for(var eid in usedIdps) {
         var enableIdp = true;
-        try {
+        //try {
 
             if(eid == "indexOf") {
                 continue;
@@ -1104,52 +1107,14 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
             }
             else {
                 if(eid == hostelEntityID) {
-                    if(!useFilter || (useFilter && filter.allowHostel!=true)) {
-                        enableIdp = false;
-                    }
+                    if(useFilter && filter.allowHostel==true) {
+                        enableIdp = true;
+                    } 
                 }
                 else {
-
-                    if(filterAllowFeeds) {
-                        enableIdp = false;
-                        // find first feed where eid is
-                        for(feed in filter.allowFeeds) {
-                          if(filterVersion == "1" && wayf.isIdpInFeed(eid, filter.allowFeeds[feed] )) {
-                              enableIdp = true;
-                              tempFeed = filter.allowFeeds[feed];
-                              break;
-                          } else {
-                            // filter version 2 and newer
-                            if(wayf.isIdpInFeed(eid, feed)) {
-                                enableIdp = true;
-                                tempFeed = feed;
-                                break;
-                            }
-                          }
-                        }
-                    }
-
-
-                    if( filterVersion == "2" && tempFeed != null && typeof filter.allowFeeds[tempFeed].denyIdPs !== "undefined" && filter.allowFeeds[tempFeed].denyIdPs.indexOf(eid) >= 0 ) {
-                      // disable IdP in denyIdPs list
-                      enableIdp = false; 
-                    } else {         
-                      if(idpFilter) {
-                        enableIdp = false;
-                        if( filterVersion == "2" ) {
-                          if( tempFeed != null ) {
-                            enableIdp = true;
-                          }
-                        } else {
-                          // filter v1
-                          if(filter["allowIdPs"].indexOf(eid)>=0) {
-                              enableIdp = true;
-                          }
-                        }
-                      }
-                    }
-
+                    
                     if((!filterAllowFeeds) && (!idpFilter)) {
+                        /* filter is not defined => take all delivered feeds */
                         enableIdp = false;
                         for(feed in allFeeds) {
                             if(wayf.isIdpInFeed(eid, feed)) {
@@ -1157,7 +1122,119 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                                 break;
                             }
                         }
-                    }
+                    } else {
+
+                      if( filterVersion == "1" ) {
+                        /* filter_v1 */
+                          
+                        if(idpFilter && filter["allowIdPs"].indexOf(eid)>=0) {
+                          /* add idp explicitly listed in allowIdps */
+                          enableIdp = true;
+                        } else {
+                          /* add idp in allowFeeds */
+                          for( feed in filter.allowFeeds ) {
+                            if( filterAllowFeeds && wayf.isIdpInFeed( eid, filter.allowFeeds[ feed ] )) {
+                              enableIdp = true;
+                            }
+                          }
+                        }
+
+                      } else {
+                        /* filter_v2 */
+
+                        var filterDenyIdps;
+                        var filterAllowIdps;
+                        var filterAllowEC;
+                        var filterDenyEC;
+                        var eidIsDeny;
+                        var eidIsNotInAllow;
+                        var eidAll;
+                        var tmpEnableIdp;
+
+                        if( filterVersion == "2" && filterAllowFeeds ) {
+                          for(feed in filter.allowFeeds) {
+                            /* go through all allowFeeds */
+
+                            filterDenyIdps = false;
+                            filterAllowIdps = false;
+                            filterAllowEC = false;
+                            filterDenyEC = false;
+                            eidIsDeny = false;
+                            eidIsNotInAllow = false;
+                            eidAll = true;
+                            tmpEnableIdp = true;
+
+                            if( wayf.isIdpInFeed( eid, feed )) {
+                            /* idp is in the feed */
+
+                              if( typeof filter.allowFeeds[feed].denyIdPs !== "undefined" ) { 
+                                filterDenyIdps = true;
+                                eidAll = false;
+                              }
+
+                              if( filterDenyIdps && filter.allowFeeds[feed].denyIdPs.indexOf(eid) >= 0 )
+                                eidIsDeny = true;
+
+                              if( typeof filter.allowFeeds[feed].allowIdPs !== "undefined" ) {
+                                filterAllowIdps = true;
+                                eidAll = false;
+                              }
+
+                              if( filterAllowIdps && filter.allowFeeds[feed].allowIdPs.indexOf(eid) < 0)
+                                eidIsNotInAllow = true;
+
+                              if( typeof filter.allowFeeds[feed].denyEC !== "undefined" ) {
+                                filterDenyEC = true;
+                                eidAll = false;
+                              }
+
+                              if( typeof filter.allowFeeds[feed].allowEC !== "undefined" ) {
+                                filterAllowEC = true;
+                                eidAll = false;
+                              }
+
+                              /* vyhodnoceni v2 */
+    
+                              // entity category, first remove denyEC, then add allowEC
+                              if( filterDenyEC && wayf.isInEc( filter.allowFeeds[feed].denyEC, wayf.feedData[feed].mdSet.entities[eid].EC )) {
+                                tmpEnableIdp = false;
+                              }
+                              if( filterAllowEC && wayf.isInEc( filter.allowFeeds[feed].allowEC, wayf.feedData[feed].mdSet.entities[eid].EC )==false) {
+                                tmpEnableIdp = false;
+                              }
+     
+                              // allowIdPs and denyIdps has hieher priority than entity category
+                              // denyIdPs is used
+                              if( eidIsDeny ) {
+                                  tmpEnableIdp = false;
+                              } else {
+                                // allowIdPs per feed
+                                if( eidIsNotInAllow ) {
+                                  tmpEnableIdp = false;            
+                                }
+                              }
+     
+                              if( eidAll ){
+                                tmpEnableIdp = true;
+                              }
+                   
+  
+                            } else {
+                              tmpEnableIdp = false;
+                            }
+
+                            if( tmpEnableIdp == true ) {
+                              enableIdp = true;
+                              break;  // if idp should be in any feed, list as enabled
+                            } else {
+                              enableIdp = false;
+                            }
+                          }                  
+                      }
+                       /* vyhodnoceni filter v2 */
+                     }
+
+                   } 
 
                 }
 
@@ -1204,9 +1281,9 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
             catch(err) {
             }
 
-        }
+        /*}
         catch(err) {
-        }
+        } */
     }
 
     // show saved Idp
