@@ -369,50 +369,52 @@ else {
 
       foreach($feedSet as $feed) {
 
-            echo "aktualni feed - ". $feed ." xxx ";
+            // echo "aktualni feed - ". $feed ." xxx ";
             $feedPath = "/opt/getMD/var/pub/current/feed/" . $feed . ".js";
             $feedFile = file_get_contents($feedPath);
             $fd = json_decode($feedFile, true);
             $c_entities = $fd["entities"];
 
-            $filterEntities = $c_entities;
+            $filterDenyIdps = false;
+            $filterAllowIdps = false;
+            $filterAllowEC = false;
+            $filterDenyEC = false;
+
+            if( isset( $jFilter['allowFeeds'][ $feed ]['denyIdPs'] )) {
+              $filterDenyIdps = true;
+            }
+
+            if( isset( $jFilter['allowFeeds'][ $feed ]['allowIdPs'] )) {
+              $filterAllowIdps = true;
+            }
+
+            if( isset( $jFilter['allowFeeds'][ $feed ]['allowEC'] )) {
+              $filterAllowEC = true;
+            }
+
+            if( isset( $jFilter['allowFeeds'][ $feed ]['denyEC'] )) {
+              $filterDenyEC = true;
+            }
+
+            foreach($c_entities as $key => $value) {
+              if( $filterDenyIdps && in_array( $key, $jFilter['allowFeeds'][ $feed ]['denyIdPs'])) {
+                continue;
+              } else {
+                if( $filterAllowIdps && ! in_array( $key, $jFilter['allowFeeds'][ $feed ]['allowIdPs'])) {
+                  continue;
+                }
+              }
+
+              if( $filterDenyEC && in_array( $key, $jFilter['allowFeeds'][ $feed ]['denyEC'])) {
+                continue;
+              }
+              if( $filterAllowEC && ! in_array( $key, $jFilter['allowFeeds'][ $feed ]['allowEC'])) {
+                continue;
+              }
+              $entities[$key] = $value;
+            }
 
             // print_r( $c_entities );
-
-            // filtering per feed, allowIdPs or denyIdPs
-            if( isset( $jFilter['allowFeeds'][ $feed ]['denyIdPs'] )) {
-              $filterEntities = null;
-              //echo "DENY FILTER <br>\n";
-              //print_r( $jFilter['allowFeeds'][ $feed ]['denyIdPs'] );
-              foreach($c_entities as $key => $value) {
-                if(!in_array($key, $jFilter['allowFeeds'][ $feed ]['denyIdPs'])) {
-                  $filterEntities[$key] = $value;
-                }
-              }
-              
-            } else {
-
-              if( isset( $jFilter['allowFeeds'][ $feed ]['allowIdPs'] )) {
-                $filterEntities = null;
-                //echo "ALLOW FILTER <br>\n";
-                //print_r( $jFilter['allowFeeds'][ $feed ]['allowIdPs'] );
-                foreach($c_entities as $key => $value) {
-                  if(in_array($key, $jFilter['allowFeeds'][ $feed ]['allowIdPs'])) {
-                    $filterEntities[$key] = $value;
-                  }
-                }
-              }
-            }
-
-            //echo $feed. "<br>";
-            //print_r( $filterEntities );
-            //echo $feed. "<br><br><br>";
-      
-            if(is_array($filterEntities)) {
-                //echo "MERGUJU do entities <br>\n";
-                $entities = array_merge($entities, $filterEntities);
-            }
-            
         }
 
     } else { 
@@ -433,19 +435,7 @@ else {
             }
             
         }
-/*      }
 
-      else {
-
-        foreach($spInfo['feeds'] as $feed) {
-            $feedPath = "/opt/getMD/var/pub/current/feed/" . $feed . ".js";
-            $feedFile = file_get_contents($feedPath);
-            $fd = json_decode($feedFile, true);
-            $c_entities = $fd["entities"];
-            $entities = array_merge($entities, $c_entities);
-        }
-      }
-*/
       if($useFilter && isset($jFilter['allowIdPs'])) {
         $fentities = Array();
         foreach($entities as $key => $value) {

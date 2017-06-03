@@ -41,11 +41,10 @@ div#wayf > div.top {
 #wayf .content {
     max-height: 450px;
     overflow: auto;
-/*    max-height: 60%; */
 }
 
 #wayf div.scroller {
-    padding: 1px 1px 10px;
+    padding: 1px 1px 20px;
 }
 
 #wayf > div.bottom {
@@ -130,7 +129,7 @@ div#wayf > div.top {
     visibility: hidden;
 }
 
-#wayf div.scroller a, #wayf div.scroller button  {
+#wayf div.scroller a, #wayf div.scroller button {
     background-color: #FFFFFF;
     border: 1px solid #BBBBBB;
     border-radius: 3px 3px 3px 3px;
@@ -141,8 +140,10 @@ div#wayf > div.top {
     text-shadow: 0 1px #FFFFFF;
     padding: 3px 6px;
     outline: medium none;
+    min-height: 45px;                                                                                                                            
     width: 100%;
 }
+
 
 #wayf div.scroller div.disabled {
     background-color: #CCCCCC;

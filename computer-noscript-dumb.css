@@ -127,6 +127,7 @@ div#wayf > div.top {
     outline: medium none;
     width: 100%;
     font-size: 250%;
+    min-height: 45px;
 }
 
 #wayf div.scroller div.disabled {
