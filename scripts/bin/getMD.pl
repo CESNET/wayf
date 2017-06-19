@@ -567,13 +567,20 @@ sub convert {
   my $converter = Text::Iconv->new('utf8', "ascii//TRANSLIT");
   my $wayf_db = decode_json( $json  );
 
-  foreach my $entity (keys %{$wayf_db->{entities}}) {
-      foreach my $lang (keys %{$wayf_db->{entities}->{$entity}->{label}}) {
-	  my $label = $wayf_db->{entities}->{$entity}->{label}->{$lang};
+  foreach my $entityID (keys %{$wayf_db->{entities}}) {
+      foreach my $lang (keys %{$wayf_db->{entities}->{$entityID}->{label}}) {
+	  my $label = $wayf_db->{entities}->{$entityID}->{label}->{$lang};
 	  my $ascii = $converter->convert($label);
 	  if ($label ne $ascii) {
-	      $wayf_db->{entities}->{$entity}->{label}->{"$lang;ascii"} = $ascii;
+	      $wayf_db->{entities}->{$entityID}->{label}->{"$lang;ascii"} = $ascii;
 	  };
+      };
+      my $entityIDnew = $entityID; $entityIDnew =~ s/&amp;/&/g;
+      if ($entityID ne $entityIDnew) {
+        my $entity = $wayf_db->{entities}->{$entityID};
+        delete $wayf_db->{entities}->{$entityID};
+        $wayf_db->{entities}->{$entityIDnew} = $entity;
+        warn "rewriting $entityID -> $entityIDnew\n";
       };
   };
   $json = to_json($wayf_db, {pretty=>1});
