@@ -2,6 +2,7 @@
 
 include 'Mobile_Detect.php';
 include '/opt/getMD/lib/SPInfo.php';
+include 'wayf_vars.php;  // customization CESNET/eduTEAMS
 
 $detect = new Mobile_Detect();
 
@@ -339,9 +340,9 @@ else {
     addVariable("serverURL", $server);
     addVariable("wayfURL", $wayf);
 
-    $prefLang = "";
+    // $prefLang = ""; get prefLang from wayf_vars.php
     if(isset($_GET['lang'])) {
-	$prefLang = $_GET['lang'];
+	    $prefLang = $_GET['lang'];
     }
     addVariable("prefLang", $prefLang);
 

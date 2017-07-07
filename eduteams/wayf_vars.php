@@ -1,1 +1,2 @@
-$lang="en";
+<?php
+ $prefLang = "en";
