@@ -928,9 +928,14 @@ function searchAuto( query, wayf, callback, saveQuery ) {
 
   // looking at only filtered records
   for(var entity in this.wayf.selectedIdps ) {
-    for(var curLang in this.wayf.selectedIdps[entity]){
-      if( this.wayf.selectedIdps[entity][curLang].search( new RegExp( query, "i" )) != -1) {
-        $( document.getElementById( entity ) ).show();
+    var extractedDomain = entity.split("/");
+    if( extractedDomain[2].search( new RegExp( query, "i" )) != -1 ) {
+      $( document.getElementById( entity ) ).show();
+    } else {
+      for(var curLang in this.wayf.selectedIdps[entity]){
+        if( this.wayf.selectedIdps[entity][curLang].search( new RegExp( query, "i" )) != -1) {
+          $( document.getElementById( entity ) ).show();
+        }
       }
     }
   }
