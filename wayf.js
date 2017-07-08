@@ -16,7 +16,7 @@
 var wayf = "";
 var hostelURL  = 'https://adm.hostel.eduid.cz/registrace';
 var showedIdpList;
-var languages = new Array("cs", "en");
+var languages = new Array("en", "cs");
 var fallbackLanguage = "en";
 var labels = {
     'BUTTON_NEXT': {'cs':'Jiný účet', 'en':'Another account'},
