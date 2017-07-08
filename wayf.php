@@ -2,7 +2,7 @@
 
 include 'Mobile_Detect.php';
 include '/opt/getMD/lib/SPInfo.php';
-include 'wayf_vars.php;  // customization CESNET/eduTEAMS
+include 'wayf_vars.php';  // customization CESNET/eduTEAMS
 
 $detect = new Mobile_Detect();
 
