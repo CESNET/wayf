@@ -15,6 +15,7 @@
 
 include 'Mobile_Detect.php';  // Broser detection library
 include '/opt/getMD/lib/SPInfo.php';  // Feed preparation
+include 'wayf_vars.php';  // customization CESNET/eduTEAMS
 
 // Development mode
 $DEVEL = false;
@@ -279,7 +280,7 @@ if(isset($_GET['entityID'])) {
     }
 }
 
-
+$lang = $prefLang;
 if(isset($_GET['lang'])) {
     if($_GET['lang'] == "cs" || $_GET['lang'] == "en") {
         $lang = $_GET['lang'];
@@ -529,7 +530,7 @@ else {
     echo("</a>");
     echo("</div>\n");
 
-    echo("<p id=\"help\"><a id='helpa' href='http://www.eduid.cz/cesnet-ds' target='_blank'><span id='helps'>CESNET</span><img class=\"helpimg\" src=\"help.png\" alt=\"Information\"></a></p>\n");
+    echo("<p id=\"help\"><a id='helpa' href='". organizationHelpLink ."' target='_blank'><span id='helps'>". $organizationLabel ."</span><img class=\"helpimg\" src=\"help.png\" alt=\"Information\"></a></p>\n");
     echo("</div>\n");
     echo("</div>\n");
 
