@@ -28,7 +28,8 @@ var labels = {
     'SETUP': {'cs':'Nastavení', 'en':'Setup'},
     'CONFIRM_DELETE': {'cs':'Zapomenout ', 'en':'Forget '},
     'BACK_TITLE': {'cs':'Zpět', 'en':'Back'},
-    'NOT_AVAILABLE': {'cs':'K této službě se nelze přihlásit pomocí', 'en':'Service is not available for'}
+    'NOT_AVAILABLE': {'cs':'K této službě se nelze přihlásit pomocí', 'en':'Service is not available for'},
+    'LOADING': {'cs': 'Načítám instituce ...', 'en':'LOADING ...'}
 }
 
 var mobileVersion = true;
@@ -318,6 +319,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
 
     var toplabel = document.createElement('span');
     toplabel.innerHTML = label;
+    toplabel.className = "toplabel";
 
     /* search field */
     var search = document.createElement('input');
@@ -355,14 +357,14 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     help.id = 'help';
 
     var cesnetLink = document.createElement('a');
-    cesnetLink.href="http://www.eduid.cz/cesnet-ds";
+    cesnetLink.href = organizationHelpLink;  // comes from wayf_vars.php
     cesnetLink.target="_blank";
     cesnetLink.id = "helpa";
 
     var sc = document.createElement('span');
     sc.id = 'helps';
 
-    sc.innerHTML = "CESNET";
+    sc.innerHTML = organizationLabel;  // comes from wayf_vars.php
     cesnetLink.appendChild(sc);
 
     var helpImage = document.createElement('img');
@@ -1386,6 +1388,8 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
 
               // empty scroller due to duplicity
               // while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
+
+              $( ".toplabel" ).text(wayf.view.getLabelText('TEXT_ALL_IDPS'));
               
               for( var key in keySorted ) {
                 wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
@@ -1418,7 +1422,7 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     noSearchSavedIdps = false;
 
     this.view.deleteContainer();
-    this.view.createContainer(this.view.getLabelText('TEXT_ALL_IDPS'), false, inIframe, false, langCallback);
+    this.view.createContainer(this.view.getLabelText('LOADING'), false, inIframe, false, langCallback);
     if(useFilter &&  "allowFeeds" in filter) {
         filterAllowFeeds = true;
     }

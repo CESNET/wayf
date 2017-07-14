@@ -346,6 +346,10 @@ else {
     }
     addVariable("prefLang", $prefLang);
 
+    // label and link to home organization
+    addVariable( "organizationLabel", $organizationLabel );
+    addVariable( "organizationHelpLink", $organizationHelpLink );
+
     $nosearch = 0;
     if( isset( $_GET['nosearch'] )) {
       $nosearch = 1;
