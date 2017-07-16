@@ -931,7 +931,7 @@ function searchAuto( query, wayf, callback, saveQuery ) {
   // looking at only filtered records
   for(var entity in this.wayf.selectedIdps ) {
     var extractedDomain = entity.split("/");
-    if( extractedDomain[2].search( new RegExp( query, "i" )) != -1 ) {
+    if( typeof extractedDomain[2] !== "undefined" && extractedDomain[2].search( new RegExp( query, "i" )) != -1 ) {
       $( document.getElementById( entity ) ).show();
     } else {
       for(var curLang in this.wayf.selectedIdps[entity]){
