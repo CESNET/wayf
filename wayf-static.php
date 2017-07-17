@@ -17,6 +17,9 @@ include 'Mobile_Detect.php';  // Broser detection library
 include '/opt/getMD/lib/SPInfo.php';  // Feed preparation
 include 'wayf_vars.php';  // customization CESNET/eduTEAMS
 
+// constants
+define( "EC", "EC" );  // EC index to entities
+
 // Development mode
 $DEVEL = false;
 
@@ -406,11 +409,15 @@ else {
                 }
               }
 
-              if( $filterDenyEC && in_array( $key, $jFilter['allowFeeds'][ $feed ]['denyEC'])) {
-                continue;
-              }
-              if( $filterAllowEC && ! in_array( $key, $jFilter['allowFeeds'][ $feed ]['allowEC'])) {
-                continue;
+              foreach( $c_entities[ $key ][ EC ] as $ecMetadata ) {
+                if( $filterDenyEC && in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['denyEC'])) {
+                  //print_r( $c_entities[ $key ] ); echo "<br>";
+                  //print_r( $ecMetadata ); echo "<br><br>";
+                  continue 2;
+                }
+                if( $filterAllowEC && ! in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['allowEC'])) {
+                  continue 2;
+                }
               }
               $entities[$key] = $value;
             }
