@@ -286,8 +286,9 @@ if(isset($_GET['entityID'])) {
 $lang = $prefLang;
 if(isset($_GET['lang'])) {
     if($_GET['lang'] == "cs" || $_GET['lang'] == "en") {
-        $lang = $_GET['lang'];
+        $lang_ui = $_GET['lang'];  // language of application
     }
+    $lang = $_GET['lang'];  // language of IdP names
 }
 
 $isDumb = false;
@@ -473,7 +474,7 @@ else {
     echo("<div class=\"top\">\n");
     echo("<p class=\"toptitle\">");
 
-    $login_str = $messages["LOGIN"][$lang];
+    $login_str = $messages["LOGIN"][$lang_ui];
 
     echo($login_str);
     echo("</p>\n");
@@ -514,7 +515,7 @@ else {
     echo("<div class=\"bottom\">\n");
 
     if($useHostel && $allowHostelReg) {
-        $label = $messages["CREATE_ACCOUNT"][$lang];
+        $label = $messages["CREATE_ACCOUNT"][$lang_ui];
         echo("<div class=\"bwrap\">\n");
         echo("<a href=\"" . getHostelRegistrarUrl() . "\" class=\"button\">");
         echo($label);
