@@ -12,11 +12,6 @@ else {
 <html>
 <head>
 <meta charset="UTF-8" />
-<style type="text/css">
-.errorfilter {
-    background-color: Pink;
-}
-</style>
 <script type="text/javascript" src="base64.js"></script>
 <link rel="stylesheet" href="jquery-ui.css" />
 <link rel="stylesheet" href="filter.css" />
@@ -28,15 +23,15 @@ var feeds = <?= $feeds ?>;
 
 <?php
 if($locale == "cz") {
-    $incl = "filter.js";
+    $incl = "filter-strings.js";
 }
 else {
-    $incl = "filter-en.js";
+    $incl = "filter-strings-en.js";
 }
 ?>
 
-
 <script type="text/javascript" src="<?php echo $incl ?>"></script>
+<script type="text/javascript" src="filter.js"></script>
 
 </head>
 <body onload="fillFeeds()">
@@ -44,7 +39,7 @@ else {
 <?php
 switch($locale) {
     case "cz":
-	$str1 = "Vytvoření filtru pro službu WAYF";
+	$str1 = "Vytvoření filtru pro službu CESNET WAYF/DS";
 	$str2 = "Vytvořit nový filtr";
 	$str3 = "Ze seznamu níže vyberte skupiny, jejichž identity provideři budou zobrazeny uživatelům WAYFu. " . 
 	        "Pokud seznam necháte prázdný, bude použit defaultní seznam skupin, který obsahuje všechny " . 
@@ -77,11 +72,13 @@ switch($locale) {
 	$str20 = "Vygenerovaný filtr";
     $str21 = "Varování";
     $str22 = "Vámi vložený filtr neodpovídá přegenerovanému filtru. To může být způsobeno například použitím IdP, které už v příslušné federaci není. Prosím, překontrolujte funkčnost vygenerovaného filtru.";
+    $str23 = "Přetáhněte příslušné entity kategorie z šedého rámečku do červeného nebo zeleného rámečku. Uživateli se zobrazí seznam IdP, které obsahují všechny entity kategorie ze zeleného rámečku a neobsahují žádnou kategorii z červeného rámečku. Každá skupina IdP má vlastní nastavení.";
+    $str24 = "Vyberte entity kategorie";
 	break;
 
     case "en":
     default:
-	$str1 = "WAYF filter creation";
+	$str1 = "CESNET WAYF/DS filter creation";
 	$str2 = "Create new filter";
 	$str3 = "Choose groups of IdPs. If you select at least one group, WAYF will show only IdPs from this list." . 
 	        " If you leave this list empty, default list of groups will be used. Default list means all groups having your SP in metadata.";
@@ -111,6 +108,8 @@ switch($locale) {
 	$str20 = "Generated filter";
     $str21 = "Warning";
     $str22 = "Entered filter differs from the builded one. It can be caused by using IdP, which is not in federation any more. Please, check filter's proper functionality.";
+    $str23 = "Move entity categories from gray box to green one or red one. List of IdPs shown to user will contain IdPs having all entity categories from green box and none entity kategory from red box. Entity kategory setting can be different for every IdP group.";
+    $str24 = "Choose entity categories";
 	break;
 }
 ?>
@@ -138,6 +137,14 @@ switch($locale) {
 <div id="idpsDiv">
 <div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str4 ?></div>
 <div id="idpaccordion">
+</div>
+</div>
+
+<h3><?php echo $str24 ?></h3>
+
+<div id="ecDiv">
+<div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str23 ?></div>
+<div id="ecaccordion">
 </div>
 </div>
 

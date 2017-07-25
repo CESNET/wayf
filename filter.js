@@ -1,3 +1,6 @@
+var ecList = {};
+var ea;
+
 function normalizeFeeds() {
     for(var feed in feeds)  {
         var checked = $("input[name='" + feed + "-idp[]']:checked");
@@ -52,6 +55,11 @@ function regenerateFilter() {
         for(var i=0; i<checkedFeeds.length; i++) {
             var feed = checkedFeeds[i];
             fo.allowFeeds[feed.value] = {};
+
+
+            var checkedEC = $("input[feed='" + feed + "']:checked");
+            var ecLen = checkedEC.length;
+
             var checkedIdPs = $("input[name='" + feed.value + "-idp[]']:checked");
             if(checkedIdPs.length>0) {
                 var fds = Array();
@@ -68,6 +76,16 @@ function regenerateFilter() {
             else {
                 fo.allowFeeds[feed.value] = {};
             }
+
+            var allowedEC = ecList[feed.value]["allowEC"];
+            if(allowedEC.length > 0) {
+                fo.allowFeeds[feed.value]["allowEC"] = allowedEC;
+            }
+
+            var deniedEC = ecList[feed.value]["denyEC"];
+            if(deniedEC.length > 0) {
+                fo.allowFeeds[feed.value]["denyEC"] = deniedEC;
+            }
         }
     }
 
@@ -82,59 +100,13 @@ function regenerateFilter() {
     var rawFilterValue = filterKey + filter;
     kontrola.innerText = filter;
 
-    fPopis = "Následující hodnotu filtru použijte jako parametr poslaný WAYFu z vašeho SP." +
-             " To lze udělat <ul><li>Parametrem \"<i>filter</i>\", který obsahuje přímo hodnotu" +
-             " filtru uvedeného níže, nebo</li><li>Parametrem \"<i>efilter</i>\", který obsahuje URL," +
-             " na kterém je dostupná hodnota filtru níže.</li></ul><b>Příklady použití:</b>" +
-             "<ul><li>/wayf.php?filter=abcd</li><li>/wayf.php?efilter=www.example.com/someurl" +
-             " (na www.example.com/someurl je vygenerovaný filtr)</li></ul>Pro více informací pokračujte na" +
-             " dokumentaci WAYFu pro <a href=\"https://www.eduid.cz/wiki/eduid/admins/howto/wayf/wayf-sp\" target=\"_blank\">správce SP</a>" +
-             " nebo <a href=\"https://www.eduid.cz/wiki/eduid/admins/howto/wayf/index\" target=\"_blank\">uživatele</a>.<br><br>" +
-             " Maximální možná celková délka" +
-             " všech parametrů posílaných na WAYF je 512 bytů.<br><b>Vygenerovaný filtr má nyní " +
-             filterLen + " bytů.</b><br><br>" + 
-             "Pro konfiguraci Shibboleth SP můžete použít např. následující kód:<br><br>" +
-             
-             "<div class=\"scroll nowrap\">&lt;<span class=\"tagname\">SessionInitiator</span> type=\"Chaining\" Location=\"/DS\" isDefault=\"false\" id=\"DS\"&gt;<br>" +
-             "    &lt;SessionInitiator type=\"SAML2\" template=\"bindingTemplate.html\"/&gt;<br>" +
-             "    &lt;SessionInitiator type=\"Shib1\"/&gt;<br>" + 
-             "    &lt;SessionInitiator type=\"SAMLDS\" URL=\"/wayf.php?filter=<span class=\"red\"><br>" +
-
-            "<span style=\"width:80em; word-wrap:break-word; display:inline-block;\">" +
-             filterValue +
-             "</span><br></span>\"/&gt;<br>" +
-             "&lt;/<span class=\"tagname\">SessionInitiator</span>&gt;</div><br><br>" + 
-             
-             "Novější verze Shibboleth SP umožnuje zjednodušenou konfiguraci:<br><br>" + 
-             
-             "<div class=\"scroll nowrap\">&lt;<span class=\"tagname\">SSO</span> discoveryProtocol=\"SAMLDS\"<br>" + 
-             "    discoveryURL=\"/wayf.php?filter=<span class=\"red\"><br>" + 
-            "<span style=\"width:80em; word-wrap:break-word; display:inline-block;\">" +
-             filterValue +
-             "</span><br></span>\"&gt;<br>" + 
-             "    SAML2 SAML1<br>" +
-             "&lt;/<span class=\"tagname\">SSO</span>&gt;</div><br><br>" + 
-             
-             "Pokud jako SP používáte <a href=\"https://simplesamlphp.org/\">SimpleSAMLphp</a>, můžete použít v souboru config/authsources.php " + 
-             "následující konfiguraci (jedná se pouze o část konfigurace):<br><br>" +
-             
-             "<div class=\"scroll nowrap\">\'<span class=\"tagname\">default-sp</span>\' => array(<br>" + 
-             "    \'saml:SP\',<br>" + 
-             "    \'idp\' => NULL,<br>" + 
-             "    \'discoURL\' => \'/wayf.php?filter=<span class=\"red\"><br>" +
-            "<span style=\"width:80em; word-wrap:break-word; display:inline-block;\">" +
-              filterValue + 
-             "</span><br></span>\',<br>" + 
-             "    ...<br>" + 
-             "),<div><br><br>" + 
-             
-             "Funkčnost vašeho filtru můžete ověřit na <a target=\"_blank\" href=\"https://ds.eduid.cz/wayf.php?filter=" + filterValue + "&entityID=sample&return=www.example.org\">tomto odkazu</a>.<br><br>";
-            
+    fPopis = str1 + filterLen + str2 + filterValue + str3 + filterValue + str4 + filterValue + str5 + filterValue + str6;
     filterInfo.innerHTML = fPopis;
     filterVal.value = filterValue;
 
     $('#filterval').removeClass("errorfilter");
 }
+
 
 function decodeFilter() {
     try {
@@ -150,8 +122,18 @@ function decodeFilter() {
         }
         $(':checkbox').attr('checked', false);
         $("input[value='whitelist']").click();
+        $("[container='zero']").empty();
+        $("[container='allow']").empty();
+        $("[container='deny']").empty();
+        for(var feed in feeds) {
+            ecList[feed].allowEC = Array();
+            ecList[feed].denyEC = Array();
+        }
         if(filter.allowFeeds != null) {
             for(var feed in filter.allowFeeds) {
+                var zero = $("[feed='" + feed + "'][container='zero']");
+                var allow = $("[feed='" + feed + "'][container='allowEC']");
+                var deny = $("[feed='" + feed + "'][container='denyEC']");
                 $("input[value='" + feed + "']").click();
                 if(filter.allowFeeds[feed].allowIdPs != null) {
                     for(idp in filter.allowFeeds[feed].allowIdPs) {
@@ -164,6 +146,38 @@ function decodeFilter() {
                         $("input[value='" + filter.allowFeeds[feed].denyIdPs[idp] + "']").click();
                     }
                 }
+                if(filter.allowFeeds[feed].allowEC != null) {
+                    for(var kec in filter.allowFeeds[feed].allowEC) {
+                        var ec = filter.allowFeeds[feed].allowEC[kec];
+                        ecList[feed].allowEC.push(ec);
+                        var sp = document.createElement("li");
+                        sp.classList.add("ecitem");
+                        sp.innerText = ec;
+                        allow.append(sp);
+                    }
+                    regenerateFilter();
+                }
+                if(filter.allowFeeds[feed].denyEC != null) {
+                    for(var kec in filter.allowFeeds[feed].denyEC) {
+                        var ec = filter.allowFeeds[feed].denyEC[kec];
+                        ecList[feed].denyEC.push(ec);
+                        var sp = document.createElement("li");
+                        sp.classList.add("ecitem");
+                        sp.innerText = ec;
+                        deny.append(sp);
+                    }
+                    regenerateFilter();
+                }
+            }
+        }
+        for(var feed in feeds) {
+            var zero = $("[feed='" + feed + "'][container='zero']");
+            for(var kec in ecList[feed].allEC) {
+                var ec = ecList[feed].allEC[kec];
+                var sp = document.createElement("li");
+                sp.classList.add("ecitem");
+                sp.innerText = ec;
+                zero.append(sp);
             }
         }
         if(filter.allowHostel != null) {
@@ -209,8 +223,6 @@ function sortEntities(e1, e2) {
     }
 }
 
-var ea;
-
 function getNameFromId(id) {
     var name = id["label"]["cs"];
     if(name == null) {
@@ -228,16 +240,18 @@ function getNameFromId(id) {
     return name;
 }
 
+
 function sortIdps(a, b) {
     var idpNameA = getNameFromId(ea[a]);
     var idpNameB = getNameFromId(ea[b]);
     return idpNameA.localeCompare(idpNameB);
 }
 
-function showIdps(url, content, feed) {
+
+function showIdps(url, idpContent, ecContent, feed) {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
-        return function(cont, fd) {
+        return function(cont, ecCont, fd) {
             if(xmlhttp.readyState == 4 ) {
                 switch(xmlhttp.status) {
                     case 200:
@@ -245,6 +259,7 @@ function showIdps(url, content, feed) {
                         var eArray = feedData.entities;
                         ea = eArray;
                         var keys = [];
+                        var ecSet = [];
                         for (var key in eArray) {
                             if (eArray.hasOwnProperty(key)) {
                                 keys.push(key);
@@ -257,6 +272,14 @@ function showIdps(url, content, feed) {
                             var idpName = getNameFromId(value);
                             var i = document.createElement("input");
                             var l = document.createElement("label");
+                            if(typeof value.EC !== 'undefined') {
+                                for(var keyEC in value.EC) {
+                                    var ec = value.EC[keyEC];
+                                    if(ecSet.indexOf(ec) == -1) {
+                                        ecSet.push(ec);
+                                    }
+                                }
+                            }
                             i.type = "checkbox";
                             i.name = fd + "-idp[]";
                             i.value = ent;
@@ -267,10 +290,38 @@ function showIdps(url, content, feed) {
 
                             l.appendChild(i);
                             l.appendChild(s);
-                            
+
                             cont.appendChild(l);
                             cont.appendChild(b);
                         }
+
+                        var zero = document.createElement("ul");
+                        zero.classList.add("zero");
+                        zero.setAttribute("feed", fd);
+                        zero.setAttribute("container", "zero");
+
+                        var plus = document.createElement("ul");
+                        plus.classList.add("allow");
+                        plus.setAttribute("feed", fd);
+                        plus.setAttribute("container", "allowEC");
+
+                        var minus = document.createElement("ul");
+                        minus.classList.add("deny");
+                        minus.setAttribute("feed", fd);
+                        minus.setAttribute("container", "denyEC");
+
+                        for(var key in ecSet) {
+                            var ec = ecSet[key];
+                            var sp = document.createElement("li");
+                            sp.classList.add("ecitem");
+                            sp.innerText = ec;
+                            zero.appendChild(sp);
+                            ecList[fd].allEC.push(ec);
+                       }
+
+                       ecContent.appendChild(zero);
+                       ecContent.appendChild(plus);
+                       ecContent.appendChild(minus);
                         break;
                     case 304:
                         break;
@@ -278,11 +329,46 @@ function showIdps(url, content, feed) {
                         break;
                 }
             }
-        }(content, feed);
+        }(idpContent, ecContent, feed);
     };
     xmlhttp.open("GET", url, false);
     xmlhttp.send();
 }
+
+
+function deleteKeyFromArray(key, array) {
+    var i = array.indexOf(key);
+    if(i != -1) {
+        array.splice(i, 1);
+    }
+}
+
+
+function addECStringToList(ecString, feed, listType) {
+
+    // listType values: zero, allowEC, denyEC
+    var feedList = ecList[feed];
+    var aList = feedList["allowEC"];
+    var dList = feedList["denyEC"];
+    switch(listType) {
+
+        case "zero":
+            deleteKeyFromArray(ecString, aList);
+            deleteKeyFromArray(ecString, dList);
+            break;
+
+        case "allowEC":
+            aList.push(ecString);
+            deleteKeyFromArray(ecString, dList);
+            break;
+
+        case "denyEC":
+            dList.push(ecString);
+            deleteKeyFromArray(ecString, aList);
+            break
+    }
+}
+
 
 function fillFeeds() {
 
@@ -299,6 +385,16 @@ function fillFeeds() {
         i.value = key;
         i.className = "oc";
 
+        var newList = {};
+        var allow = Array();
+        var deny = Array();
+        var all = Array();
+        newList["allowEC"] = allow;
+        newList["denyEC"] = deny;
+        newList["allEC"] = all;
+        
+        ecList[key] = newList;
+
         var i1 = document.createElement("input");
         var l1 = document.createElement("label");
         i1.type = "radio";
@@ -307,7 +403,7 @@ function fillFeeds() {
         i1.checked = "checked";
         i1.className = "oc";
         var s1 = document.createElement("span");
-        s1.innerHTML = "Vybraná IdP budou viditelná, ostatní budou skrytá";
+        s1.innerHTML = str7;
         var b1 = document.createElement("br");
         l1.appendChild(i1);
         l1.appendChild(s1);
@@ -319,7 +415,7 @@ function fillFeeds() {
         i2.value = "blacklist";
         i2.className = "oc";
         var s2 = document.createElement("span");
-        s2.innerHTML = "Vybraná IdP nebudou viditelná, všechna ostatní budou viditelná";
+        s2.innerHTML = str8;
         var b2 = document.createElement("br");
         l2.appendChild(i2);
         l2.appendChild(s2);
@@ -341,6 +437,14 @@ function fillFeeds() {
         idpAcc.appendChild(title);
         idpAcc.appendChild(cont);
 
+        var ecAcc = document.getElementById("ecaccordion");
+        var ecTitle = document.createElement("h3");
+        var ecCont = document.createElement("div");
+        ecCont.id = key;
+        ecTitle.innerHTML = key;
+        ecAcc.appendChild(ecTitle);
+        ecAcc.appendChild(ecCont);
+
         cont.appendChild(l1);
         cont.appendChild(b1);
 
@@ -350,11 +454,21 @@ function fillFeeds() {
         var bb = document.createElement("br");
         cont.appendChild(bb);
 
-        showIdps(value, cont, key);
+        showIdps(value, cont, ecCont, key);
     }
 
     $('.oc').change(function(){ regenerateFilter(); });
-    $("#accordion,#idpaccordion").accordion({
+    $(".zero,.allow,.deny").sortable({
+        connectWith: ".zero,.allow,.deny",
+        receive: function(event, ui) {
+            var ec = $(ui.item).text();
+            var feed = $(this).attr("feed");
+            var cont = $(this).attr("container");
+            addECStringToList(ec, feed, cont);
+            regenerateFilter();
+        }
+    });
+    $("#accordion,#idpaccordion,#ecaccordion").accordion({
         heightStyle: "content"
     });
     $("#tabs").tabs();

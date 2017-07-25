@@ -9,3 +9,33 @@
 .black {
     color: black;
 }
+
+.zero {
+    background-color: #d8d8d8;
+    min-height: 1em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    cursor: move;
+}
+
+.allow {
+    background-color: lightgreen;
+    min-height: 1em;
+    margin-top: 1em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    cursor: move;
+}
+
+.deny {
+    background-color: lightpink;
+    min-height: 1em;
+    margin-top: 1em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    cursor: move;
+}
+
+.errorfilter {
+    background-color: Pink;
+}
