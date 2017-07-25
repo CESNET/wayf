@@ -148,14 +148,14 @@ if(isset($_GET['entityID'])) {
 if(isset($_GET['LoA'])) {
     $_GET['LoA'];
 }
-if(isset($_GET['lang'])) {
-    $lang = $_GET['lang'];
-}
+
 if(isset($_GET['kerberos'])) {
     $kerberos = $_GET['kerberos'];
 }
+
 $hostelRegistrarURL = 'https://adm.hostel.eduid.cz/registrace';
 $hostelId = "https://idp.hostel.eduid.cz/idp/shibboleth";
+
 if(isset($_GET['fromHostel'])) {
     $fromHostelRegistrar = $_GET['fromHostel'];
 }
@@ -343,7 +343,18 @@ else {
     // $prefLang = ""; get prefLang from wayf_vars.php
     if(isset($_GET['lang'])) {
 	    $prefLang = $_GET['lang'];
+    } else {
+      // use language from http accept header
+      if( isset( $_SERVER["HTTP_ACCEPT_LANGUAGE"] )) {
+        $tmp_lang = locale_accept_from_http( $_SERVER["HTTP_ACCEPT_LANGUAGE"] );
+        $rest = explode( "_", $tmp_lang );
+        if( isset( $rest[0] )) {
+          $prefLang = $rest[0];
+          // echo $prefLang;
+        }
+      }
     }
+
     addVariable("prefLang", $prefLang);
 
     // label and link to home organization
