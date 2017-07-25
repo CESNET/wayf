@@ -23,6 +23,10 @@ gear_wheel.png,gear_wheel.png
 gb.png,gb.png
 filter.php,filter.php
 filter.js,filter.js
+filter-en.js,filter-en.js
+filter-strings-en.js,filter-strings-en.js
+filter-strings.js,filter-strings.js
+filter.css,filter.css
 feeds.js,feeds.js
 favicon.ico,favicon.ico
 errorpage.css,errorpage.css
