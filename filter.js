@@ -123,8 +123,8 @@ function decodeFilter() {
         $(':checkbox').attr('checked', false);
         $("input[value='whitelist']").click();
         $("[container='zero']").empty();
-        $("[container='allow']").empty();
-        $("[container='deny']").empty();
+        $("[container='allowEC']").empty();
+        $("[container='denyEC']").empty();
         for(var feed in feeds) {
             ecList[feed].allowEC = Array();
             ecList[feed].denyEC = Array();
@@ -136,16 +136,21 @@ function decodeFilter() {
                 var deny = $("[feed='" + feed + "'][container='denyEC']");
                 $("input[value='" + feed + "']").click();
                 if(filter.allowFeeds[feed].allowIdPs != null) {
-                    for(idp in filter.allowFeeds[feed].allowIdPs) {
-                        $("input[value='" + filter.allowFeeds[feed].allowIdPs[idp] + "']").click();
+                    for(var kidp in filter.allowFeeds[feed].allowIdPs) {
+                        var idp = filter.allowFeeds[feed].allowIdPs[kidp];
+                        var i = $("input[name='" + feed + "-idp[]'][value='" + idp + "']");
+                        i.click();
                     }
                 }
                 else if(filter.allowFeeds[feed].denyIdPs != null) {
                     $("[name='" + feed + "-filterType'][value='blacklist']").click();
-                    for(idp in filter.allowFeeds[feed].denyIdPs) {
-                        $("input[value='" + filter.allowFeeds[feed].denyIdPs[idp] + "']").click();
+                    for(var kidp in filter.allowFeeds[feed].denyIdPs) {
+                        var idp = filter.allowFeeds[feed].denyIdPs[kidp];
+                        var i = $("input[name='" + feed + "-idp[]'][value='" + idp + "']");
+                        i.click();
                     }
                 }
+
                 if(filter.allowFeeds[feed].allowEC != null) {
                     for(var kec in filter.allowFeeds[feed].allowEC) {
                         var ec = filter.allowFeeds[feed].allowEC[kec];
@@ -168,6 +173,7 @@ function decodeFilter() {
                     }
                     regenerateFilter();
                 }
+
             }
         }
         for(var feed in feeds) {
