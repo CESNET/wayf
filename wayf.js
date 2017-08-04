@@ -19,17 +19,17 @@ var showedIdpList;
 var languages = new Array("en", "cs");
 var fallbackLanguage = "en";
 var labels = {
-    'BUTTON_NEXT': {'cs':'Jiný účet', 'en':'Another account'},
-    'BUTTON_HOSTEL': {'cs':'Zřídit účet', 'en':'Create account'},
-    'TEXT_ALL_IDPS': {'cs':'Přihlásit účtem', 'en':'Login with'},
-    'TEXT_ACCOUNT': {'cs':'Zřídit účet', 'en':'Create account'},
-    'TEXT_SAVED_IDPS': {'cs':'Přihlásit účtem', 'en':'Login with'},
-    'IDP_HOSTEL': {'cs':'Hostel IdP', 'en':'Hostel IdP'},
-    'SETUP': {'cs':'Nastavení', 'en':'Setup'},
-    'CONFIRM_DELETE': {'cs':'Zapomenout ', 'en':'Forget '},
-    'BACK_TITLE': {'cs':'Zpět', 'en':'Back'},
-    'NOT_AVAILABLE': {'cs':'K této službě se nelze přihlásit pomocí', 'en':'Service is not available for'},
-    'LOADING': {'cs': 'Načítám instituce ...', 'en':'LOADING ...'}
+    'BUTTON_NEXT': {'cs':'Jiný účet', 'en':'Another account', 'it':'Altro account', 'nl':'Ander account', 'fr':'Un autre compte', 'el':'Άλλος λογαριασμός', 'de':'Anderes Konto' },
+    'BUTTON_HOSTEL': {'cs':'Zřídit účet', 'en':'Create account', 'it':'Crea account', 'nl':'Maak account aan', 'fr':'Créer un compte', 'el':'Δημιουργία λογαριασμού', 'de':'Konto kreieren' },
+    'TEXT_ALL_IDPS': {'cs':'Přihlásit účtem', 'en':'Login with', 'it':'Login tramite', 'nl':'Login met', 'fr':'S’authentifier avec', 'el':'Σύνδεση μέσω', 'de':'Anmelden mit' },
+    'TEXT_ACCOUNT': {'cs':'Zřídit účet', 'en':'Create account', 'it':'Crea account', 'nl':'Maak account aan', 'fr':'Créer un compte', 'el':'Δημιουργία λογαριασμού', 'de':'Konto kreieren' },
+    'TEXT_SAVED_IDPS': {'cs':'Přihlásit účtem', 'en':'Login with', 'it':'Login tramite', 'nl':'Login met', 'fr':'S’authentifier avec', 'el':'Σύνδεση μέσω', 'de':'Anmelden mit' },
+    'IDP_HOSTEL': {'cs':'Hostel IdP', 'en':'Hostel IdP', 'it': 'IdP ospite', 'nl':'Thuis IdP', 'fr':'S’authentifier avec' },
+    'SETUP': {'cs':'Nastavení', 'en':'Setup', 'it':'Setup', 'nl':'Maak aan', 'fr':'Configurer', 'el':'Παραμετροποίηση', 'de':'Einstellungen' },
+    'CONFIRM_DELETE': {'cs':'Zapomenout ', 'en':'Forget ', 'it':'Dimentica', 'nl':'Vergeet', 'fr':'Enlever', 'el':'Διαγραφή', 'de':'Lösche' },
+    'BACK_TITLE': {'cs':'Zpět', 'en':'Back', 'it':'Indietro', 'nl':'Terug', 'fr':'Retour', 'el':'Πίσω', 'de':'Zurück' },
+    'NOT_AVAILABLE': {'cs':'K této službě se nelze přihlásit pomocí', 'en':'Service is not available for', 'it':'Il servizio non è disponibile per', 'nl':'Service is niet beschikbaar', 'fr':'Service non fonctionnel pour', 'el':'Ο Πάροχος Ταυτότητας δεν είναι διαθέσιμος για αυτή την υπηρεσία', 'de':'Dienst ist nicht verfügbar für' },
+    'LOADING': {'cs': 'Načítám instituce ...', 'en':'LOADING ...', 'it':' Caricamento ...', 'nl':'Aan het laden', 'fr':'Chargement en cours', 'el':'ΦΟΡΤΩΣΗ ...', 'de':'Laden ...' }
 }
 
 var mobileVersion = true;
