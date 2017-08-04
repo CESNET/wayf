@@ -38,30 +38,6 @@ var inIframe = false;
 var feedCount = 0;
 var filterVersion = 1;  // default original version, not suitable for all cases
 
-// check if local storage is available
-/*
-try {
-    if(localStorage === undefined || localStorage === null) {
-	try {
-    	    window.location.href = noHTML5URL;
-	}
-	catch(e) {
-	    window.location.href = noHTML5URL;
-	}	 
-    }
-} catch (e2) {
-       window.location.href = noHTML5URL;
-} 
-*/
-
-/*
-try {
-  localStorage.test = 1;
-} catch (e) {
-  alert('safari');
-}
-*/
-
 // check support of json, otherwise use 3rd implementation
 if (typeof JSON == 'undefined') {
   var fileref = document.createElement('script')
