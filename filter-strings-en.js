@@ -42,7 +42,7 @@ str5 =
     "</span></span>\',<br>" + 
     "    ...<br>" + 
     "),<div><br><br>" + 
-    "You can check functionality of your filter on <a target=\"_blank\" href=\"https://ds.eduid.cz/wayf.php?filter=";
+    "You can check functionality of your filter on <a target=\"_blank\" href=\"https://" + serverName + "/wayf.php?filter=";
 
 str6 =
     "&entityID=sample&return=www.example.org\">this link</a>.<br><br>";

@@ -1,6 +1,9 @@
 var ecList = {};
 var ea;
 
+var allowEC = "allowEC";
+var denyEC = "denyEC";
+
 function normalizeFeeds() {
     for(var feed in feeds)  {
         var checked = $("input[name='" + feed + "-idp[]']:checked");
@@ -77,14 +80,14 @@ function regenerateFilter() {
                 fo.allowFeeds[feed.value] = {};
             }
 
-            var allowedEC = ecList[feed.value]["allowEC"];
+            var allowedEC = ecList[feed.value][allowEC];
             if(allowedEC.length > 0) {
-                fo.allowFeeds[feed.value]["allowEC"] = allowedEC;
+                fo.allowFeeds[feed.value][allowEC] = allowedEC;
             }
 
-            var deniedEC = ecList[feed.value]["denyEC"];
+            var deniedEC = ecList[feed.value][denyEC];
             if(deniedEC.length > 0) {
-                fo.allowFeeds[feed.value]["denyEC"] = deniedEC;
+                fo.allowFeeds[feed.value][denyEC] = deniedEC;
             }
         }
     }
@@ -126,8 +129,8 @@ function decodeFilter() {
         $("[container='allowEC']").empty();
         $("[container='denyEC']").empty();
         for(var feed in feeds) {
-            ecList[feed].allowEC = Array();
-            ecList[feed].denyEC = Array();
+            ecList[feed][allowEC] = Array();
+            ecList[feed][denyEC] = Array();
         }
         if(filter.allowFeeds != null) {
             for(var feed in filter.allowFeeds) {

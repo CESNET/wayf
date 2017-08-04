@@ -8,6 +8,8 @@ else {
     $locale = "en";
 }; 
 
+$serverName = "\"" . $_SERVER['HTTP_HOST']  . "\"";
+
 ?>
 <html>
 <head>
@@ -19,6 +21,9 @@ else {
 <script type="text/javascript" src="jquery-ui.js"></script>
 <script type="text/javascript">
 var feeds = <?= $feeds ?>;
+</script>
+<script type="text/javascript">
+var serverName = <?= $serverName ?>;
 </script>
 
 <?php

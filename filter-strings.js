@@ -43,7 +43,7 @@ str5 =
     "</span><br></span>\',<br>" + 
     "    ...<br>" + 
     "),<div><br><br>" + 
-    "Funkčnost vašeho filtru můžete ověřit na <a target=\"_blank\" href=\"https://ds.eduid.cz/wayf.php?filter=";
+    "Funkčnost vašeho filtru můžete ověřit na <a target=\"_blank\" href=\"https://" + serverName + "/wayf.php?filter=";
 
 str6 =
     "&entityID=sample&return=www.example.org\">tomto odkazu</a>.<br><br>";
