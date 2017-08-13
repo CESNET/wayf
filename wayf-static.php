@@ -420,14 +420,12 @@ else {
                     //print_r( $ecMetadata ); echo "<br><br>";
                     continue 2;
                   }
-                  if( $allowCurIdp || ( $filterAllowEC && in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['allowEC']))) {
-                    // dont filter
-                  } else {
+                  if( ! $allowCurIdp && ( $filterAllowEC && ! in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['allowEC']))) {
                     continue 2;
                   }
                 }
               } else {
-                if( $filterAllowEC || ( $filterDenyEC && ! $allowCurIdp )) {
+                if( $filterAllowEC ) // || ( $filterDenyEC && ! $allowCurIdp )) {
                   // eid has not any entity-category => can't be on list allowedEC
                   continue;
                 }
