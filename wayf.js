@@ -1330,7 +1330,9 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
       return;
     }
 
-    var xmlhttp = new XMLHttpRequest();
+   $( ".toplabel" ).text(wayf.view.getLabelText('LOADING'));
+
+   var xmlhttp = new XMLHttpRequest();
     xmlhttp.feedId = id;
     xmlhttp.onreadystatechange = function() {
         var state = xmlhttp.readyState;
@@ -1407,7 +1409,7 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     noSearchSavedIdps = false;
 
     this.view.deleteContainer();
-    this.view.createContainer(this.view.getLabelText('LOADING'), false, inIframe, false, langCallback);
+    this.view.createContainer(this.view.getLabelText('TEXT_ALL_IDPS'), false, inIframe, false, langCallback);
     if(useFilter &&  "allowFeeds" in filter) {
         filterAllowFeeds = true;
     }
