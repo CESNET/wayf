@@ -425,7 +425,7 @@ else {
                   }
                 }
               } else {
-                if( $filterAllowEC ) // || ( $filterDenyEC && ! $allowCurIdp )) {
+                if( $filterAllowEC ) { // || ( $filterDenyEC && ! $allowCurIdp )) {
                   // eid has not any entity-category => can't be on list allowedEC
                   continue;
                 }
