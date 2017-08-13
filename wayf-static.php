@@ -404,20 +404,32 @@ else {
             foreach($c_entities as $key => $value) {
               if( $filterDenyIdps && in_array( $key, $jFilter['allowFeeds'][ $feed ]['denyIdPs'])) {
                 continue;
-              } else {
-                if( $filterAllowIdps && ! in_array( $key, $jFilter['allowFeeds'][ $feed ]['allowIdPs'])) {
-                  continue;
+              }
+ 
+              $allowCurIdp = false;
+              if( $filterAllowIdps ) { 
+                if( in_array( $key, $jFilter['allowFeeds'][ $feed ]['allowIdPs'] )) {
+                  $allowCurIdp = true;
                 }
               }
-
-              foreach( $c_entities[ $key ][ EC ] as $ecMetadata ) {
-                if( $filterDenyEC && in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['denyEC'])) {
-                  //print_r( $c_entities[ $key ] ); echo "<br>";
-                  //print_r( $ecMetadata ); echo "<br><br>";
-                  continue 2;
+               
+              if( isset( $c_entities[ $key ][ EC ] )) {
+                foreach( $c_entities[ $key ][ EC ] as $ecMetadata ) {
+                  if( ! $allowCurIdp && $filterDenyEC && in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['denyEC'])) {
+                    //print_r( $c_entities[ $key ] ); echo "<br>";
+                    //print_r( $ecMetadata ); echo "<br><br>";
+                    continue 2;
+                  }
+                  if( $allowCurIdp || ( $filterAllowEC && in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['allowEC']))) {
+                    // dont filter
+                  } else {
+                    continue 2;
+                  }
                 }
-                if( $filterAllowEC && ! in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['allowEC'])) {
-                  continue 2;
+              } else {
+                if( $filterAllowEC || ( $filterDenyEC && ! $allowCurIdp )) {
+                  // eid has not any entity-category => can't be on list allowedEC
+                  continue;
                 }
               }
               $entities[$key] = $value;

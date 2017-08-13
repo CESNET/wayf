@@ -812,18 +812,25 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
           if( filterDenyIdps && filter.allowFeeds[feedId].denyIdPs.indexOf(eid) >= 0 ) {
               continue;
           } else {
-            // allowIdPs per feed
-            if( filterAllowIdps && filter.allowFeeds[feedId].allowIdPs.indexOf(eid)<0) {
-              continue;            
-            }
-          }
 
-          // entity category, first remove denyEC, then add allowEC
-          if( filterDenyEC && wayf.isInEc( filter.allowFeeds[feedId].denyEC, mdSet.entities[eid].EC )) {
-            continue;
-          }
-          if( filterAllowEC && wayf.isInEc( filter.allowFeeds[feedId].allowEC, mdSet.entities[eid].EC )==false) {
-            continue;
+            // allowIdPs per feed
+            if( filterAllowIdps ) { 
+
+              if( filter.allowFeeds[feedId].allowIdPs.indexOf(eid)>=0 || (filterAllowEC && wayf.isInEc( filter.allowFeeds[feedId].allowEC, mdSet.entities[eid].EC ))) {
+                // dont filter, because eid is allowIdP or allowEC
+              } else {
+                continue;
+              } 
+            } else {
+  
+              // entity category, first remove denyEC, then add allowEC
+              if( filterDenyEC && wayf.isInEc( filter.allowFeeds[feedId].denyEC, mdSet.entities[eid].EC )) {
+                continue;
+              }
+              if( filterAllowEC && wayf.isInEc( filter.allowFeeds[feedId].allowEC, mdSet.entities[eid].EC )==false) {
+                continue;
+              }
+            }
           }
         } else {
           // filter v1
@@ -1186,7 +1193,7 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                                 tmpEnableIdp = false;
                               }
      
-                              // allowIdPs and denyIdps has hieher priority than entity category
+                              // allowIdPs and denyIdps has higher priority than entity category
                               // denyIdPs is used
                               if( eidIsDeny ) {
                                   tmpEnableIdp = false;
@@ -1194,6 +1201,10 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                                 // allowIdPs per feed
                                 if( eidIsNotInAllow ) {
                                   tmpEnableIdp = false;            
+                                } else {
+                                  if( filterAllowIdps ) {
+                                    tmpEnableIdp = true;  // eid is on allowIdPs list, so must be enabled
+                                  }
                                 }
                               }
      
