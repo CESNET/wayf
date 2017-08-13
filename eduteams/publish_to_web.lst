@@ -27,7 +27,7 @@ filter-en.js,filter-en.js
 filter-strings-en.js,filter-strings-en.js
 filter-strings.js,filter-strings.js
 filter.css,filter.css
-feeds.js,feeds.js
+eduteams/feeds.js,feeds.js
 favicon.ico,favicon.ico
 errorpage.css,errorpage.css
 ds.js,ds.js
