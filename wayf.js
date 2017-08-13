@@ -816,9 +816,7 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
             // allowIdPs per feed
             if( filterAllowIdps ) { 
 
-              if( filter.allowFeeds[feedId].allowIdPs.indexOf(eid)>=0 || (filterAllowEC && wayf.isInEc( filter.allowFeeds[feedId].allowEC, mdSet.entities[eid].EC ))) {
-                // dont filter, because eid is allowIdP or allowEC
-              } else {
+              if( filter.allowFeeds[feedId].allowIdPs.indexOf(eid)<0 && (filterAllowEC && ! wayf.isInEc( filter.allowFeeds[feedId].allowEC, mdSet.entities[eid].EC ))) {
                 continue;
               } 
             } else {
