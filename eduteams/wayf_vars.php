@@ -1,5 +1,6 @@
 <?php
   $prefLang = "en";
   $lang_ui = "en";
-  $organizationLabel = "eduTEAMS";
-  $organizationHelpLink = "https://wiki.geant.org/display/gn42jra3/IdP+Discovery+Service";
+  $organizationLabel = "Service powered by eduGAIN";
+  $organizationHelpLink = "https://www.geant.org/Innovation/eduteams";
+  $organizationHelpImage = "EduGAIN_logo.png";

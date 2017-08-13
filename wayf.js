@@ -345,7 +345,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
 
     var helpImage = document.createElement('img');
     helpImage.className = "helpimg";
-    helpImage.src = "help.png";
+    helpImage.src = organizationHelpImage;
     helpImage.alt = "Information";
     helpImage.id = "helpi";
 

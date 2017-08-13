@@ -360,6 +360,7 @@ else {
     // label and link to home organization
     addVariable( "organizationLabel", $organizationLabel );
     addVariable( "organizationHelpLink", $organizationHelpLink );
+    addVariable( "organizationHelpImage", $organizationHelpImage );
 
     $nosearch = 0;
     if( isset( $_GET['nosearch'] )) {

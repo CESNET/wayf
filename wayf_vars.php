@@ -3,3 +3,4 @@
   $lang_ui = "cs";  // language of application, static version
   $organizationLabel = "CESNET";
   $organizationHelpLink = "http://www.eduid.cz/cesnet-ds";
+  $organizationHelpImage = "help.png";
