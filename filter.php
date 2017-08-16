@@ -77,7 +77,7 @@ switch($locale) {
 	$str20 = "Vygenerovaný filtr";
     $str21 = "Varování";
     $str22 = "Vámi vložený filtr neodpovídá přegenerovanému filtru. To může být způsobeno například použitím IdP, které už v příslušné federaci není. Prosím, překontrolujte funkčnost vygenerovaného filtru.";
-    $str23 = "Přetáhněte příslušné entity kategorie z šedého rámečku do červeného nebo zeleného rámečku. Uživateli se zobrazí seznam IdP, které obsahují všechny entity kategorie ze zeleného rámečku a neobsahují žádnou kategorii z červeného rámečku. Každá skupina IdP má vlastní nastavení.";
+    $str23 = "Přetáhněte příslušné entity kategorie z šedého rámečku do červeného nebo zeleného rámečku. Uživateli se zobrazí seznam IdP, které obsahují některou entity kategorii ze zeleného rámečku a neobsahují žádnou kategorii z červeného rámečku. Každá skupina IdP má vlastní nastavení.";
     $str24 = "Vyberte entity kategorie";
 	break;
 
@@ -85,14 +85,14 @@ switch($locale) {
     default:
 	$str1 = "CESNET WAYF/DS filter creation";
 	$str2 = "Create new filter";
-	$str3 = "Choose groups of IdPs. If you select at least one group, WAYF will show only IdPs from this list." . 
+	$str3 = "Select groups of IdPs. If you select at least one group, WAYF will show only IdPs from this list." . 
 	        " If you leave this list empty, default list of groups will be used. Default list means all groups having your SP in metadata.";
 	$str4 = "Choose IdPs which will be shown to WAYF users. " .
 		"In case of empty list -  user will be offered all IdPs from all checked groups from previous tab. " . 
 		" If no group is selected in the previous tab, the default list of IdPs will be shown " . 
 		"Default list means all groups having your SP in metadata. IdPs are sorted by groups.";	
 	$str5 = "Choose groups";
-	$str6 = "Choose individual IdPs";
+	$str6 = "Select individual IdPs";
 	$str7 = "Add hostel IdP";
 	$str8 = "if you want to allow access to users out of federations, you can use special identity provider ". 
 		"<a href=\"http://hostel.eduid.cz/\">Hostel IdP</a>. " . 
