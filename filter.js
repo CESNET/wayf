@@ -353,6 +353,10 @@ function deleteKeyFromArray(key, array) {
 }
 
 
+function switchOnFeed(feedName) {
+    $("input:checkbox[value='" + feedName + "']").not(":checked").click();
+}
+
 function addECStringToList(ecString, feed, listType) {
 
     // listType values: zero, allowEC, denyEC
@@ -369,11 +373,13 @@ function addECStringToList(ecString, feed, listType) {
         case "allowEC":
             aList.push(ecString);
             deleteKeyFromArray(ecString, dList);
+            switchOnFeed(feed);
             break;
 
         case "denyEC":
             dList.push(ecString);
             deleteKeyFromArray(ecString, aList);
+            switchOnFeed(feed);
             break
     }
 }
