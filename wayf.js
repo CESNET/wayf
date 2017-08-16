@@ -17,6 +17,17 @@ var wayf = "";
 var hostelURL  = 'https://adm.hostel.eduid.cz/registrace';
 var showedIdpList;
 var languages = new Array("en", "cs");
+var langsAvailable = {
+  'cs': { 'img':'flags/cs.png' },
+  'de': { 'img':'flags/de.png' },
+  'el': { 'img':'flags/el.png' },
+  'en': { 'img':'flags/en.png' },
+  'fr': { 'img':'flags/fr.png' },
+  'it': { 'img':'flags/it.png' },
+  'lt': { 'img':'flags/lt.png' },
+  'nl': { 'img':'flags/nl.png' }
+}
+  
 var fallbackLanguage = "en";
 var labels = {
     'BUTTON_NEXT': {'cs':'Jiný účet', 'en':'Another account', 'it':'Altro account', 'nl':'Ander account', 'fr':'Un autre compte', 'el':'Άλλος λογαριασμός', 'de':'Anderes Konto', 'lt':'Kita paskyra' },
@@ -366,6 +377,11 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
 
     this.mixelaHash = new Object();
 
+    if(showSetup) {
+        this.bottom.appendChild(setup);
+    }
+
+/*
     var langCS = document.createElement('div');
     langCS.className = "lang";
     langCS.onclick = (function() {
@@ -389,6 +405,40 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     var langENimg = document.createElement('img');
     langENimg.src = "gb.png";
     langEN.appendChild(langENimg);
+*/
+    //var langDropdown = document.createElement('div');
+    //langDropdown.className = "dropdown";
+
+    //var langSpan = document.createElement('span');
+    //langSpan.innerHTML = "Lang";
+    //langDropdown.appendChild( langSpan );
+    
+    //var langDropdownContent = document.createElement('div');
+    //langDropdownContent.className = "dropdown-content";
+
+    //var flagImg = new Array();
+    for(var curLang in langsAvailable) {
+      var flag = document.createElement('div');
+      flag.className = "lang";
+      // flag.style.margin="3px";
+  
+      var flagImg = document.createElement('img');
+      flagImg.src = langsAvailable[curLang].img;
+      flagImg.onclick = (function( lang=curLang ) {
+        return function() {
+          prefLang = lang;
+          langCallback();
+        }                  
+      })();
+
+      flag.appendChild( flagImg );
+   
+      // langDropdownContent.appendChild( flag );
+      this.bottom.appendChild( flag );
+   
+    }
+
+    // langDropdown.appendChild( langDropdownContent );
 
     top.appendChild(title);
     title.appendChild(search);
@@ -409,11 +459,8 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     this.content.appendChild(bottomFiller);
     this.wayfDiv.appendChild(this.content);
 
-    if(showSetup) {
-        this.bottom.appendChild(setup);
-    }
-    this.bottom.appendChild(langCS);
-    this.bottom.appendChild(langEN);
+    //this.bottom.appendChild(langCS);
+    //this.bottom.appendChild(langEN);
     this.bottom.appendChild(help);
 
     this.wayfDiv.appendChild(this.bottom);
