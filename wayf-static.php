@@ -13,7 +13,7 @@
  */
 
 
-include 'Mobile_Detect.php';  // Broser detection library
+include 'Mobile_Detect.php';  // Browser detection library
 include '/opt/getMD/lib/SPInfo.php';  // Feed preparation
 include 'wayf_vars.php';  // customization CESNET/eduTEAMS
 
@@ -38,6 +38,18 @@ $messages = array(
     "CREATE_ACCOUNT" => array("cs" => "Vytvořit účet", "en" => "Create account", "it" => "Crea account", "nl" => "Maak account aan", "fr" => "Créer un compte", "el" => "Δημιουργία λογαριασμού", "de" => "Konto kreieren", "lt" => "Sukurti paskyrą" ),
 );
 
+// Available languages
+$langsAvailable = array (
+  "cs" => array( "img" => "flags/cs.png" ),
+  "de" => array( "img" => "flags/de.png" ),
+  "el" => array( "img" => "flags/el.png" ),
+  "en" => array( "img" => "flags/en.png" ),
+  "fr" => array( "img" => "flags/fr.png" ),
+  "it" => array( "img" => "flags/it.png" ),
+  "lt" => array( "img" => "flags/lt.png" ),
+  "nl" => array( "img" => "flags/nl.png" ),
+);
+
 /** Function returns label in prefered language from metadata
  *
  * @param $entity - metadata
@@ -48,10 +60,6 @@ function getLabelFromEntity($entity) {
     // prefered lang by browser
     if(isset($entity["label"][$lang]) && $entity["label"][$lang] != "") {
         $title = $entity["label"][$lang];
-    }
-    else if(isset($value["label"]["cs"])) {
-        // prefered lang by authors of wayf
-        $title = $entity["label"]["cs"];
     }
     else if(isset($entity["label"]["en"])) {
         // standard english label
@@ -285,7 +293,7 @@ if(isset($_GET['entityID'])) {
 
 $lang = $prefLang;
 if(isset($_GET['lang'])) {
-    if($_GET['lang'] == "cs" || $_GET['lang'] == "en") {
+    if( isset( $langsAvailable[ $_GET['lang']] ) ) {
         $lang_ui = $_GET['lang'];  // language of application
     }
     $lang = $_GET['lang'];  // language of IdP names
@@ -533,20 +541,17 @@ else {
         echo("</div>\n");
     }
 
+    // show available languages
     $pself = $_SERVER["PHP_SELF"];
-    $uri = getUri("cs");
-    echo("<div class=\"lang\">\n");
-    echo("<a href=\"" . $pself . $uri . "&lang=cs" .  "\">");
-    echo("<img src=\"cs.png\">");
-    echo("</a>");
-    echo("</div>\n");
+    foreach( $langsAvailable as $key => $value ) {
+      $uri = getUri( $key );
+      echo("<div class=\"lang\">\n");
+      echo("<a href=\"" . $pself . $uri . "&lang=". $key . "\">");
+      echo("<img src=\"". $value["img"] ."\">");
+      echo("</a>");
+      echo("</div>\n");
+    }
 
-    $uri = getUri("en");
-    echo("<div class=\"lang\">\n");
-    echo("<a href=\"" . $pself . $uri . "&lang=en" . "\">");
-    echo("<img src=\"gb.png\">");
-    echo("</a>");
-    echo("</div>\n");
 
     echo("<p id=\"help\"><a id='helpa' href='". $organizationHelpLink ."' target='_blank'><span id='helps'>". $organizationLabel ."</span><img class=\"helpimg\" src=\"". $organizationHelpImage ."\" alt=\"Information\"></a></p>\n");
     echo("</div>\n");
