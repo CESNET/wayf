@@ -34,8 +34,8 @@ else {
 
 // Messages
 $messages = array(
-    "LOGIN" => array("cs" => "Přihlásit účtem", "en" => "Login with" ),
-    "CREATE_ACCOUNT" => array("cs" => "Vytvořit účet", "en" => "Create account" ),
+    "LOGIN" => array("cs" => "Přihlásit účtem", "en" => "Login with", "it" => "Login tramite", "nl" => "Login met", "fr" => "S’authentifier avec", "el" => "Σύνδεση μέσω", "de" => "Anmelden mit", "lt" => "Prisijungti su" ),
+    "CREATE_ACCOUNT" => array("cs" => "Vytvořit účet", "en" => "Create account", "it" => "Crea account", "nl" => "Maak account aan", "fr" => "Créer un compte", "el" => "Δημιουργία λογαριασμού", "de" => "Konto kreieren", "lt" => "Sukurti paskyrą" ),
 );
 
 /** Function returns label in prefered language from metadata
