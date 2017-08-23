@@ -137,19 +137,17 @@ switch($locale) {
 <div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str3 ?></div><br>
 </div>
 
-<h3><?php echo $str6 ?></h3>
-
-<div id="idpsDiv">
-<div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str4 ?></div>
-<div id="idpaccordion">
-</div>
-</div>
-
 <h3><?php echo $str24 ?></h3>
-
 <div id="ecDiv">
 <div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str23 ?></div>
 <div id="ecaccordion">
+</div>
+</div>
+
+<h3><?php echo $str6 ?></h3>
+<div id="idpsDiv">
+<div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str4 ?></div>
+<div id="idpaccordion">
 </div>
 </div>
 
