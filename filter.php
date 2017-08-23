@@ -87,10 +87,10 @@ switch($locale) {
 	$str2 = "Create new filter";
 	$str3 = "Select groups of IdPs. If you select at least one group, WAYF will show only IdPs from this list." . 
 	        " If you leave this list empty, default list of groups will be used. Default list means all groups having your SP in metadata.";
-	$str4 = "Select IdPs which will be shown to WAYF users. " .
-		"In case of empty list -  user will be offered all IdPs from all checked groups from previous tab. " . 
-		" If no group is selected in the previous tab, the default list of IdPs will be shown " . 
-		"Default list means all groups having your SP in metadata. IdPs are sorted by groups.";	
+	$str4 = "Filter IdPs either by allow list or deny list.<br><br>" .
+            "Having a allow list selection filters out IdPs not on it.<br>" .
+            "Having a deny list selection filters out IdPs on it.<br><br>" .
+            "The list of Idps may be further adjusted by selecting entity categories. When used together with entity categories filtering, the list shown comprises of IdPs not filtered out by categories filter with possible additions of IdP allow list or possible deductions of IdP deny list.";
 	$str5 = "Select groups";
 	$str6 = "Select individual IdPs";
 	$str7 = "Add hostel IdP";
@@ -113,7 +113,10 @@ switch($locale) {
 	$str20 = "Generated filter";
     $str21 = "Warning";
     $str22 = "Entered filter differs from the builded one. It can be caused by using IdP, which is not in federation any more. Please, check filter's proper functionality.";
-    $str23 = "Move entity categories from gray box to green one or red one. List of IdPs shown to user will contain IdPs having all entity categories from green box and none entity kategory from red box. Entity kategory setting can be different for every IdP group.";
+    $str23 = "Filter entities by entity categories. Available categories may be activated by moving them to green or red boxes.<br><br>" .
+             "Having a selection in green box filters out entities not matching at least one of the selected categories.<br>" .
+             "Having a selection in red box filters out entities matching at least one of the selected categories.<br><br>" .
+             "The list of Idps may be further adjusted by selecting individual IdPs. When used together with individual IdP filtering, the list shown comprises of IdPs not filtered out by categories filter with possible additions of IdP allow list or possible deductions of IdP deny list.";
     $str24 = "Select entity categories";
 	break;
 }
