@@ -135,26 +135,26 @@ switch($locale) {
 <div id="tabs-1">
 
 <div id="accordion">
-<h3><?php echo $str5 ?></h3>
+<h3 class="accgroup"><?php echo $str5 ?></h3>
 <div id="feedsDiv">
 <div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str3 ?></div><br>
 </div>
 
-<h3><?php echo $str24 ?></h3>
+<h3 class="accec"><?php echo $str24 ?></h3>
 <div id="ecDiv">
 <div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str23 ?></div>
 <div id="ecaccordion">
 </div>
 </div>
 
-<h3><?php echo $str6 ?></h3>
+<h3 class="accidps"><?php echo $str6 ?></h3>
 <div id="idpsDiv">
 <div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str4 ?></div>
 <div id="idpaccordion">
 </div>
 </div>
 
-<h3><?php echo $str7 ?></h3>
+<h3 class="acchostel"><?php echo $str7 ?></h3>
 <div>
 <div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str8 ?></div>
 <input type="checkbox" name="Hostel" id="hostel" value="Use Hostel" class="oc"><?php echo $str9 ?><br>
