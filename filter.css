@@ -39,3 +39,8 @@
 .errorfilter {
     background-color: Pink;
 }
+
+.acchostel,
+.accgroup {
+    display: none !important;
+}
