@@ -92,9 +92,11 @@ function regenerateFilter() {
         }
     }
 
-    fo.allowHostel = hostel.checked;
     if(hostel.checked) {
-        fo.allowHostelReg = hostelreg.checked;
+        fo.allowHostel = hostel.checked;
+        if(hostel.checked) {
+            fo.allowHostelReg = hostelreg.checked;
+        }
     }
 
     var filter = JSON.stringify(fo);
