@@ -44,7 +44,7 @@ else {
 <?php
 switch($locale) {
     case "cz":
-	$str1 = "Vytvoření filtru pro službu CESNET WAYF/DS";
+	$str1 = "Vytvoření filtru pro službu eduTEAMS Discovery";
 	$str2 = "Vytvořit nový filtr";
 	$str3 = "Ze seznamu níže vyberte skupiny, jejichž identity provideři budou zobrazeny uživatelům WAYFu. " . 
 	        "Pokud seznam necháte prázdný, bude použit defaultní seznam skupin, který obsahuje všechny " . 
@@ -83,15 +83,15 @@ switch($locale) {
 
     case "en":
     default:
-	$str1 = "CESNET WAYF/DS filter creation";
+	$str1 = "eduTEAMS Discovery filter generator";
 	$str2 = "Create new filter";
 	$str3 = "Select groups of IdPs. If you select at least one group, WAYF will show only IdPs from this list." . 
 	        " If you leave this list empty, default list of groups will be used. Default list means all groups having your SP in metadata.";
-	$str4 = "Choose IdPs which will be shown to WAYF users. " .
+	$str4 = "Select IdPs which will be shown to WAYF users. " .
 		"In case of empty list -  user will be offered all IdPs from all checked groups from previous tab. " . 
 		" If no group is selected in the previous tab, the default list of IdPs will be shown " . 
 		"Default list means all groups having your SP in metadata. IdPs are sorted by groups.";	
-	$str5 = "Choose groups";
+	$str5 = "Select groups";
 	$str6 = "Select individual IdPs";
 	$str7 = "Add hostel IdP";
 	$str8 = "if you want to allow access to users out of federations, you can use special identity provider ". 
@@ -114,7 +114,7 @@ switch($locale) {
     $str21 = "Warning";
     $str22 = "Entered filter differs from the builded one. It can be caused by using IdP, which is not in federation any more. Please, check filter's proper functionality.";
     $str23 = "Move entity categories from gray box to green one or red one. List of IdPs shown to user will contain IdPs having all entity categories from green box and none entity kategory from red box. Entity kategory setting can be different for every IdP group.";
-    $str24 = "Choose entity categories";
+    $str24 = "Select entity categories";
 	break;
 }
 ?>
