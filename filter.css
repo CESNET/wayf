@@ -40,7 +40,6 @@
     background-color: Pink;
 }
 
-.acchostel,
-.accgroup {
+.acchostel, .accgroup {
     display: none !important;
 }
