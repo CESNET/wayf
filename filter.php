@@ -1,4 +1,7 @@
-<?php 
+<?php
+
+include 'wayf_vars.php';
+ 
 $feeds  = file_get_contents("feeds.js");
 $l = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
 if(strpos($l, "cs-CZ") !== false || strpos($l, "cs") !== false || strpos($l, "sk-SK") !== false || strpos($l, "sk") !== false) {
@@ -44,7 +47,7 @@ else {
 <?php
 switch($locale) {
     case "cz":
-	$str1 = "Vytvoření filtru pro službu eduTEAMS Discovery";
+	$str1 = $filterTitleCS;
 	$str2 = "Vytvořit nový filtr";
 	$str3 = "Ze seznamu níže vyberte skupiny, jejichž identity provideři budou zobrazeny uživatelům WAYFu. " . 
 	        "Pokud seznam necháte prázdný, bude použit defaultní seznam skupin, který obsahuje všechny " . 
@@ -83,7 +86,7 @@ switch($locale) {
 
     case "en":
     default:
-	$str1 = "eduTEAMS Discovery filter generator";
+	$str1 = $filterTitleEN;
 	$str2 = "Create new filter";
 	$str3 = "Select groups of IdPs. If you select at least one group, WAYF will show only IdPs from this list." . 
 	        " If you leave this list empty, default list of groups will be used. Default list means all groups having your SP in metadata.";
