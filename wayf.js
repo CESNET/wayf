@@ -16,19 +16,31 @@
 var wayf = "";
 var hostelURL  = 'https://adm.hostel.eduid.cz/registrace';
 var showedIdpList;
-var languages = new Array("cs", "en");
+var languages = new Array("en", "cs");
+var langsAvailable = {
+  'cs': { 'img':'flags/cs.png' },
+  'de': { 'img':'flags/de.png' },
+  'el': { 'img':'flags/el.png' },
+  'en': { 'img':'flags/en.png' },
+  'fr': { 'img':'flags/fr.png' },
+  'it': { 'img':'flags/it.png' },
+  'lt': { 'img':'flags/lt.png' },
+  'nl': { 'img':'flags/nl.png' }
+}
+  
 var fallbackLanguage = "en";
 var labels = {
-    'BUTTON_NEXT': {'cs':'Jiný účet', 'en':'Another account'},
-    'BUTTON_HOSTEL': {'cs':'Zřídit účet', 'en':'Create account'},
-    'TEXT_ALL_IDPS': {'cs':'Přihlásit účtem', 'en':'Login with'},
-    'TEXT_ACCOUNT': {'cs':'Zřídit účet', 'en':'Create account'},
-    'TEXT_SAVED_IDPS': {'cs':'Přihlásit účtem', 'en':'Login with'},
-    'IDP_HOSTEL': {'cs':'Hostel IdP', 'en':'Hostel IdP'},
-    'SETUP': {'cs':'Nastavení', 'en':'Setup'},
-    'CONFIRM_DELETE': {'cs':'Zapomenout ', 'en':'Forget '},
-    'BACK_TITLE': {'cs':'Zpět', 'en':'Back'},
-    'NOT_AVAILABLE': {'cs':'K této službě se nelze přihlásit pomocí', 'en':'Service is not available for'}
+    'BUTTON_NEXT': {'cs':'Jiný účet', 'en':'Another account', 'it':'Altro account', 'nl':'Ander account', 'fr':'Un autre compte', 'el':'Άλλος λογαριασμός', 'de':'Anderes Konto', 'lt':'Kita paskyra' },
+    'BUTTON_HOSTEL': {'cs':'Zřídit účet', 'en':'Create account', 'it':'Crea account', 'nl':'Maak account aan', 'fr':'Créer un compte', 'el':'Δημιουργία λογαριασμού', 'de':'Konto kreieren', 'lt':'Sukurti paskyrą' },
+    'TEXT_ALL_IDPS': {'cs':'Přihlásit účtem', 'en':'Login with', 'it':'Login tramite', 'nl':'Login met', 'fr':'S’authentifier avec', 'el':'Σύνδεση μέσω', 'de':'Anmelden mit', 'lt':'Prisijungti su' },
+    'TEXT_ACCOUNT': {'cs':'Zřídit účet', 'en':'Create account', 'it':'Crea account', 'nl':'Maak account aan', 'fr':'Créer un compte', 'el':'Δημιουργία λογαριασμού', 'de':'Konto kreieren', 'lt':'Sukurti paskyrą' },
+    'TEXT_SAVED_IDPS': {'cs':'Přihlásit účtem', 'en':'Login with', 'it':'Login tramite', 'nl':'Login met', 'fr':'S’authentifier avec', 'el':'Σύνδεση μέσω', 'de':'Anmelden mit', 'lt':'Prisijungti su' },
+    'IDP_HOSTEL': {'cs':'Hostel IdP', 'en':'Hostel IdP', 'it': 'IdP ospite', 'nl':'Gast IdP', 'fr':'S’authentifier avec' },
+    'SETUP': {'cs':'Nastavení', 'en':'Setup', 'it':'Setup', 'nl':'Maak aan', 'fr':'Configurer', 'el':'Παραμετροποίηση', 'de':'Einstellungen', 'lt':'Nustatymai' },
+    'CONFIRM_DELETE': {'cs':'Zapomenout ', 'en':'Forget ', 'it':'Dimentica ', 'nl':'Vergeet ', 'fr':'Enlever ', 'el':'Διαγραφή ', 'de':'Lösche ', 'lt':'Pamiršti ' },
+    'BACK_TITLE': {'cs':'Zpět', 'en':'Back', 'it':'Indietro', 'nl':'Terug', 'fr':'Retour', 'el':'Πίσω', 'de':'Zurück', 'lt':'Atgal' },
+    'NOT_AVAILABLE': {'cs':'K této službě se nelze přihlásit pomocí', 'en':'Service is not available for', 'it':'Il servizio non è disponibile per', 'nl':'Service is niet beschikbaar', 'fr':'Service non fonctionnel pour', 'el':'Ο Πάροχος Ταυτότητας δεν είναι διαθέσιμος για αυτή την υπηρεσία', 'de':'Dienst ist nicht verfügbar für', 'lt':'Paslauga neteikiama' },
+    'LOADING': {'cs': 'Načítám instituce ...', 'en':'LOADING ...', 'it':' Caricamento ...', 'nl':'Aan het laden', 'fr':'Chargement en cours', 'el':'ΦΟΡΤΩΣΗ ...', 'de':'Laden ...', 'lt':'KRAUNAMA ...' }
 }
 
 var mobileVersion = true;
@@ -36,30 +48,6 @@ var hostelEntityID = "https://idp.hostel.eduid.cz/idp/shibboleth";
 var inIframe = false;
 var feedCount = 0;
 var filterVersion = 1;  // default original version, not suitable for all cases
-
-// check if local storage is available
-/*
-try {
-    if(localStorage === undefined || localStorage === null) {
-	try {
-    	    window.location.href = noHTML5URL;
-	}
-	catch(e) {
-	    window.location.href = noHTML5URL;
-	}	 
-    }
-} catch (e2) {
-       window.location.href = noHTML5URL;
-} 
-*/
-
-/*
-try {
-  localStorage.test = 1;
-} catch (e) {
-  alert('safari');
-}
-*/
 
 // check support of json, otherwise use 3rd implementation
 if (typeof JSON == 'undefined') {
@@ -318,6 +306,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
 
     var toplabel = document.createElement('span');
     toplabel.innerHTML = label;
+    toplabel.className = "toplabel";
 
     /* search field */
     var search = document.createElement('input');
@@ -355,19 +344,19 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     help.id = 'help';
 
     var cesnetLink = document.createElement('a');
-    cesnetLink.href="http://www.eduid.cz/cesnet-ds";
+    cesnetLink.href = organizationHelpLink;  // comes from wayf_vars.php
     cesnetLink.target="_blank";
     cesnetLink.id = "helpa";
 
     var sc = document.createElement('span');
     sc.id = 'helps';
 
-    sc.innerHTML = "CESNET";
+    sc.innerHTML = organizationLabel;  // comes from wayf_vars.php
     cesnetLink.appendChild(sc);
 
     var helpImage = document.createElement('img');
     helpImage.className = "helpimg";
-    helpImage.src = "help.png";
+    helpImage.src = organizationHelpImage;
     helpImage.alt = "Information";
     helpImage.id = "helpi";
 
@@ -388,6 +377,11 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
 
     this.mixelaHash = new Object();
 
+    if(showSetup) {
+        this.bottom.appendChild(setup);
+    }
+
+/*
     var langCS = document.createElement('div');
     langCS.className = "lang";
     langCS.onclick = (function() {
@@ -411,6 +405,40 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     var langENimg = document.createElement('img');
     langENimg.src = "gb.png";
     langEN.appendChild(langENimg);
+*/
+    //var langDropdown = document.createElement('div');
+    //langDropdown.className = "dropdown";
+
+    //var langSpan = document.createElement('span');
+    //langSpan.innerHTML = "Lang";
+    //langDropdown.appendChild( langSpan );
+    
+    //var langDropdownContent = document.createElement('div');
+    //langDropdownContent.className = "dropdown-content";
+
+    //var flagImg = new Array();
+    for(var curLang in langsAvailable) {
+      var flag = document.createElement('div');
+      flag.className = "lang";
+      // flag.style.margin="3px";
+  
+      var flagImg = document.createElement('img');
+      flagImg.src = langsAvailable[curLang].img;
+      flagImg.onclick = (function( lang=curLang ) {
+        return function() {
+          prefLang = lang;
+          langCallback();
+        }                  
+      })();
+
+      flag.appendChild( flagImg );
+   
+      // langDropdownContent.appendChild( flag );
+      this.bottom.appendChild( flag );
+   
+    }
+
+    // langDropdown.appendChild( langDropdownContent );
 
     top.appendChild(title);
     title.appendChild(search);
@@ -431,11 +459,8 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     this.content.appendChild(bottomFiller);
     this.wayfDiv.appendChild(this.content);
 
-    if(showSetup) {
-        this.bottom.appendChild(setup);
-    }
-    this.bottom.appendChild(langCS);
-    this.bottom.appendChild(langEN);
+    //this.bottom.appendChild(langCS);
+    //this.bottom.appendChild(langEN);
     this.bottom.appendChild(help);
 
     this.wayfDiv.appendChild(this.bottom);
@@ -778,21 +803,44 @@ Wayf.prototype.getUrlFromFeedId = function(feedId) {
     }
 }
 
+/** function Wayf.prototype.isInEc - exist EC in allowEC/denyEC?
+  */
+Wayf.prototype.isInEc = function( allowOrDenyEcArray, ecArray ) {
+  for( var ec in ecArray ) {
+    if( allowOrDenyEcArray.indexOf(ecArray[ec])>=0) {
+      return true;
+    }
+  }
+  return false;
+}
+
 Wayf.prototype.listAllData = function(feedId, mdSet) {
     var idpFilter = false;
     var filterDenyIdps = false;
     var filterAllowIdps = false; 
+    var filterAllowEC = false;
+    var filterDenyEC = false;
 
     if( useFilter ) {
       if( filterVersion == "2" ) {
+        // exist denyIdPs?
         if( typeof filter.allowFeeds[feedId].denyIdPs !== "undefined" ) {
           filterDenyIdps = true;
         } else {
+          // exist allowIdPs?
           // deny has higher priority
           if( typeof filter.allowFeeds[feedId].allowIdPs !== "undefined" ) {
             filterAllowIdps = true;
           }
-       }
+        }
+        // exist denyEC?
+        if( typeof filter.allowFeeds[feedId].denyEC !== "undefined" ) {
+          filterDenyEC = true;
+        }
+        // exist allowEC?
+        if( typeof filter.allowFeeds[feedId].allowEC !== "undefined" ) {
+          filterAllowEC = true;
+        }
       } else {
         // filter v1
         if( ("allowIdPs" in filter)) {
@@ -811,9 +859,22 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
           if( filterDenyIdps && filter.allowFeeds[feedId].denyIdPs.indexOf(eid) >= 0 ) {
               continue;
           } else {
+
             // allowIdPs per feed
-            if( filterAllowIdps && filter.allowFeeds[feedId].allowIdPs.indexOf(eid)<0) {
-              continue;            
+            if( filterAllowIdps ) { 
+
+              if( filter.allowFeeds[feedId].allowIdPs.indexOf(eid)<0 && (filterAllowEC && ! wayf.isInEc( filter.allowFeeds[feedId].allowEC, mdSet.entities[eid].EC ))) {
+                continue;
+              } 
+            } else {
+  
+              // entity category, first remove denyEC, then add allowEC
+              if( filterDenyEC && wayf.isInEc( filter.allowFeeds[feedId].denyEC, mdSet.entities[eid].EC )) {
+                continue;
+              }
+              if( filterAllowEC && wayf.isInEc( filter.allowFeeds[feedId].allowEC, mdSet.entities[eid].EC )==false) {
+                continue;
+              }
             }
           }
         } else {
@@ -897,9 +958,14 @@ function searchAuto( query, wayf, callback, saveQuery ) {
 
   // looking at only filtered records
   for(var entity in this.wayf.selectedIdps ) {
-    for(var curLang in this.wayf.selectedIdps[entity]){
-      if( this.wayf.selectedIdps[entity][curLang].search( new RegExp( query, "i" )) != -1) {
-        $( document.getElementById( entity ) ).show();
+    var extractedDomain = entity.split("/");
+    if( typeof extractedDomain[2] !== "undefined" && extractedDomain[2].search( new RegExp( query, "i" )) != -1 ) {
+      $( document.getElementById( entity ) ).show();
+    } else {
+      for(var curLang in this.wayf.selectedIdps[entity]){
+        if( this.wayf.selectedIdps[entity][curLang].search( new RegExp( query, "i" )) != -1) {
+          $( document.getElementById( entity ) ).show();
+        }
       }
     }
   }
@@ -989,6 +1055,7 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
     var idpFilter = false;
     var filterAllowFeeds = false;
 
+    /* load feeds */
     if(useFilter) {
       if( filterVersion == "2" ) { 
         for(var f in filter.allowFeeds) {
@@ -1027,13 +1094,13 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
       }
     }
     else {
+        /* load all feeds, filter is not set */
         feedCount = Object.keys(allFeeds).length;
         for(var feed in allFeeds) {
             var feedUrl = allFeeds[feed];
             wayf.getFeed(feed, feedUrl, false, false, true );
         }
     }
-
 
     var usedIdps = this.usedIdps;
     this.view.deleteContainer();
@@ -1047,9 +1114,10 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
         this.view.createContainer(this.view.getLabelText('TEXT_SAVED_IDPS'), true, inIframe, false, langCallback);
     }
 
+    /* foreach saved idp */
     for(var eid in usedIdps) {
         var enableIdp = true;
-        try {
+        //try {
 
             if(eid == "indexOf") {
                 continue;
@@ -1074,50 +1142,14 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
             }
             else {
                 if(eid == hostelEntityID) {
-                    if(!useFilter || (useFilter && filter.allowHostel!=true)) {
-                        enableIdp = false;
-                    }
+                    if(useFilter && filter.allowHostel==true) {
+                        enableIdp = true;
+                    } 
                 }
                 else {
-
-                    if(filterAllowFeeds) {
-                        enableIdp = false;
-                        for(feed in filter.allowFeeds) {
-                          if(filterVersion == "1" && wayf.isIdpInFeed(eid, filter.allowFeeds[feed] )) {
-                              enableIdp = true;
-                              tempFeed = filter.allowFeeds[feed];
-                              break;
-                          } else {
-                            if(wayf.isIdpInFeed(eid, feed)) {
-                                enableIdp = true;
-                                tempFeed = feed;
-                                break;
-                            }
-                          }
-                        }
-                    }
-
-
-                    if( filterVersion == "2" && tempFeed != null && typeof filter.allowFeeds[tempFeed].denyIdPs !== "undefined" && filter.allowFeeds[tempFeed].denyIdPs.indexOf(eid) >= 0 ) {
-                      // disable IdP in denyIdPs list
-                      enableIdp = false; 
-                    } else {         
-                      if(idpFilter) {
-                        enableIdp = false;
-                        if( filterVersion == "2" ) {
-                          if( tempFeed != null ) {
-                            enableIdp = true;
-                          }
-                        } else {
-                          // filter v1
-                          if(filter["allowIdPs"].indexOf(eid)>=0) {
-                              enableIdp = true;
-                          }
-                        }
-                      }
-                    }
-
+                    
                     if((!filterAllowFeeds) && (!idpFilter)) {
+                        /* filter is not defined => take all delivered feeds */
                         enableIdp = false;
                         for(feed in allFeeds) {
                             if(wayf.isIdpInFeed(eid, feed)) {
@@ -1125,7 +1157,123 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                                 break;
                             }
                         }
-                    }
+                    } else {
+
+                      if( filterVersion == "1" ) {
+                        /* filter_v1 */
+                          
+                        if(idpFilter && filter["allowIdPs"].indexOf(eid)>=0) {
+                          /* add idp explicitly listed in allowIdps */
+                          enableIdp = true;
+                        } else {
+                          /* add idp in allowFeeds */
+                          for( feed in filter.allowFeeds ) {
+                            if( filterAllowFeeds && wayf.isIdpInFeed( eid, filter.allowFeeds[ feed ] )) {
+                              enableIdp = true;
+                            }
+                          }
+                        }
+
+                      } else {
+                        /* filter_v2 */
+
+                        var filterDenyIdps;
+                        var filterAllowIdps;
+                        var filterAllowEC;
+                        var filterDenyEC;
+                        var eidIsDeny;
+                        var eidIsNotInAllow;
+                        var eidAll;
+                        var tmpEnableIdp;
+
+                        if( filterVersion == "2" && filterAllowFeeds ) {
+                          for(feed in filter.allowFeeds) {
+                            /* go through all allowFeeds */
+
+                            filterDenyIdps = false;
+                            filterAllowIdps = false;
+                            filterAllowEC = false;
+                            filterDenyEC = false;
+                            eidIsDeny = false;
+                            eidIsNotInAllow = false;
+                            eidAll = true;
+                            tmpEnableIdp = true;
+
+                            if( wayf.isIdpInFeed( eid, feed )) {
+                            /* idp is in the feed */
+
+                              if( typeof filter.allowFeeds[feed].denyIdPs !== "undefined" ) { 
+                                filterDenyIdps = true;
+                                eidAll = false;
+                              }
+
+                              if( filterDenyIdps && filter.allowFeeds[feed].denyIdPs.indexOf(eid) >= 0 )
+                                eidIsDeny = true;
+
+                              if( typeof filter.allowFeeds[feed].allowIdPs !== "undefined" ) {
+                                filterAllowIdps = true;
+                                eidAll = false;
+                              }
+
+                              if( filterAllowIdps && filter.allowFeeds[feed].allowIdPs.indexOf(eid) < 0)
+                                eidIsNotInAllow = true;
+
+                              if( typeof filter.allowFeeds[feed].denyEC !== "undefined" ) {
+                                filterDenyEC = true;
+                                eidAll = false;
+                              }
+
+                              if( typeof filter.allowFeeds[feed].allowEC !== "undefined" ) {
+                                filterAllowEC = true;
+                                eidAll = false;
+                              }
+
+                              /* vyhodnoceni v2 */
+    
+                              // entity category, first remove denyEC, then add allowEC
+                              if( filterDenyEC && wayf.isInEc( filter.allowFeeds[feed].denyEC, wayf.feedData[feed].mdSet.entities[eid].EC )) {
+                                tmpEnableIdp = false;
+                              }
+                              if( filterAllowEC && wayf.isInEc( filter.allowFeeds[feed].allowEC, wayf.feedData[feed].mdSet.entities[eid].EC )==false) {
+                                tmpEnableIdp = false;
+                              }
+     
+                              // allowIdPs and denyIdps has higher priority than entity category
+                              // denyIdPs is used
+                              if( eidIsDeny ) {
+                                  tmpEnableIdp = false;
+                              } else {
+                                // allowIdPs per feed
+                                if( eidIsNotInAllow ) {
+                                  tmpEnableIdp = false;            
+                                } else {
+                                  if( filterAllowIdps ) {
+                                    tmpEnableIdp = true;  // eid is on allowIdPs list, so must be enabled
+                                  }
+                                }
+                              }
+     
+                              if( eidAll ){
+                                tmpEnableIdp = true;
+                              }
+                   
+  
+                            } else {
+                              tmpEnableIdp = false;
+                            }
+
+                            if( tmpEnableIdp == true ) {
+                              enableIdp = true;
+                              break;  // if idp should be in any feed, list as enabled
+                            } else {
+                              enableIdp = false;
+                            }
+                          }                  
+                      }
+                       /* vyhodnoceni filter v2 */
+                     }
+
+                   } 
 
                 }
 
@@ -1172,9 +1320,9 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
             catch(err) {
             }
 
-        }
+        /*}
         catch(err) {
-        }
+        } */
     }
 
     // show saved Idp
@@ -1229,7 +1377,9 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
       return;
     }
 
-    var xmlhttp = new XMLHttpRequest();
+   $( ".toplabel" ).text(wayf.view.getLabelText('LOADING'));
+
+   var xmlhttp = new XMLHttpRequest();
     xmlhttp.feedId = id;
     xmlhttp.onreadystatechange = function() {
         var state = xmlhttp.readyState;
@@ -1272,6 +1422,8 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
 
               // empty scroller due to duplicity
               // while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
+
+              $( ".toplabel" ).text(wayf.view.getLabelText('TEXT_ALL_IDPS'));
               
               for( var key in keySorted ) {
                 wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );

@@ -1,0 +1,1 @@
+{ "eduGAIN":"/feed/eduGAIN.js"}

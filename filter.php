@@ -1,4 +1,7 @@
-<?php 
+<?php
+
+include 'wayf_vars.php';
+ 
 $feeds  = file_get_contents("feeds.js");
 $l = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
 if(strpos($l, "cs-CZ") !== false || strpos($l, "cs") !== false || strpos($l, "sk-SK") !== false || strpos($l, "sk") !== false) {
@@ -8,15 +11,12 @@ else {
     $locale = "en";
 }; 
 
+$serverName = "\"" . $_SERVER['HTTP_HOST']  . "\"";
+
 ?>
 <html>
 <head>
 <meta charset="UTF-8" />
-<style type="text/css">
-.errorfilter {
-    background-color: Pink;
-}
-</style>
 <script type="text/javascript" src="base64.js"></script>
 <link rel="stylesheet" href="jquery-ui.css" />
 <link rel="stylesheet" href="filter.css" />
@@ -25,18 +25,21 @@ else {
 <script type="text/javascript">
 var feeds = <?= $feeds ?>;
 </script>
+<script type="text/javascript">
+var serverName = <?= $serverName ?>;
+</script>
 
 <?php
 if($locale == "cz") {
-    $incl = "filter.js";
+    $incl = "filter-strings.js";
 }
 else {
-    $incl = "filter-en.js";
+    $incl = "filter-strings-en.js";
 }
 ?>
 
-
 <script type="text/javascript" src="<?php echo $incl ?>"></script>
+<script type="text/javascript" src="filter.js"></script>
 
 </head>
 <body onload="fillFeeds()">
@@ -44,7 +47,7 @@ else {
 <?php
 switch($locale) {
     case "cz":
-	$str1 = "Vytvoření filtru pro službu WAYF";
+	$str1 = $filterTitleCS;
 	$str2 = "Vytvořit nový filtr";
 	$str3 = "Ze seznamu níže vyberte skupiny, jejichž identity provideři budou zobrazeny uživatelům WAYFu. " . 
 	        "Pokud seznam necháte prázdný, bude použit defaultní seznam skupin, který obsahuje všechny " . 
@@ -77,20 +80,22 @@ switch($locale) {
 	$str20 = "Vygenerovaný filtr";
     $str21 = "Varování";
     $str22 = "Vámi vložený filtr neodpovídá přegenerovanému filtru. To může být způsobeno například použitím IdP, které už v příslušné federaci není. Prosím, překontrolujte funkčnost vygenerovaného filtru.";
+    $str23 = "Přetáhněte příslušné entity kategorie z šedého rámečku do červeného nebo zeleného rámečku. Uživateli se zobrazí seznam IdP, které obsahují některou entity kategorii ze zeleného rámečku a neobsahují žádnou kategorii z červeného rámečku. Každá skupina IdP má vlastní nastavení.";
+    $str24 = "Vyberte entity kategorie";
 	break;
 
     case "en":
     default:
-	$str1 = "WAYF filter creation";
+	$str1 = $filterTitleEN;
 	$str2 = "Create new filter";
-	$str3 = "Choose groups of IdPs. If you select at least one group, WAYF will show only IdPs from this list." . 
+	$str3 = "Select groups of IdPs. If you select at least one group, WAYF will show only IdPs from this list." . 
 	        " If you leave this list empty, default list of groups will be used. Default list means all groups having your SP in metadata.";
-	$str4 = "Choose IdPs which will be shown to WAYF users. " .
-		"In case of empty list -  user will be offered all IdPs from all checked groups from previous tab. " . 
-		" If no group is selected in the previous tab, the default list of IdPs will be shown " . 
-		"Default list means all groups having your SP in metadata. IdPs are sorted by groups.";	
-	$str5 = "Choose groups";
-	$str6 = "Choose individual IdPs";
+	$str4 = "Filter IdPs either by allow list or deny list.<br><br>" .
+            "Having a allow list selection filters out IdPs not on it.<br>" .
+            "Having a deny list selection filters out IdPs on it.<br><br>" .
+            "The list of Idps may be further adjusted by selecting entity categories. When used together with entity categories filtering, the list shown comprises of IdPs not filtered out by categories filter with possible additions of IdP allow list or possible deductions of IdP deny list.";
+	$str5 = "Select groups";
+	$str6 = "Select individual IdPs";
 	$str7 = "Add hostel IdP";
 	$str8 = "if you want to allow access to users out of federations, you can use special identity provider ". 
 		"<a href=\"http://hostel.eduid.cz/\">Hostel IdP</a>. " . 
@@ -111,6 +116,11 @@ switch($locale) {
 	$str20 = "Generated filter";
     $str21 = "Warning";
     $str22 = "Entered filter differs from the builded one. It can be caused by using IdP, which is not in federation any more. Please, check filter's proper functionality.";
+    $str23 = "Filter entities by entity categories. Available categories may be activated by moving them to green or red boxes.<br><br>" .
+             "Having a selection in green box filters out entities not matching at least one of the selected categories.<br>" .
+             "Having a selection in red box filters out entities matching at least one of the selected categories.<br><br>" .
+             "The list of Idps may be further adjusted by selecting individual IdPs. When used together with individual IdP filtering, the list shown comprises of IdPs not filtered out by categories filter with possible additions of IdP allow list or possible deductions of IdP deny list.";
+    $str24 = "Select entity categories";
 	break;
 }
 ?>
@@ -128,21 +138,27 @@ switch($locale) {
 <div id="tabs-1">
 
 <div id="accordion">
-<h3><?php echo $str5 ?></h3>
-<div id="feedsDiv">
+<h3 class="accgroup"><?php echo $str5 ?></h3>
+<div id="feedsDiv" class="accgroup">
 <div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str3 ?></div><br>
 </div>
 
-<h3><?php echo $str6 ?></h3>
+<h3 class="accec"><?php echo $str24 ?></h3>
+<div id="ecDiv" class="accec">
+<div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str23 ?></div>
+<div id="ecaccordion">
+</div>
+</div>
 
-<div id="idpsDiv">
+<h3 class="accidps"><?php echo $str6 ?></h3>
+<div id="idpsDiv" class="accidps">
 <div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str4 ?></div>
 <div id="idpaccordion">
 </div>
 </div>
 
-<h3><?php echo $str7 ?></h3>
-<div>
+<h3 class="acchostel"><?php echo $str7 ?></h3>
+<div class="acchostel">
 <div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str8 ?></div>
 <input type="checkbox" name="Hostel" id="hostel" value="Use Hostel" class="oc"><?php echo $str9 ?><br>
 <input type="checkbox" name="HostelReg" id="hostelreg" value="Use Hostel Reg" class="oc"><?php echo $str10 ?>

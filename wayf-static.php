@@ -13,8 +13,12 @@
  */
 
 
-include 'Mobile_Detect.php';  // Broser detection library
+include 'Mobile_Detect.php';  // Browser detection library
 include '/opt/getMD/lib/SPInfo.php';  // Feed preparation
+include 'wayf_vars.php';  // customization CESNET/eduTEAMS
+
+// constants
+define( "EC", "EC" );  // EC index to entities
 
 // Development mode
 $DEVEL = false;
@@ -30,8 +34,20 @@ else {
 
 // Messages
 $messages = array(
-    "LOGIN" => array("cs" => "Přihlásit účtem", "en" => "Login with" ),
-    "CREATE_ACCOUNT" => array("cs" => "Vytvořit účet", "en" => "Create account" ),
+    "LOGIN" => array("cs" => "Přihlásit účtem", "en" => "Login with", "it" => "Login tramite", "nl" => "Login met", "fr" => "S’authentifier avec", "el" => "Σύνδεση μέσω", "de" => "Anmelden mit", "lt" => "Prisijungti su" ),
+    "CREATE_ACCOUNT" => array("cs" => "Vytvořit účet", "en" => "Create account", "it" => "Crea account", "nl" => "Maak account aan", "fr" => "Créer un compte", "el" => "Δημιουργία λογαριασμού", "de" => "Konto kreieren", "lt" => "Sukurti paskyrą" ),
+);
+
+// Available languages
+$langsAvailable = array (
+  "cs" => array( "img" => "flags/cs.png" ),
+  "de" => array( "img" => "flags/de.png" ),
+  "el" => array( "img" => "flags/el.png" ),
+  "en" => array( "img" => "flags/en.png" ),
+  "fr" => array( "img" => "flags/fr.png" ),
+  "it" => array( "img" => "flags/it.png" ),
+  "lt" => array( "img" => "flags/lt.png" ),
+  "nl" => array( "img" => "flags/nl.png" ),
 );
 
 /** Function returns label in prefered language from metadata
@@ -44,10 +60,6 @@ function getLabelFromEntity($entity) {
     // prefered lang by browser
     if(isset($entity["label"][$lang]) && $entity["label"][$lang] != "") {
         $title = $entity["label"][$lang];
-    }
-    else if(isset($value["label"]["cs"])) {
-        // prefered lang by authors of wayf
-        $title = $entity["label"]["cs"];
     }
     else if(isset($entity["label"]["en"])) {
         // standard english label
@@ -279,11 +291,12 @@ if(isset($_GET['entityID'])) {
     }
 }
 
-
+$lang = $prefLang;
 if(isset($_GET['lang'])) {
-    if($_GET['lang'] == "cs" || $_GET['lang'] == "en") {
-        $lang = $_GET['lang'];
+    if( isset( $langsAvailable[ $_GET['lang']] ) ) {
+        $lang_ui = $_GET['lang'];  // language of application
     }
+    $lang = $_GET['lang'];  // language of IdP names
 }
 
 $isDumb = false;
@@ -369,50 +382,66 @@ else {
 
       foreach($feedSet as $feed) {
 
-            echo "aktualni feed - ". $feed ." xxx ";
+            // echo "aktualni feed - ". $feed ." xxx ";
             $feedPath = "/opt/getMD/var/pub/current/feed/" . $feed . ".js";
             $feedFile = file_get_contents($feedPath);
             $fd = json_decode($feedFile, true);
             $c_entities = $fd["entities"];
 
-            $filterEntities = $c_entities;
+            $filterDenyIdps = false;
+            $filterAllowIdps = false;
+            $filterAllowEC = false;
+            $filterDenyEC = false;
 
-            // print_r( $c_entities );
-
-            // filtering per feed, allowIdPs or denyIdPs
             if( isset( $jFilter['allowFeeds'][ $feed ]['denyIdPs'] )) {
-              $filterEntities = null;
-              //echo "DENY FILTER <br>\n";
-              //print_r( $jFilter['allowFeeds'][ $feed ]['denyIdPs'] );
-              foreach($c_entities as $key => $value) {
-                if(!in_array($key, $jFilter['allowFeeds'][ $feed ]['denyIdPs'])) {
-                  $filterEntities[$key] = $value;
+              $filterDenyIdps = true;
+            }
+
+            if( isset( $jFilter['allowFeeds'][ $feed ]['allowIdPs'] )) {
+              $filterAllowIdps = true;
+            }
+
+            if( isset( $jFilter['allowFeeds'][ $feed ]['allowEC'] )) {
+              $filterAllowEC = true;
+            }
+
+            if( isset( $jFilter['allowFeeds'][ $feed ]['denyEC'] )) {
+              $filterDenyEC = true;
+            }
+
+            foreach($c_entities as $key => $value) {
+              if( $filterDenyIdps && in_array( $key, $jFilter['allowFeeds'][ $feed ]['denyIdPs'])) {
+                continue;
+              }
+ 
+              $allowCurIdp = false;
+              if( $filterAllowIdps ) { 
+                if( in_array( $key, $jFilter['allowFeeds'][ $feed ]['allowIdPs'] )) {
+                  $allowCurIdp = true;
                 }
               }
-              
-            } else {
-
-              if( isset( $jFilter['allowFeeds'][ $feed ]['allowIdPs'] )) {
-                $filterEntities = null;
-                //echo "ALLOW FILTER <br>\n";
-                //print_r( $jFilter['allowFeeds'][ $feed ]['allowIdPs'] );
-                foreach($c_entities as $key => $value) {
-                  if(in_array($key, $jFilter['allowFeeds'][ $feed ]['allowIdPs'])) {
-                    $filterEntities[$key] = $value;
+               
+              if( isset( $c_entities[ $key ][ EC ] )) {
+                foreach( $c_entities[ $key ][ EC ] as $ecMetadata ) {
+                  if( ! $allowCurIdp && $filterDenyEC && in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['denyEC'])) {
+                    //print_r( $c_entities[ $key ] ); echo "<br>";
+                    //print_r( $ecMetadata ); echo "<br><br>";
+                    continue 2;
+                  }
+                  if( ! $allowCurIdp && ( $filterAllowEC && ! in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['allowEC']))) {
+                    continue 2;
                   }
                 }
+              } else {
+                if( $filterAllowEC ) { // || ( $filterDenyEC && ! $allowCurIdp )) {
+                  // eid has not any entity-category => can't be on list allowedEC
+                  continue;
+                }
               }
+              $entities[$key] = $value;
             }
 
-            //echo $feed. "<br>";
-            //print_r( $filterEntities );
-            //echo $feed. "<br><br><br>";
-      
-            if(is_array($filterEntities)) {
-                //echo "MERGUJU do entities <br>\n";
-                $entities = array_merge($entities, $filterEntities);
-            }
-            
+            // print_r( $c_entities );
         }
 
     } else { 
@@ -433,19 +462,7 @@ else {
             }
             
         }
-/*      }
 
-      else {
-
-        foreach($spInfo['feeds'] as $feed) {
-            $feedPath = "/opt/getMD/var/pub/current/feed/" . $feed . ".js";
-            $feedFile = file_get_contents($feedPath);
-            $fd = json_decode($feedFile, true);
-            $c_entities = $fd["entities"];
-            $entities = array_merge($entities, $c_entities);
-        }
-      }
-*/
       if($useFilter && isset($jFilter['allowIdPs'])) {
         $fentities = Array();
         foreach($entities as $key => $value) {
@@ -475,7 +492,7 @@ else {
     echo("<div class=\"top\">\n");
     echo("<p class=\"toptitle\">");
 
-    $login_str = $messages["LOGIN"][$lang];
+    $login_str = $messages["LOGIN"][$lang_ui];
 
     echo($login_str);
     echo("</p>\n");
@@ -516,7 +533,7 @@ else {
     echo("<div class=\"bottom\">\n");
 
     if($useHostel && $allowHostelReg) {
-        $label = $messages["CREATE_ACCOUNT"][$lang];
+        $label = $messages["CREATE_ACCOUNT"][$lang_ui];
         echo("<div class=\"bwrap\">\n");
         echo("<a href=\"" . getHostelRegistrarUrl() . "\" class=\"button\">");
         echo($label);
@@ -524,22 +541,19 @@ else {
         echo("</div>\n");
     }
 
+    // show available languages
     $pself = $_SERVER["PHP_SELF"];
-    $uri = getUri("cs");
-    echo("<div class=\"lang\">\n");
-    echo("<a href=\"" . $pself . $uri . "&lang=cs" .  "\">");
-    echo("<img src=\"cs.png\">");
-    echo("</a>");
-    echo("</div>\n");
+    foreach( $langsAvailable as $key => $value ) {
+      $uri = getUri( $key );
+      echo("<div class=\"lang\">\n");
+      echo("<a href=\"" . $pself . $uri . "&lang=". $key . "\">");
+      echo("<img src=\"". $value["img"] ."\">");
+      echo("</a>");
+      echo("</div>\n");
+    }
 
-    $uri = getUri("en");
-    echo("<div class=\"lang\">\n");
-    echo("<a href=\"" . $pself . $uri . "&lang=en" . "\">");
-    echo("<img src=\"gb.png\">");
-    echo("</a>");
-    echo("</div>\n");
 
-    echo("<p id=\"help\"><a id='helpa' href='http://www.eduid.cz/cesnet-ds' target='_blank'><span id='helps'>CESNET</span><img class=\"helpimg\" src=\"help.png\" alt=\"Information\"></a></p>\n");
+    echo("<p id=\"help\"><a id='helpa' href='". $organizationHelpLink ."' target='_blank'><span id='helps'>". $organizationLabel ."</span><img class=\"helpimg\" src=\"". $organizationHelpImage ."\" alt=\"Information\"></a></p>\n");
     echo("</div>\n");
     echo("</div>\n");
 
