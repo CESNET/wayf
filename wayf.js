@@ -1124,6 +1124,10 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
             }
 
             var entity = usedIdps[eid];
+            // When saved value is broken, ignore it
+            if(typeof entity.entity == 'undefined') {
+                continue;
+            }
             var url = this.createEntityLink(eid);
             var tgt = this.view.target;
             var label = this.getLabelFromLabels(entity.entity.label);
