@@ -424,11 +424,12 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
   
       var flagImg = document.createElement('img');
       flagImg.src = langsAvailable[curLang].img;
-      flagImg.onclick = (function( lang=curLang ) {
+      flagImg.onclick = (function() {
+        var lang = curLang;
         return function() {
           prefLang = lang;
           langCallback();
-        }                  
+        }
       })();
 
       flag.appendChild( flagImg );
