@@ -1362,11 +1362,19 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
 		    minLength: 0
       });
 
+
       // lastSearch action
       searchAuto( textSearch, wayf, null, false);
 
     });
 
+    $( document ).keypress(function(e) {
+        // if pressed key is enter
+        if( e.which == 13 ) {
+          $( ".scroller" ).children( "div:visible" ).first().click();
+        }
+   });
+ 
 }
 
 
