@@ -32,9 +32,9 @@ var fallbackLanguage = "en";
 var labels = {
     'BUTTON_NEXT': {'cs':'Jiný účet', 'en':'Another account', 'it':'Altro account', 'nl':'Ander account', 'fr':'Un autre compte', 'el':'Άλλος λογαριασμός', 'de':'Anderes Konto', 'lt':'Kita paskyra' },
     'BUTTON_HOSTEL': {'cs':'Zřídit účet', 'en':'Create account', 'it':'Crea account', 'nl':'Maak account aan', 'fr':'Créer un compte', 'el':'Δημιουργία λογαριασμού', 'de':'Konto kreieren', 'lt':'Sukurti paskyrą' },
-    'TEXT_ALL_IDPS': {'cs':'Přihlásit účtem', 'en':'Login with', 'it':'Login tramite', 'nl':'Login met', 'fr':'S’authentifier avec', 'el':'Σύνδεση μέσω', 'de':'Anmelden mit', 'lt':'Prisijungti su' },
+    'TEXT_ALL_IDPS': {'cs':'Přihlásit účtem', 'en':'Log in with', 'it':'Login tramite', 'nl':'Login met', 'fr':'S’authentifier avec', 'el':'Σύνδεση μέσω', 'de':'Anmelden mit', 'lt':'Prisijungti su' },
     'TEXT_ACCOUNT': {'cs':'Zřídit účet', 'en':'Create account', 'it':'Crea account', 'nl':'Maak account aan', 'fr':'Créer un compte', 'el':'Δημιουργία λογαριασμού', 'de':'Konto kreieren', 'lt':'Sukurti paskyrą' },
-    'TEXT_SAVED_IDPS': {'cs':'Přihlásit účtem', 'en':'Login with', 'it':'Login tramite', 'nl':'Login met', 'fr':'S’authentifier avec', 'el':'Σύνδεση μέσω', 'de':'Anmelden mit', 'lt':'Prisijungti su' },
+    'TEXT_SAVED_IDPS': {'cs':'Přihlásit účtem', 'en':'Log in with', 'it':'Login tramite', 'nl':'Login met', 'fr':'S’authentifier avec', 'el':'Σύνδεση μέσω', 'de':'Anmelden mit', 'lt':'Prisijungti su' },
     'IDP_HOSTEL': {'cs':'Hostel IdP', 'en':'Hostel IdP', 'it': 'IdP ospite', 'nl':'Gast IdP', 'fr':'S’authentifier avec' },
     'SETUP': {'cs':'Nastavení', 'en':'Setup', 'it':'Setup', 'nl':'Maak aan', 'fr':'Configurer', 'el':'Παραμετροποίηση', 'de':'Einstellungen', 'lt':'Nustatymai' },
     'CONFIRM_DELETE': {'cs':'Zapomenout ', 'en':'Forget ', 'it':'Dimentica ', 'nl':'Vergeet ', 'fr':'Enlever ', 'el':'Διαγραφή ', 'de':'Lösche ', 'lt':'Pamiršti ' },
@@ -1362,11 +1362,19 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
 		    minLength: 0
       });
 
+
       // lastSearch action
       searchAuto( textSearch, wayf, null, false);
 
     });
 
+    $( document ).keypress(function(e) {
+        // if pressed key is enter
+        if( e.which == 13 ) {
+          $( ".scroller" ).children( "div:visible" ).first().click();
+        }
+   });
+ 
 }
 
 
