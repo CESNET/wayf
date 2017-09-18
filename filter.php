@@ -13,6 +13,38 @@ else {
 
 $serverName = "\"" . $_SERVER['HTTP_HOST']  . "\"";
 
+
+function addVariable($varName, $varValue, $isRecursion=false) {
+    if(!$isRecursion) {
+        echo("var $varName = ");
+    }
+    if(is_array($varValue)) {
+        echo("Array(");
+        $cnt = count($varValue);
+        for($i=0; $i< $cnt; $i++) {
+            $value = $varValue[$i];
+            addVariable($varName, $value, true);
+            if($i+1<$cnt) {
+                echo(", ");
+            }
+        }
+        echo(")");
+    }
+    else if(gettype($varValue) == "string") {
+        echo("\"$varValue\"");
+    }
+    else if(gettype($varValue) == "boolean") {
+        $str = $varValue ? "true" : "false";
+        echo($str);
+    }
+    else {
+        echo($varValue);
+    }
+    if(!$isRecursion) {
+        echo(";\n");
+    }
+}
+
 ?>
 <html>
 <head>
@@ -40,6 +72,14 @@ else {
 
 <script type="text/javascript" src="<?php echo $incl ?>"></script>
 <script type="text/javascript" src="filter.js"></script>
+<script type="text/javascript">
+<?php
+addVariable("filterAdminsURL", $filterAdminsURL);
+addVariable("filterUsersURL", $filterUsersURL);
+?>
+</script>
+
+
 
 </head>
 <body onload="fillFeeds()">

@@ -105,7 +105,7 @@ function regenerateFilter() {
     var rawFilterValue = filterKey + filter;
     kontrola.innerText = filter;
 
-    fPopis = str1 + filterLen + str2 + filterValue + str3 + filterValue + str4 + filterValue + str5 + filterValue + str6;
+    fPopis = str4 + filterValue + str5 + str6 + filterLen + str7 + str1 + filterAdminsURL + str2 + filterUsersURL + str3;
     filterInfo.innerHTML = fPopis;
     filterVal.value = filterValue;
 
@@ -420,7 +420,7 @@ function fillFeeds() {
         i1.checked = "checked";
         i1.className = "oc";
         var s1 = document.createElement("span");
-        s1.innerHTML = str7;
+        s1.innerHTML = str8;
         var b1 = document.createElement("br");
         l1.appendChild(i1);
         l1.appendChild(s1);
@@ -432,7 +432,7 @@ function fillFeeds() {
         i2.value = "blacklist";
         i2.className = "oc";
         var s2 = document.createElement("span");
-        s2.innerHTML = str8;
+        s2.innerHTML = str9;
         var b2 = document.createElement("br");
         l2.appendChild(i2);
         l2.appendChild(s2);

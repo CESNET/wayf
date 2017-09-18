@@ -6,3 +6,6 @@
   $organizationHelpImage = "help.png";
   $filterTitleCS = "Vytvoření filtru pro službu CESNET WAYF";
   $filterTitleEN = "CESNET WAYF filter creation";
+  $filterAdminsURL = "https://www.eduid.cz/wiki/eduid/admins/howto/wayf/wayf-sp";
+  $filterUsersURL = "https://www.eduid.cz/wiki/eduid/admins/howto/wayf/index";
+
