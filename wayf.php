@@ -361,6 +361,7 @@ else {
     addVariable( "organizationLabel", $organizationLabel );
     addVariable( "organizationHelpLink", $organizationHelpLink );
     addVariable( "organizationHelpImage", $organizationHelpImage );
+    addVariable( "organizationHelpImageAlt", $organizationHelpImageAlt );
 
     $nosearch = 0;
     if( isset( $_GET['nosearch'] )) {

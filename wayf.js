@@ -357,7 +357,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     var helpImage = document.createElement('img');
     helpImage.className = "helpimg";
     helpImage.src = organizationHelpImage;
-    helpImage.alt = "Information";
+    helpImage.alt = organizationHelpImageAlt;
     helpImage.id = "helpi";
 
     cesnetLink.appendChild(helpImage);
