@@ -357,7 +357,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     var helpImage = document.createElement('img');
     helpImage.className = "helpimg";
     helpImage.src = organizationHelpImage;
-    helpImage.alt = "Information";
+    helpImage.alt = organizationHelpImageAlt;
     helpImage.id = "helpi";
 
     cesnetLink.appendChild(helpImage);
@@ -864,7 +864,9 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
             // allowIdPs per feed
             if( filterAllowIdps ) { 
 
-              if( filter.allowFeeds[feedId].allowIdPs.indexOf(eid)<0 && (filterAllowEC && ! wayf.isInEc( filter.allowFeeds[feedId].allowEC, mdSet.entities[eid].EC ))) {
+              if( filter.allowFeeds[feedId].allowIdPs.indexOf(eid)>=0 || (filterAllowEC && wayf.isInEc( filter.allowFeeds[feedId].allowEC, mdSet.entities[eid].EC ))) {
+                // nothing, too complex if
+              } else {
                 continue;
               } 
             } else {

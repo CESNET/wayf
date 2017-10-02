@@ -553,7 +553,7 @@ else {
     }
 
 
-    echo("<p id=\"help\"><a id='helpa' href='". $organizationHelpLink ."' target='_blank'><span id='helps'>". $organizationLabel ."</span><img class=\"helpimg\" src=\"". $organizationHelpImage ."\" alt=\"Information\"></a></p>\n");
+    echo("<p id=\"help\"><a id='helpa' href='". $organizationHelpLink ."' target='_blank'><span id='helps'>". $organizationLabel ."</span><img class=\"helpimg\" src=\"". $organizationHelpImage ."\" alt=\"". $organizationHelpImageAlt ."\"></a></p>\n");
     echo("</div>\n");
     echo("</div>\n");
 
