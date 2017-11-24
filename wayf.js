@@ -279,6 +279,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
 
     var top = document.createElement('div');
     top.className = "top";
+    top.style.textAlign = "center";
 
     if(showClosing && isSetup) {
         var closeEFiller = document.createElement('span');
@@ -307,19 +308,23 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     var toplabel = document.createElement('span');
     toplabel.innerHTML = label;
     toplabel.className = "toplabel";
+    toplabel.style.width = "100%";
 
     /* search field */
     var search = document.createElement('input');
     search.className = "topsearch";
-    search.size = 12;
+    // search.size = 12;
+    search.style.width="100%";
     search.style.backgroundRepeat="no-repeat";
     search.style.backgroundPosition="right";
     search.style.backgroundImage="url('search.png')";
     search.style.borderRadius="3px";
     search.style.borderStyle="1px solid #bbb";
-    search.style.position="relative";
-    search.style.cssFloat="right";
+    // search.style.position="relative";
+    // search.style.cssFloat="right";
     search.style.visibility = "visible";
+    search.style.marginTop = "5px";
+
 
     if( noSearch ) {
       search.style.visibility = "hidden";
@@ -441,9 +446,9 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
 
     // langDropdown.appendChild( langDropdownContent );
 
-    top.appendChild(title);
-    title.appendChild(search);
-    title.appendChild(toplabel);
+    //top.appendChild(title);
+    top.appendChild(toplabel);
+    top.appendChild(search);
 
     if(showClosing && isSetup) {
         if(inIframe) {
@@ -1346,8 +1351,8 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
     // jquery-ui
     var textSearch = this.lastSearch;
     $(document).ready( function() {
-      $( ".topsearch" ).css("position", "relative");
-      $( ".topsearch" ).css( "float", "right" ); 
+      //$( ".topsearch" ).css("position", "relative");
+      //$( ".topsearch" ).css( "float", "right" ); 
       $( ".topsearch" ).focus();
       $( ".topsearch" ).val( textSearch );
       $( ".topsearch" ).autocomplete( {
@@ -1534,8 +1539,8 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     var textSearch = this.lastSearch;
     $(document).ready( function() {
 
-      $( ".topsearch" ).css( "position", "relative" );
-      $( ".topsearch" ).css( "float", "right" );
+      //$( ".topsearch" ).css( "position", "relative" );
+      //$( ".topsearch" ).css( "float", "right" );
       $( ".topsearch" ).focus();
       $( ".topsearch" ).val( textSearch );
       $( ".topsearch" ).autocomplete( {
