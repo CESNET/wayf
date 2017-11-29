@@ -302,6 +302,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
 
     var title = document.createElement('p');
     title.className = "toptitle";
+    title.style.width = "96%";
     // title.innerHTML = label;
 
     var toplabel = document.createElement('span');
@@ -311,7 +312,6 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     /* search field */
     var search = document.createElement('input');
     search.className = "topsearch";
-    search.size = 12;
     search.style.backgroundRepeat="no-repeat";
     search.style.backgroundPosition="right";
     search.style.backgroundImage="url('search.png')";
@@ -320,6 +320,8 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     search.style.position="relative";
     search.style.cssFloat="right";
     search.style.visibility = "visible";
+    search.style.width="200px";
+    search.style.fontSize="14px";
 
     if( noSearch ) {
       search.style.visibility = "hidden";
