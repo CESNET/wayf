@@ -90,9 +90,9 @@
   </xsl:template>
 
   <xsl:template name="entityCategories">
-    <xsl:if test='md:Extensions/mdattr:EntityAttributes/saml:Attribute[@Name="http://macedir.org/entity-category" or @Name="http://macedir.org/entity-category-support"]/saml:AttributeValue'>
+    <xsl:if test='md:Extensions/mdattr:EntityAttributes/saml:Attribute[@Name="http://macedir.org/entity-category" or @Name="http://macedir.org/entity-category-support" or @Name="urn:oasis:names:tc:SAML:attribute:assurance-certification"]/saml:AttributeValue'>
       <xsl:text>, "EC": [</xsl:text>
-      <xsl:apply-templates select='md:Extensions/mdattr:EntityAttributes/saml:Attribute[@Name="http://macedir.org/entity-category"  or @Name="http://macedir.org/entity-category-support"]/saml:AttributeValue'/>
+      <xsl:apply-templates select='md:Extensions/mdattr:EntityAttributes/saml:Attribute[@Name="http://macedir.org/entity-category" or @Name="http://macedir.org/entity-category-support" or @Name="urn:oasis:names:tc:SAML:attribute:assurance-certification"]/saml:AttributeValue'/>
       <xsl:text>]</xsl:text>
     </xsl:if>
   </xsl:template>
