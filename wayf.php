@@ -360,9 +360,9 @@ else {
     addVariable( "organizationHelpImage", $organizationHelpImage );
     addVariable( "organizationHelpImageAlt", $organizationHelpImageAlt );
 
-    $nosearch = 0;
+    $nosearch = true;
     if( isset( $_GET['nosearch'] )) {
-      $nosearch = 1;
+      $nosearch = false;
     }
     addVariable( "noSearch", $nosearch );
 
