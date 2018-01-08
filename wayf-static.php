@@ -166,11 +166,11 @@ function addIdP($label, $id, $logo) {
         }
     }
 
-    echo("<a class=\"enabled\" title=\"" . $label . "\" href=\"" . $returnURL . "&" . $returnIDVariable . "=" . $id . "\">\n");
-    echo("<img class=\"logo\" src=\"" . $logo . "\">\n");
-    echo("<span class=\"title\">" . $label . "</span>\n");
-    echo("<hr>");
-    echo("</a>\n");
+    echo "<a class=\"enabled\" title=\"" . $label . "\" href=\"" . $returnURL . "&" . $returnIDVariable . "=" . $id . "\">\n";
+    echo "<img class=\"logo\" src=\"" . $logo . "\">\n";
+    echo "<span class=\"title\">" . $label . "</span>\n";
+    echo "<hr>";
+    echo "</a>\n";
 }
 
 
@@ -328,32 +328,32 @@ if(isset($fromHostelRegistrar)) {
 }
 else if(!isset($entityID)) {
     // missing entityID
-    echo($doctype);
-    echo("<html><head>");
-    echo($charset);
-    echo($edge);
-    echo("<link rel=\"stylesheet\" type=\"text/css\" href=\"errorpage.css\">");
-    echo("</head><body>");
+    echo $doctype;
+    echo "<html><head>";
+    echo $charset;
+    echo $edge;
+    echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"errorpage.css\">";
+    echo "</head><body>";
 
-    echo("<div id=\"nadpis_cs\"><h1>Nastala chyba</h1>");
-    echo("Poskytovatel služby ke které se hlásíte nepředal všechny parametry potřebné pro přihlášení.<br>");
-    echo("K přihlášení je nutný alespoň parametr &quot;<i>entityID</i>&quot;.<br>");
-    echo("Seznam parametrů, které poskytovatel služby předal, můžete vidět v seznamu níže.<br>");
-    echo("Dokumetaci k přihlašovací službě můžete najít na adrese <a href=\"http://www.eduid.cz/cesnet-ds\">http://www.eduid.cz/cesnet-ds</a></div>");
+    echo "<div id=\"nadpis_cs\"><h1>Nastala chyba</h1>";
+    echo "Poskytovatel služby ke které se hlásíte nepředal všechny parametry potřebné pro přihlášení.<br>";
+    echo "K přihlášení je nutný alespoň parametr &quot;<i>entityID</i>&quot;.<br>";
+    echo "Seznam parametrů, které poskytovatel služby předal, můžete vidět v seznamu níže.<br>";
+    echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a href=\"http://www.eduid.cz/cesnet-ds\">http://www.eduid.cz/cesnet-ds</a></div>";
 
-    echo("<div id=\"nadpis_en\"><h1>An error occured</h1>");
-    echo("Service provider didn't send all parameters needed for login.<br>");
-    echo("For login is needed at least &quot;<i>entityID</i>&quot.<br>");
-    echo("List of parameters sended from service provider is below.");
-    echo("<br>Documentation (in czech language) can be found at <a href=\"http://www.eduid.cz/cesnet-ds\">http://www.eduid.cz/cesnet-ds</a></div>");
+    echo "<div id=\"nadpis_en\"><h1>An error occured</h1>";
+    echo "Service provider didn't send all parameters needed for login.<br>";
+    echo "For login is needed at least &quot;<i>entityID</i>&quot.<br>";
+    echo "List of parameters sended from service provider is below.";
+    echo "<br>Documentation (in czech language) can be found at <a href=\"http://www.eduid.cz/cesnet-ds\">http://www.eduid.cz/cesnet-ds</a></div>";
 
-    echo("<div id=\"paramlist\"><h2>Seznam parametrů / List of parameters</h2>");
+    echo"<div id=\"paramlist\"><h2>Seznam parametrů / List of parameters</h2>";
 
     foreach($_GET as $key => $value) {
         $gval = $_GET[$gparam];
-        echo("[$key] = [$value]<br>\n");
+        echo "[$key] = [$value]<br>\n";
     }
-    echo("</div><div class=\"roztah\"></div>");
+    echo "</div><div class=\"roztah\"></div>";
 
 }
 else {
@@ -476,30 +476,30 @@ else {
 
     $sorted_entities = uasort($entities, 'idpCmp');
 
-    echo($doctype);
-    echo("<html><head>");
-    echo($charset);
-    echo($edge);
+    echo $doctype;
+    echo "<html><head>";
+    echo $charset;
+    echo $edge;
     if($isDumb) {
-        echo("<link rel=\"stylesheet\" type=\"text/css\" href=\"computer-noscript-dumb.css\" />");
+        echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"computer-noscript-dumb.css\" />";
     }
     else {
-        echo("<link rel=\"stylesheet\" type=\"text/css\" href=\"computer-noscript.css\" />");
+        echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"computer-noscript.css\" />";
     }
-    echo("</head><body>\n");
+    echo "</head><body>\n";
 
-    echo("<div id=\"wayf\">\n");
-    echo("<div class=\"top\">\n");
-    echo("<p class=\"toptitle\">");
+    echo "<div id=\"wayf\">\n";
+    echo "<div class=\"top\">\n";
+    echo "<p class=\"toptitle\">";
 
     $login_str = $messages["LOGIN"][$lang_ui];
 
-    echo($login_str);
-    echo("</p>\n");
-    echo("</div>\n");
-    echo("<div class=\"content\">\n");
-    echo("<div class=\"topfiller\"></div>\n");
-    echo("<div class=\"scroller\">\n");
+    echo $login_str;
+    echo "</p>\n";
+    echo "</div>\n";
+    echo "<div class=\"content\">\n";
+    echo "<div class=\"topfiller\"></div>\n";
+    echo "<div class=\"scroller\">\n";
 
     $hostelInserted = false;
 
@@ -526,38 +526,38 @@ else {
         addIdp($label, $key, $value["logo"]);
     }
 */
-    echo("</div>\n");
-    echo("<div class=\"bottomfiller\"></div>\n");
-    echo("</div>\n");
+    echo "</div>\n";
+    echo "<div class=\"bottomfiller\"></div>\n";
+    echo "</div>\n";
 
-    echo("<div class=\"bottom\">\n");
+    echo "<div class=\"bottom\">\n";
 
     if($useHostel && $allowHostelReg) {
         $label = $messages["CREATE_ACCOUNT"][$lang_ui];
-        echo("<div class=\"bwrap\">\n");
-        echo("<a href=\"" . getHostelRegistrarUrl() . "\" class=\"button\">");
-        echo($label);
-        echo("</a>");
-        echo("</div>\n");
+        echo "<div class=\"bwrap\">\n";
+        echo "<a href=\"" . getHostelRegistrarUrl() . "\" class=\"button\">";
+        echo $label;
+        echo "</a>";
+        echo "</div>\n";
     }
 
     // show available languages
     $pself = $_SERVER["PHP_SELF"];
     foreach( $langsAvailable as $key => $value ) {
       $uri = getUri( $key );
-      echo("<div class=\"lang\">\n");
-      echo("<a href=\"" . $pself . $uri . "&lang=". $key . "\">");
-      echo("<img src=\"". $value["img"] ."\">");
-      echo("</a>");
-      echo("</div>\n");
+      echo "<div class=\"lang\">\n";
+      echo "<a href=\"" . $pself . $uri . "&lang=". $key . "\">";
+      echo "<img src=\"". $value["img"] ."\">";
+      echo "</a>";
+      echo "</div>\n";
     }
 
 
-    echo("<p id=\"help\"><a id='helpa' href='". $organizationHelpLink ."' target='_blank'><span id='helps'>". $organizationLabel ."</span><img class=\"helpimg\" src=\"". $organizationHelpImage ."\" alt=\"". $organizationHelpImageAlt ."\"></a></p>\n");
-    echo("</div>\n");
-    echo("</div>\n");
+    echo "<p id=\"help\"><a id='helpa' href='". $organizationHelpLink ."' target='_blank'><span id='helps'>". $organizationLabel ."</span><img class=\"helpimg\" src=\"". $organizationHelpImage ."\" alt=\"". $organizationHelpImageAlt ."\"></a></p>\n";
+    echo "</div>\n";
+    echo "</div>\n";
 
-    echo("<br><br><br>");
+    echo "<br><br><br>";
 
 }
-echo("</body></html>");
+echo "</body></html>";
