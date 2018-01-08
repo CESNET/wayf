@@ -121,6 +121,7 @@ div.bottom {
     text-shadow: 0 1px #FFFFFF;
     padding: 3px;
     outline: medium none;
+    min-height: 45px;
 }
 
 .topfiller {
