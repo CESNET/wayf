@@ -34,8 +34,8 @@ else {
 
 // Messages
 $messages = array(
-    "LOGIN" => array("cs" => "Přihlásit účtem", "en" => "Log in with", "it" => "Login tramite", "nl" => "Login met", "fr" => "S’authentifier avec", "el" => "Σύνδεση μέσω", "de" => "Anmelden mit", "lt" => "Prisijungti su" ),
-    "CREATE_ACCOUNT" => array("cs" => "Vytvořit účet", "en" => "Create account", "it" => "Crea account", "nl" => "Maak account aan", "fr" => "Créer un compte", "el" => "Δημιουργία λογαριασμού", "de" => "Konto kreieren", "lt" => "Sukurti paskyrą" ),
+    "LOGIN" => array("cs" => "Přihlásit účtem", "en" => "Log in with", "it" => "Login tramite", "nl" => "Login met", "fr" => "S’authentifier avec", "el" => "Σύνδεση μέσω", "de" => "Anmelden mit", "lt" => "Prisijungti su", "es" => "Acceder con" ),
+    "CREATE_ACCOUNT" => array("cs" => "Vytvořit účet", "en" => "Create account", "it" => "Crea account", "nl" => "Maak account aan", "fr" => "Créer un compte", "el" => "Δημιουργία λογαριασμού", "de" => "Konto kreieren", "lt" => "Sukurti paskyrą", "es" => "Crear cuenta" ),
 );
 
 // Available languages
@@ -44,6 +44,7 @@ $langsAvailable = array (
   "de" => array( "img" => "flags/de.png" ),
   "el" => array( "img" => "flags/el.png" ),
   "en" => array( "img" => "flags/en.png" ),
+  "es" => array( "img" => "flags/es.png" ),
   "fr" => array( "img" => "flags/fr.png" ),
   "it" => array( "img" => "flags/it.png" ),
   "lt" => array( "img" => "flags/lt.png" ),
