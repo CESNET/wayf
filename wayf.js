@@ -42,7 +42,7 @@ var labels = {
     'CONFIRM_DELETE': {'cs':'Zapomenout ', 'en':'Forget ', 'it':'Dimentica ', 'nl':'Vergeet ', 'fr':'Enlever ', 'el':'Διαγραφή ', 'de':'Lösche ', 'lt':'Pamiršti ', 'es':'Olvidar ', 'sv':'Glöm' },
     'BACK_TITLE': {'cs':'Zpět', 'en':'Back', 'it':'Indietro', 'nl':'Terug', 'fr':'Retour', 'el':'Πίσω', 'de':'Zurück', 'lt':'Atgal', 'es':'Atrás', 'sv':'Tillbaka' },
     'NOT_AVAILABLE': {'cs':'K této službě se nelze přihlásit pomocí', 'en':'Service is not available for', 'it':'Il servizio non è disponibile per', 'nl':'Service is niet beschikbaar', 'fr':'Service non fonctionnel pour', 'el':'Ο Πάροχος Ταυτότητας δεν είναι διαθέσιμος για αυτή την υπηρεσία', 'de':'Dienst ist nicht verfügbar für', 'lt':'Paslauga neteikiama', 'es':'Servicio no disponible para', 'sv':'Tjänsten är inte tillgänglig för' },
-    'LOADING': {'cs': 'Načítám instituce ...', 'en':'LOADING ...', 'it':' Caricamento ...', 'nl':'Aan het laden', 'fr':'Chargement en cours', 'el':'ΦΟΡΤΩΣΗ ...', 'de':'Laden ...', 'lt':'KRAUNAMA ...', 'es':'CARGANDO...', 'sv':'Läser in... }
+    'LOADING': {'cs': 'Načítám instituce ...', 'en':'LOADING ...', 'it':' Caricamento ...', 'nl':'Aan het laden', 'fr':'Chargement en cours', 'el':'ΦΟΡΤΩΣΗ ...', 'de':'Laden ...', 'lt':'KRAUNAMA ...', 'es':'CARGANDO...', 'sv':'Läser in...' }
 }
 
 var mobileVersion = true;
