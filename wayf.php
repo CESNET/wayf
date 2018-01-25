@@ -386,7 +386,7 @@ else {
 	else {
             $otherParams = $otherParams . "&" . $gkey . "=" . urlencode($gval);
 	}
-        echo "// $gkey = $gval\n";
+        // echo "// $gkey = $gval\n";
     }
     echo "var otherParams = \"$otherParams\";\n";
     echo "var useFilter = ";
