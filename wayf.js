@@ -51,6 +51,12 @@ var inIframe = false;
 var feedCount = 0;
 var filterVersion = 1;  // default original version, not suitable for all cases
 
+/* some variables are coming from wayf.php, for example returnURL */
+var returnUrlParamCharacter = "&";
+if( returnURL.indexOf( "?" ) == -1 ) {
+  returnUrlParamCharacter = "?";
+}
+
 // check support of json, otherwise use 3rd implementation
 if (typeof JSON == 'undefined') {
   var fileref = document.createElement('script')
@@ -250,7 +256,7 @@ View.prototype.addNewHostelAccountButton = function(buttonLabel, label) {
   */
 View.prototype.addHostelIdp = function(label, isSetup) {
     var logoSource = "/logo/idp.hostel.eduid.cz.idp.shibboleth.png";
-    var url = returnURL + "&" + returnIDVariable + "=" + hostelEntityID + otherParams;
+    var url = returnURL + returnUrlParamCharacter + returnIDVariable + "=" + hostelEntityID + otherParams;
     var tgt = this.target;
     var callback = (function() {
         var veid = hostelEntityID;
@@ -1559,6 +1565,6 @@ Wayf.prototype.listAllIdps = function(forceAll) {
 }
 
 Wayf.prototype.createEntityLink = function(eid) {
-    retURL = returnURL + "&" + returnIDVariable + "=" + eid + otherParams;
+    retURL = returnURL + returnUrlParamCharacter + returnIDVariable + "=" + eid + otherParams;
     return retURL;
 }

@@ -158,7 +158,7 @@ else {
  * param $logo - logo of IdP
  */
 function addIdP($label, $id, $logo) {
-    global $returnURL, $returnIDVariable, $ban_lib, $lib;
+    global $returnURL, $returnIDVariable, $ban_lib, $lib, $returnUrlParamCharacter;
 
     // if IdP is on banned list and should be banned cancel adding (library nowadays) 
     if($ban_lib) {
@@ -167,7 +167,7 @@ function addIdP($label, $id, $logo) {
         }
     }
 
-    echo "<a class=\"enabled\" title=\"" . $label . "\" href=\"" . $returnURL . "&" . $returnIDVariable . "=" . $id . "\">\n";
+    echo "<a class=\"enabled\" title=\"" . $label . "\" href=\"" . $returnURL . $returnUrlParamCharacter . $returnIDVariable . "=" . $id . "\">\n";
     echo "<img class=\"logo\" src=\"" . $logo . "\">\n";
     echo "<span class=\"title\">" . $label . "</span>\n";
     echo "<hr>";
@@ -215,6 +215,10 @@ $charset = "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8
 $wayfURL = "https://$_SERVER[SERVER_NAME]/wayf-dev-static.php";
 
 $returnURL = $_GET['return'];
+$returnUrlParamCharacter = "&";
+if( strpos( $returnURL, '?' ) === false ) {
+  $returnUrlParamCharacter = "?";
+}
 $useFilter = false;
 $entityID = $_GET['entityID'];
 $lang = "cs";
@@ -311,7 +315,7 @@ if(isset($_GET['dumb'])) {
 if(isset($fromHostelRegistrar)) {
     // Hostel hack - redirect to Hostel to authenticate
     $returnURL = urldecode($_GET['return']);
-    $returnURL = $returnURL . "&" . $returnIDVariable . "=" . $hostelId;
+    $returnURL = $returnURL . $returnUrlParamCharacter . $returnIDVariable . "=" . $hostelId;
     $otherParams = "";
     foreach($_GET as $gkey => $gval) {
         if(($gkey ==  "fromHostelRegistrar") || ($gkey == "useHostel") || ($gkey == "entityID") || ($gkey == "return")) {
