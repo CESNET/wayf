@@ -40,15 +40,16 @@ $messages = array(
 
 // Available languages
 $langsAvailable = array (
-  "cs" => array( "img" => "flags/cs.png" ),
-  "de" => array( "img" => "flags/de.png" ),
-  "el" => array( "img" => "flags/el.png" ),
-  "en" => array( "img" => "flags/en.png" ),
-  "es" => array( "img" => "flags/es.png" ),
-  "fr" => array( "img" => "flags/fr.png" ),
-  "it" => array( "img" => "flags/it.png" ),
-  "lt" => array( "img" => "flags/lt.png" ),
-  "nl" => array( "img" => "flags/nl.png" ),
+  "cs" => array( "img" => "flags/cs.png", "name" => "Čeština" ),
+  "de" => array( "img" => "flags/de.png", "name" => "Deutsch" ),
+  "el" => array( "img" => "flags/el.png", "name" => "Ελληνικά" ),
+  "en" => array( "img" => "flags/en.png", "name" => "English" ),
+  "es" => array( "img" => "flags/es.png", "name" => "Español" ),
+  "fr" => array( "img" => "flags/fr.png", "name" => "Français" ),
+  "it" => array( "img" => "flags/it.png", "name" => "Italiano" ),
+  "lt" => array( "img" => "flags/lt.png", "name" => "Lietuvių" ),
+  "nl" => array( "img" => "flags/nl.png", "name" => "Nederlands" ),
+  "sv" => array( "img" => "flags/sv.png", "name" => "Svenska" )
 );
 
 /** Function returns label in prefered language from metadata
@@ -548,13 +549,46 @@ else {
 
     // show available languages
     $pself = $_SERVER["PHP_SELF"];
-    foreach( $langsAvailable as $key => $value ) {
-      $uri = getUri( $key );
+
+    if( $langStyle == "txt" ) {
       echo "<div class=\"lang\">\n";
-      echo "<a href=\"" . $pself . $uri . "&lang=". $key . "\">";
-      echo "<img src=\"". $value["img"] ."\">";
-      echo "</a>";
+      echo "<form action=\"". $pself ."\" method=\"GET\">\n";
+      //echo "<div class=\"form-lang\" style=\"overflow: hidden; width:200px; white-space: nowrap;\">";
+      foreach( $_GET as $key => $value) {
+        if( $key != "lang" ) {
+          echo "<input type=hidden name=\"". $key ."\" value=\"". $value ."\">\n";
+        }
+      }
+      echo "<select name=\"lang\" class=\"lang\" id=\"selLang\">";
+      foreach( $langsAvailable as $key => $value ) {
+        // $uri = getUri( $key );
+
+        //echo "<li>";
+        //echo "<a href=\"" . $pself . $uri . "&lang=". $key . "\">";
+        //echo "<img alt=\"". $value["name"] ."\" src=\"". $value["img"] ."\">";
+        //echo "</li>";
+        //echo "</a>";
+
+        $selected = ( $lang_ui == $key ? "selected" : "" ) ;
+        echo "<option value=\"". $key ,"\" $selected  >". $value["name"] ."</option>\n";
+  
+      }
+      echo "</select>\n";
+      echo "<input type=submit value=\"OK\">";
+      //echo "</div>";
+      echo "</form>\n";
       echo "</div>\n";
+    }
+
+    if( $langStyle == "img" ) {
+      foreach( $langsAvailable as $key => $value ) {
+        $uri = getUri( $key );
+        echo "<div class=\"lang\">\n";
+        echo "<a href=\"" . $pself . $uri . "&lang=". $key . "\">";
+        echo "<img alt=\"". $value["name"] ."\" src=\"". $value["img"] ."\">";
+        echo "</a>";
+        echo "</div>\n";
+      }
     }
 
 

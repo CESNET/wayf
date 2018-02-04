@@ -3,7 +3,7 @@
  *
  * javascript version of WAYF
  *
- * @version ?.? 2013 - 2014
+ * @version ?.? 2013 - 2018
  * @author Jan Chvojka jan.chvojka@cesnet.cz
  * @author Pavel Polacek pavel.polacek@ujep.cz
  * @see getMD - TODO: add link - prepares feed for WAYF
@@ -18,16 +18,16 @@ var hostelURL  = 'https://adm.hostel.eduid.cz/registrace';
 var showedIdpList;
 var languages = new Array("en", "cs");
 var langsAvailable = {
-  'cs': { 'img':'flags/cs.png' },
-  'de': { 'img':'flags/de.png' },
-  'el': { 'img':'flags/el.png' },
-  'en': { 'img':'flags/en.png' },
-  'es': { 'img':'flags/es.png' },
-  'fr': { 'img':'flags/fr.png' },
-  'it': { 'img':'flags/it.png' },
-  'lt': { 'img':'flags/lt.png' },
-  'nl': { 'img':'flags/nl.png' },
-  'sv': { 'img':'flags/sv.png' }
+  'cs': { 'img':'flags/cs.png', 'name':'Čeština' },
+  'de': { 'img':'flags/de.png', 'name':'Deutsch' },
+  'el': { 'img':'flags/el.png', 'name':'Ελληνικά' },
+  'en': { 'img':'flags/en.png', 'name':'English' },
+  'es': { 'img':'flags/es.png', 'name':'Español' },
+  'fr': { 'img':'flags/fr.png', 'name':'Français' },
+  'it': { 'img':'flags/it.png', 'name':'Italiano' },
+  'lt': { 'img':'flags/lt.png', 'name':'Lietuvių' },
+  'nl': { 'img':'flags/nl.png', 'name':'Nederlands' },
+  'sv': { 'img':'flags/sv.png', 'name':'Svenska' }
 }
   
 var fallbackLanguage = "en";
@@ -391,62 +391,103 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
         this.bottom.appendChild(setup);
     }
 
-/*
-    var langCS = document.createElement('div');
-    langCS.className = "lang";
-    langCS.onclick = (function() {
-        return function() {
-            prefLang = "cs";
-            langCallback();
-        }
-    })();
-    var langCSimg = document.createElement('img');
-    langCSimg.src = "cs.png";
-    langCS.appendChild(langCSimg);
-
-    var langEN = document.createElement('div');
-    langEN.className = "lang";
-    langEN.onclick = (function() {
-        return function() {
-            prefLang = "en";
-            langCallback();
-        }
-    })();
-    var langENimg = document.createElement('img');
-    langENimg.src = "gb.png";
-    langEN.appendChild(langENimg);
-*/
-    //var langDropdown = document.createElement('div');
-    //langDropdown.className = "dropdown";
-
-    //var langSpan = document.createElement('span');
-    //langSpan.innerHTML = "Lang";
-    //langDropdown.appendChild( langSpan );
-    
-    //var langDropdownContent = document.createElement('div');
-    //langDropdownContent.className = "dropdown-content";
-
-    //var flagImg = new Array();
-    for(var curLang in langsAvailable) {
-      var flag = document.createElement('div');
-      flag.className = "lang";
-      // flag.style.margin="3px";
+    /* style of ui selector */
+    if( langStyle === "dropdown" ) {
+      var langDropdown = document.createElement('div');
+      langDropdown.className = "dropdown";
+      langDropdown.onclick = (function() {
+          var langDrop = langDropdown;
+          return function() {
+            langDrop.style.display = "block";
+          }
+        })();
+ 
   
-      var flagImg = document.createElement('img');
-      flagImg.src = langsAvailable[curLang].img;
-      flagImg.onclick = (function() {
-        var lang = curLang;
-        return function() {
-          prefLang = lang;
-          langCallback();
-        }
-      })();
+      var langSpan = document.createElement('span');
+      langSpan.innerHTML = prefLang;
+      langDropdown.appendChild( langSpan );
+      
+      var langDropdownContent = document.createElement('div');
+      langDropdownContent.className = "dropdown-content";
+  
+       for(var curLang in langsAvailable) {
+        var spanLang = document.createElement('span');
+        spanLang.innerHTML = curLang;
+        spanLang.className = "span-lang";
+        spanLang.onclick = (function() {
+          var lang = curLang;
+          return function() {
+            prefLang = lang;
+            langCallback();
+          }
+        })();
 
-      flag.appendChild( flagImg );
-   
-      // langDropdownContent.appendChild( flag );
-      this.bottom.appendChild( flag );
-   
+        langDropdownContent.appendChild( spanLang );
+      }
+
+      langDropdown.appendChild( langDropdownContent );
+
+      this.bottom.appendChild( langDropdown );
+     //var flagImg = new Array();
+
+    } 
+    if( langStyle === "txt" ) {
+      var select = document.createElement('select');
+      select.className = "lang";
+      select.id = "selLang";
+      select.onchange = (function() {
+          var mySelect = select;
+          return function() {
+            if( mySelect.selectedOptions.length == 1 ) {
+              prefLang = mySelect.selectedOptions[0].value;
+              langCallback();
+            }
+          }
+        })();
+
+
+      for(var curLang in langsAvailable) {
+        var divSelect = document.createElement('div');
+        divSelect.className = "lang";
+        var option = document.createElement('option');
+        option.value = curLang;
+        option.innerHTML = langsAvailable[ curLang ].name;
+        option.onchange = (function() {
+          var lang = curLang;
+          return function() {
+            prefLang = lang;
+            langCallback();
+          }
+        })();
+
+        if( curLang === prefLang ) option.selected = true;
+        select.appendChild( option ); 
+      }
+      divSelect.appendChild( select );
+      this.bottom.appendChild( divSelect );
+    } 
+    if( langStyle === "img" ) {
+      for(var curLang in langsAvailable) {
+        var flag = document.createElement('div');
+        flag.className = "lang";
+        // flag.style.margin="3px";
+    
+        var flagImg = document.createElement('img');
+        flagImg.src = langsAvailable[curLang].img;
+        flagImg.onclick = (function() {
+          var lang = curLang;
+          return function() {
+            prefLang = lang;
+            langCallback();
+          }
+        })();
+  
+        flag.appendChild( flagImg );
+     
+        // langDropdownContent.appendChild( flag );
+        this.bottom.appendChild( flag );
+     
+      }
     }
 
     // langDropdown.appendChild( langDropdownContent );

@@ -297,3 +297,12 @@ button.button {
     margin-bottom: 3px;
     margin-top: 3px;
 }
+
+#wayf > div.bottom > div.lang > select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: transparent;
+    /* padding: 5px; */
+}
+

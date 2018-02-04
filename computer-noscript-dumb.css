@@ -91,6 +91,31 @@ div#wayf > div.top {
     padding: 0px;
 }
 
+#wayf > div.bottom > div.lang > form {
+    overflow: hidden;
+    width: 150px;
+}
+
+
+#wayf > div.bottom > div.lang > form > select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: transparent;
+    /*padding: 3px;*/
+    display: inline-block;
+    width: 100px;
+}
+
+#wayf > div.bottom > div.lang > form > input {
+    display: inline-block;
+     -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: transparent;
+    width: 40px;
+}
+
 #wayf p#help {
     color: #CCCCCC;
     font-size: 75%;

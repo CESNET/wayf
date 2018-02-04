@@ -360,6 +360,8 @@ else {
     addVariable( "organizationHelpImage", $organizationHelpImage );
     addVariable( "organizationHelpImageAlt", $organizationHelpImageAlt );
 
+    addVariable( "langStyle", $langStyle );
+
     $nosearch = false;
     if( isset( $_GET['nosearch'] )) {
       $nosearch = true;
