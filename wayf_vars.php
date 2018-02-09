@@ -9,5 +9,5 @@
   $filterTitleEN = "CESNET WAYF filter creation";
   $filterAdminsURL = "https://www.eduid.cz/wiki/eduid/admins/howto/wayf/wayf-sp";
   $filterUsersURL = "https://www.eduid.cz/wiki/eduid/admins/howto/wayf/index";
-  $langStyle = "txt";  // dropdown or txt (select with lang names) or img (flags) or dropdown
+  $langStyle = "img";  // dropdown or txt (select with lang names) or img (flags) or dropdown
 
