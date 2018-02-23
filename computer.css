@@ -169,6 +169,20 @@ div#wayf > div.top {
     min-height: 45px;
 }
 
+#wayf div.scroller div.selected {
+    background-color: #FFFFFF;
+    border: 1px solid #00008B;
+    border-radius: 3px 3px 3px 3px;
+    color: #333333;
+    display: block;
+    margin: 4px 2px 0 0;
+    text-decoration: none;
+    text-shadow: 0 1px #FFFFFF;
+    padding: 3px 6px;
+    outline: medium none;
+    min-height: 45px;
+}
+
 #wayf div.scroller img.logo {
     float: right;
     margin: 0;

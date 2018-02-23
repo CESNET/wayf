@@ -280,7 +280,7 @@ View.prototype.createSetupList = function() {
 
 /** function View.prototype.createContainer - generate <div> container for IdP list
   */
-View.prototype.createContainer = function(label, showSetup, showClosing, isSetup, langCallback) {
+View.prototype.createContainer = function(label, showSetup, showClosing, isSetup, isListAll, langCallback) {
 
     this.wayfDiv = document.createElement('div');
     this.wayfDiv.id = "wayf";
@@ -519,6 +519,60 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
 
     var body = document.getElementsByTagName('body')[0];
     body.appendChild(this.wayfDiv);
+
+    $( document.body ).off().keyup( function(e) {
+
+        if(( isListAll && (! noSearch )) || (( ! isListAll ) && (! noSearchSavedIdps ))) {
+          var searchFor = $( ".topsearch" ).val();
+          searchAuto( searchFor, wayf, null, true );
+        }
+
+
+        var act = $( ".selected" );
+        var newAct = act;
+
+        // if pressed key is enter
+        if( e.which === 13 ) {
+          // $( ".scroller" ).children( "div:visible" ).first().click();
+          act.click();
+        }
+        // 38 -up, 40 - down
+/*       if( isListAll ) { */
+         // listAllIdps()
+         var ind = $( ".enabled:visible" ).index( act );
+         var length = $( ".enabled:visible").length;
+         if( e.which === 40 ) {
+           var next = $( ".enabled:visible" ).eq(ind+1);
+           if(( ind+1 ) >= length ) {
+             next = $( ".enabled:visible" ).eq(0);  // go to first record
+           }
+           if( next.length === 1 ) {
+             act.removeClass( "selected" );
+             next.addClass( "selected" );
+             newAct = next;
+           }
+         }
+         if( e.which === 38 ) {
+           var prev = $( ".enabled:visible" ).eq(ind-1);
+           if(( ind-1 ) < 0 ) {
+             prev = $( ".enabled:visible" ).eq( length-1 );
+           }
+           if( prev.length === 1 ) {
+             act.removeClass( "selected" );
+             prev.addClass( "selected" );
+             newAct = prev;
+           }
+         }
+
+         var relativePosition = newAct.offset().top;
+         var divContent = $( "div.content" );
+         // console.log( relativePosition );
+         // console.log( divContent[0].scrollTop  );
+         $( "div.content" ).scrollTop( divContent[0].scrollTop + newAct.offset().top - 200 ); 
+
+    } );
+
+
 }
 
 /** function View.prototype.deleteContainer - destroy <div> container from page
@@ -1023,15 +1077,7 @@ function searchAuto( query, wayf, callback, saveQuery ) {
       }
     }
   }
-
-  $( ".topsearch" ).keypress(function(e) {
-    // if pressed key is enter
-    if( e.which == 13 ) {
-      $( ".scroller" ).children( "div:visible" ).first().click();
-    }
-  });
- 
-  // callback( result );  // we don't use autocompletion list
+    
 }
 
 Wayf.prototype.getBase64Image = function(url, etag) {
@@ -1162,10 +1208,10 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
         wayf.listSavedIdps(isSetup,true);
     }
     if(isSetup) {
-        this.view.createContainer(this.view.getLabelText('SETUP'), false, true, true, langCallback);
+        this.view.createContainer(this.view.getLabelText('SETUP'), false, true, true, false, langCallback);
     }
     else {
-        this.view.createContainer(this.view.getLabelText('TEXT_SAVED_IDPS'), true, inIframe, false, langCallback);
+        this.view.createContainer(this.view.getLabelText('TEXT_SAVED_IDPS'), true, inIframe, false, false, langCallback);
     }
 
     /* foreach saved idp */
@@ -1390,44 +1436,21 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
       wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
     }
 
+    $( ".scroller" ).children( "div:visible" ).first().addClass( 'selected' );
+
     if(!isSetup) {
         this.view.addButton(this.view.getLabelText('BUTTON_NEXT'));
     }
 
-    // jquery-ui
-    var textSearch = this.lastSearch;
-    $(document).ready( function() {
-      $( ".topsearch" ).css("position", "relative");
-      $( ".topsearch" ).css( "float", "right" ); 
-      $( ".topsearch" ).focus();
-      $( ".topsearch" ).val( textSearch );
-      $( ".topsearch" ).autocomplete( {
-        select: function (event, ui)
-        {
-          "use strict";
-          //console.debug('select event called');
-          //console.debug(ui.item.value);
-        },
-	      source: function( request, response) {
-          var searchFor = request.term;
-          searchAuto( searchFor, wayf, response, true);
-        },
-		    minLength: 0
+    if( ! noSearchSavedIdps ) {
+      var textSearch = this.lastSearch;
+      $(document).ready( function() {
+        $( ".topsearch" ).css("position", "relative");
+        $( ".topsearch" ).css( "float", "right" ); 
+        $( ".topsearch" ).focus();
+        $( ".topsearch" ).val( textSearch );
       });
-
-
-      // lastSearch action
-      searchAuto( textSearch, wayf, null, false);
-
-    });
-
-    $( document ).keypress(function(e) {
-        // if pressed key is enter
-        if( e.which == 13 ) {
-          $( ".scroller" ).children( "div:visible" ).first().click();
-        }
-   });
- 
+    }
 }
 
 
@@ -1495,7 +1518,8 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
                 wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
               }
 
-              searchAuto( textSearch, wayf, null, false );
+              $( ".scroller" ).children( "div:visible" ).first().addClass( 'selected' );
+
             }
         }
     };
@@ -1522,7 +1546,7 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     noSearchSavedIdps = false;
 
     this.view.deleteContainer();
-    this.view.createContainer(this.view.getLabelText('TEXT_ALL_IDPS'), false, inIframe, false, langCallback);
+    this.view.createContainer(this.view.getLabelText('TEXT_ALL_IDPS'), false, inIframe, false, true, langCallback);
     if(useFilter &&  "allowFeeds" in filter) {
         filterAllowFeeds = true;
     }
@@ -1569,17 +1593,15 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     
     }
 
-      // sort mixela
-      var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
+    // sort mixela
+    var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
 
-      // empty scroller due to duplicity
-      // while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
-              
-      for( var key in keySorted ) {
-        wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
-      }
-
-    searchAuto( textSearch, wayf, null, false );
+    // empty scroller due to duplicity
+    // while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
+            
+    for( var key in keySorted ) {
+      wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
+    }
 
     // jquery-ui
     var textSearch = this.lastSearch;
@@ -1589,20 +1611,8 @@ Wayf.prototype.listAllIdps = function(forceAll) {
       $( ".topsearch" ).css( "float", "right" );
       $( ".topsearch" ).focus();
       $( ".topsearch" ).val( textSearch );
-      $( ".topsearch" ).autocomplete( {
-        select: function (event, ui)
-        {
-          "use strict";
-          //console.debug('select event called');
-          //console.debug(ui.item.value);
-        },
-	      source: function( request, response) {
-          var searchFor = request.term;
-          searchAuto( searchFor, wayf, response, true);
-        },
-		    minLength: 0
-      });
-    });
+    }); 
+
 }
 
 Wayf.prototype.createEntityLink = function(eid) {
