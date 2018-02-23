@@ -1603,7 +1603,8 @@ Wayf.prototype.listAllIdps = function(forceAll) {
       wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
     }
 
-    // jquery-ui
+    $( ".scroller" ).children( "div:visible" ).first().addClass( 'selected' );
+
     var textSearch = this.lastSearch;
     $(document).ready( function() {
 
