@@ -57,14 +57,6 @@ if( returnURL.indexOf( "?" ) == -1 ) {
   returnUrlParamCharacter = "?";
 }
 
-// check support of json, otherwise use 3rd implementation
-if (typeof JSON == 'undefined') {
-  var fileref = document.createElement('script')
-  fileref.setAttribute("type", "text/javascript")
-  fileref.setAttribute("src", "/json2.js")
-  document.getElementsByTagName("head")[0].appendChild(fileref)
-}
-
 // check support of Array.prototype, otherwise use 3rd implementation
 if(!Array.prototype.indexOf) {
     Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {

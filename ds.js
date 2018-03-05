@@ -1,10 +1,3 @@
-if (typeof JSON == 'undefined') {
-  var fileref = document.createElement('script')
-  fileref.setAttribute("type", "text/javascript")
-  fileref.setAttribute("src", "/json2.js")
-  document.getElementsByTagName("head")[0].appendChild(fileref)
-}
-
 function setOverStyle () {
     var st = document.getElementById('ds-style');
     if (st == undefined) {
