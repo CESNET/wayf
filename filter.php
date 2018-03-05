@@ -120,8 +120,8 @@ switch($locale) {
 	$str20 = "Vygenerovaný filtr";
     $str21 = "Varování";
     $str22 = "Vámi vložený filtr neodpovídá přegenerovanému filtru. To může být způsobeno například použitím IdP, které už v příslušné federaci není. Prosím, překontrolujte funkčnost vygenerovaného filtru.";
-    $str23 = "Přetáhněte příslušné entity kategorie z šedého rámečku do červeného nebo zeleného rámečku. Uživateli se zobrazí seznam IdP, které obsahují některou entity kategorii ze zeleného rámečku a neobsahují žádnou kategorii z červeného rámečku. Každá skupina IdP má vlastní nastavení.";
-    $str24 = "Vyberte entity kategorie";
+    $str23 = "Přetáhněte příslušné entity kategorie nebo Sirtfi z šedého rámečku do červeného nebo zeleného rámečku. Uživateli se zobrazí seznam IdP, které obsahují některou entity kategorii nebo Sirtfi ze zeleného rámečku a neobsahují žádnou kategorii z červeného rámečku. Každá skupina IdP má vlastní nastavení.";
+    $str24 = "Vyberte entity kategorie nebo Sirtfi";
 	break;
 
     case "en":
@@ -156,11 +156,11 @@ switch($locale) {
 	$str20 = "Generated filter";
     $str21 = "Warning";
     $str22 = "Entered filter differs from the builded one. It can be caused by using IdP, which is not in federation any more. Please, check filter's proper functionality.";
-    $str23 = "Filter entities by entity categories. Available categories may be activated by moving them to green or red boxes.<br><br>" .
+    $str23 = "Filter entities by entity categories or Sirtfi. Available categories/Sirtfi may be activated by moving them to green or red boxes.<br><br>" .
              "Having a selection in green box filters out entities not matching at least one of the selected categories.<br>" .
              "Having a selection in red box filters out entities matching at least one of the selected categories.<br><br>" .
              "The list of Idps may be further adjusted by selecting individual IdPs. When used together with individual IdP filtering, the list shown comprises of IdPs not filtered out by categories filter with possible additions of IdP allow list or possible deductions of IdP deny list.";
-    $str24 = "Select entity categories";
+    $str24 = "Select entity categories or Sirtfi";
 	break;
 }
 ?>
