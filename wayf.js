@@ -514,19 +514,15 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
 
     $( document.body ).off().keyup( function(e) {
 
-        if(( isListAll && (! noSearch )) || (( ! isListAll ) && (! noSearchSavedIdps ))) {
-          var searchFor = $( ".topsearch" ).val();
-          searchAuto( searchFor, wayf, null, true );
-        }
-
-
         var act = $( ".selected" );
         var newAct = act;
+        var keyUpOrDown = false;
 
         // if pressed key is enter
         if( e.which === 13 ) {
           // $( ".scroller" ).children( "div:visible" ).first().click();
           act.click();
+          return;
         }
         // 38 -up, 40 - down
 /*       if( isListAll ) { */
@@ -534,6 +530,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
          var ind = $( ".enabled:visible" ).index( act );
          var length = $( ".enabled:visible").length;
          if( e.which === 40 ) {
+           keyUpOrDown = true;
            var next = $( ".enabled:visible" ).eq(ind+1);
            if(( ind+1 ) >= length ) {
              next = $( ".enabled:visible" ).eq(0);  // go to first record
@@ -545,6 +542,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
            }
          }
          if( e.which === 38 ) {
+           keyUpOrDown = true;
            var prev = $( ".enabled:visible" ).eq(ind-1);
            if(( ind-1 ) < 0 ) {
              prev = $( ".enabled:visible" ).eq( length-1 );
@@ -561,6 +559,13 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
          // console.log( relativePosition );
          // console.log( divContent[0].scrollTop  );
          $( "div.content" ).scrollTop( divContent[0].scrollTop + newAct.offset().top - 200 ); 
+
+         if( ! keyUpOrDown ) {
+           if(( isListAll && (! noSearch )) || (( ! isListAll ) && (! noSearchSavedIdps ))) {
+             var searchFor = search.value; // $( ".topsearch" ).val();
+             searchAuto( searchFor, wayf, null, true );
+           }
+         }
 
     } );
 
