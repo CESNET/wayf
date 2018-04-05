@@ -170,17 +170,12 @@ div#wayf > div.top {
 }
 
 #wayf div.scroller div.selected {
-    background-color: #FFFFFF;
-    border: 1px solid #00008B;
-    border-radius: 3px 3px 3px 3px;
-    color: #333333;
-    display: block;
-    margin: 4px 2px 0 0;
-    text-decoration: none;
-    text-shadow: 0 1px #FFFFFF;
-    padding: 3px 6px;
-    outline: medium none;
-    min-height: 45px;
+  border-color: #66afe9;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px
+rgba(102,175,233,.6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+  background-color: rgba(102,175,233,.1)
 }
 
 #wayf div.scroller img.logo {
