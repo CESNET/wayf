@@ -140,6 +140,7 @@ div#wayf > div.top {
     padding: 3px 6px;
     outline: medium none;
     min-height: 45px;
+    min-width: 300px;
 }
 
 #wayf div.scroller div.selected {
