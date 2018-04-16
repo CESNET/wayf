@@ -210,12 +210,12 @@ div.enabled {
 }
 
 #wayf div.scroller div.enabled:hover  {
-    background-color: #fff;
+    /* background-color: #fff; */
     border: 1px solid #000! important;
 }
 
 #wayf div.scroller div.enabled:focus {
-    background-color: #fff;
+    /* background-color: #fff; */
     border: 1px solid #000! important;
 }
 
