@@ -30,6 +30,11 @@ else {
     $wayfURL = "/wayf.php";
 }
 
+$customCodePath = '/opt/getMD/etc/custom.js';
+if (file_exists($customCodePath)) {
+    $script .= file_get_contents($customCodePath); // inject custom code
+}
+
 function urldecodeToArray($url) {
     $ret_ar = array();
     if (($pos = strpos($url, '?')) !== false) {
