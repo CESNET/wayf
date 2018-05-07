@@ -42,6 +42,10 @@ function showCloser (overl) {
     bdy.appendChild(closer);
 }
 
+function setIframeFocus(){
+  document.getElementById('overl').contentWindow.focus();
+}
+
 function startOverlay (ev) {
 
     if(localStorage === undefined || localStorage === null) {
@@ -93,6 +97,7 @@ function startOverlay (ev) {
     overl.onload = function () {
         var ol = overl;
         showCloser(ol);
+        setTimeout(setIframeFocus, 100);
     };
     var bdy = document.getElementsByTagName('body')[0];
     bdy.appendChild(overl);
