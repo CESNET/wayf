@@ -564,6 +564,8 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
            if(( isListAll && (! noSearch )) || (( ! isListAll ) && (! noSearchSavedIdps ))) {
              var searchFor = search.value; // $( ".topsearch" ).val();
              searchAuto( searchFor, wayf, null, true );
+             act.removeClass("selected" );
+             $( ".enabled:visible" ).eq(0).addClass("selected");
            }
          }
 
