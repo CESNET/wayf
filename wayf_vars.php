@@ -11,3 +11,6 @@
   $filterUsersURL = "https://www.eduid.cz/wiki/eduid/admins/howto/wayf/index";
   $langStyle = "img";  // dropdown or txt (select with lang names) or img (flags) or dropdown
 
+  $customLogo = "{ 
+    'https://attributes.eduid.cz/shibboleth': { 'Label':'Attr', 'Link':'', 'Image':'custom/test.png', 'ImageAlt':'Attributes' }
+  }";

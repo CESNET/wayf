@@ -48,20 +48,23 @@ function urldecodeToArray($url) {
 
 /* pass variable from php to javascript */
 function addVariable($varName, $varValue, $isRecursion=false) {
-    $varValue = strip_tags($varValue);
+    if(!is_array($varValue)) {
+      $varValue = strip_tags($varValue);
+    }
     if(!$isRecursion) {
         echo "var $varName = ";
     }
     if(is_array($varValue)) {
         echo "Array(";
-        $cnt = count($varValue);
-        for($i=0; $i< $cnt; $i++) {
-            $value = $varValue[$i];
-            addVariable($varName, $value, true);
-            if($i+1<$cnt) {
-                echo ", ";
-            }
+        $print_comma = false;
+        foreach( $varValue as $value ) {
+          if( $print_comma )
+            echo ", ";
+
+          addVariable( $varName, $value, true );
+          $print_comma = true;
         }
+          
         echo ")";
     }
     else if(gettype($varValue) == "string") {
@@ -360,6 +363,10 @@ else {
     addVariable( "organizationHelpImage", $organizationHelpImage );
     addVariable( "organizationHelpImageAlt", $organizationHelpImageAlt );
 
+    if( isset( $customLogo )) {
+      echo "var customLogo = ".$customLogo .";\n";
+    }
+
     addVariable( "langStyle", $langStyle );
 
     $nosearch = false;
@@ -411,6 +418,10 @@ else {
             $getParams .= "&" . $key . "=" . $gval;
     }
     echo "var httpParameters = \"$getParams\";\n";
+
+    if( isset( $_GET['entityID'] )) {
+      echo "var SPentityID = \"". $_GET['entityID']."\";\n" ;
+    }
 
     if(isset($useHostel)) {
         echo "var useHostel = true;\n";

@@ -353,6 +353,13 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     var sc = document.createElement('span');
     sc.id = 'helps';
 
+    // if customLogo is defined, then rewrite image per SP entityID
+    if( customLogo && SPentityID ) {  
+      if( customLogo[ SPentityID ]["Image"] ) {
+        organizationHelpImage = customLogo[ SPentityID ]["Image"];
+      }
+    }
+
     sc.innerHTML = organizationLabel;  // comes from wayf_vars.php
     cesnetLink.appendChild(sc);
 
