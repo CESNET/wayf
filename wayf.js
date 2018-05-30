@@ -345,6 +345,23 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     var help = document.createElement('p');
     help.id = 'help';
 
+    // if customLogo is defined, then rewrite image per SP entityID
+    if( customLogo && SPentityID ) {  
+      if( typeof customLogo[ SPentityID ]["Image"] !== 'undefined' ) {
+        organizationHelpImage = customLogo[ SPentityID ]["Image"];
+      }
+      if( typeof customLogo[ SPentityID ]["Link"] !== 'undefined' ) {
+        organizationHelpLink = customLogo[ SPentityID ]["Link"];
+      }
+      if( typeof customLogo[ SPentityID ]["Label"] !== 'undefined' ) {
+        organizationLabel = customLogo[ SPentityID ]["Label"];
+      }
+       if( typeof customLogo[ SPentityID ]["ImageAlt"] !== 'undefined' ) {
+        organizationHelpImageAlt = customLogo[ SPentityID ]["ImageAlt"];
+      }
+      
+    }
+
     var cesnetLink = document.createElement('a');
     cesnetLink.href = organizationHelpLink;  // comes from wayf_vars.php
     cesnetLink.target="_blank";
@@ -352,13 +369,6 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
 
     var sc = document.createElement('span');
     sc.id = 'helps';
-
-    // if customLogo is defined, then rewrite image per SP entityID
-    if( customLogo && SPentityID ) {  
-      if( customLogo[ SPentityID ]["Image"] ) {
-        organizationHelpImage = customLogo[ SPentityID ]["Image"];
-      }
-    }
 
     sc.innerHTML = organizationLabel;  // comes from wayf_vars.php
     cesnetLink.appendChild(sc);
