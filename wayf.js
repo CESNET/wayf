@@ -346,7 +346,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     help.id = 'help';
 
     // if customLogo is defined, then rewrite image per SP entityID
-    if( typeof customLogo !== 'undefined' && SPentityID ) {  
+    if( typeof customLogo !== 'undefined' && SPentityID && typeof customLogo[ SPentityID ] !== 'undefined' ) {  
       if( typeof customLogo[ SPentityID ]["Image"] !== 'undefined' ) {
         organizationHelpImage = customLogo[ SPentityID ]["Image"];
       }
