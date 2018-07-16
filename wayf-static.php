@@ -423,28 +423,31 @@ else {
               $allowCurIdp = false;
               if( $filterAllowIdps ) { 
                 if( in_array( $key, $jFilter['allowFeeds'][ $feed ]['allowIdPs'] )) {
-                  $allowCurIdp = true;
+                        $entities[$key] = $value;
+                        continue;
                 }
               }
-               
-              if( isset( $c_entities[ $key ][ EC ] )) {
-                foreach( $c_entities[ $key ][ EC ] as $ecMetadata ) {
-                  if( ! $allowCurIdp && $filterDenyEC && in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['denyEC'])) {
-                    //print_r( $c_entities[ $key ] ); echo "<br>";
-                    //print_r( $ecMetadata ); echo "<br><br>";
-                    continue 2;
+              
+              if( $filterAllowEC || $filterDenyEC ) { 
+                if( isset( $c_entities[ $key ][ EC ] )) {
+                  foreach( $c_entities[ $key ][ EC ] as $ecMetadata ) {
+                    if( $filterDenyEC && in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['denyEC'])) {
+                      //print_r( $c_entities[ $key ] ); echo "<br>";
+                      //print_r( $ecMetadata ); echo "<br><br>";
+                      continue 2;
+                    }
+                    if( $filterAllowEC && ! in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['allowEC'])) {
+                      continue 2;
+                    }
                   }
-                  if( ! $allowCurIdp && ( $filterAllowEC && ! in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['allowEC']))) {
-                    continue 2;
+                } else {
+                  if( $filterAllowEC ) { // || ( $filterDenyEC && ! $allowCurIdp )) 
+                    // eid has not any entity-category => can't be on list allowedEC
+                    continue;
                   }
                 }
-              } else {
-                if( $filterAllowEC ) { // || ( $filterDenyEC && ! $allowCurIdp )) {
-                  // eid has not any entity-category => can't be on list allowedEC
-                  continue;
-                }
+                $entities[$key] = $value;
               }
-              $entities[$key] = $value;
             }
 
             // print_r( $c_entities );
