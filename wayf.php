@@ -234,9 +234,9 @@ else {
 
     if($detect->isMobile() || $detect->isTablet()) {
         $mobile = true;
-        if($detect->isAndroidOS() && $detect->isSafari()) {
-            $dumb = true;
-        }
+        // if($detect->isAndroidOS() && $detect->isSafari()) {
+        //    $dumb = true;
+        // }
     }
 
     header("X-UA-Compatible: IE=edge");
