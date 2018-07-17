@@ -447,6 +447,11 @@ else {
                   }
                 }
                 $entities[$key] = $value;
+                continue;
+              }
+
+              if( ! $filterAllowIdps && ! $filterDenyIdps && ! $filterAllowEC && ! $filterDenyEC ) {
+                $entities[$key] = $value;
               }
             }
 
