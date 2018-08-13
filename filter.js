@@ -18,7 +18,8 @@ function normalizeFeeds() {
 
 
 function colorIdPs() {
-    for(var feed in feeds)  {
+    for(var key in feeds)  {
+        var feed = feeds[key].url;
         var ft = ($("input[name='" + feed + "-filterType']:checked"))[0];
         var checked = $("input[name='" + feed + "-idp[]']:checked").next();
         var unchecked = $("input[name='" + feed + "-idp[]']:not(:checked)").next();
@@ -130,7 +131,8 @@ function decodeFilter() {
         $("[container='zero']").empty();
         $("[container='allowEC']").empty();
         $("[container='denyEC']").empty();
-        for(var feed in feeds) {
+        for(var key in feeds) {
+            var feed = feeds[key].url;
             ecList[feed][allowEC] = Array();
             ecList[feed][denyEC] = Array();
         }
@@ -181,7 +183,8 @@ function decodeFilter() {
 
             }
         }
-        for(var feed in feeds) {
+        for(var key in feeds) {
+            var feed = feeds[key].url;
             var zero = $("[feed='" + feed + "'][container='zero']");
             for(var kec in ecList[feed].allEC) {
                 var ec = ecList[feed].allEC[kec];
@@ -396,10 +399,14 @@ function fillFeeds() {
     });
     var feedsDiv = document.getElementById("feedsDiv");
     for(var key in feeds)  {
+
+        var label = feeds[key].label;
+        var url = feeds[key].url;
+
         var i = document.createElement("input");
         i.type = "checkbox";
         i.name = "feed[]";
-        i.value = key;
+        i.value = url;
         i.className = "oc";
 
         var newList = {};
@@ -409,13 +416,13 @@ function fillFeeds() {
         newList["allowEC"] = allow;
         newList["denyEC"] = deny;
         newList["allEC"] = all;
-        
-        ecList[key] = newList;
+
+        ecList[url] = newList;
 
         var i1 = document.createElement("input");
         var l1 = document.createElement("label");
         i1.type = "radio";
-        i1.name = key + "-filterType";
+        i1.name = url + "-filterType";
         i1.value = "whitelist";
         i1.checked = "checked";
         i1.className = "oc";
@@ -428,7 +435,7 @@ function fillFeeds() {
         var i2 = document.createElement("input");
         var l2 = document.createElement("label");
         i2.type = "radio";
-        i2.name = key + "-filterType";
+        i2.name = url + "-filterType";
         i2.value = "blacklist";
         i2.className = "oc";
         var s2 = document.createElement("span");
@@ -439,26 +446,25 @@ function fillFeeds() {
 
         var l = document.createElement("label");
         var s = document.createElement("span");
-        s.innerHTML = key;
+        s.innerHTML = label;
         var b = document.createElement("br");
         l.appendChild(i);
         l.appendChild(s);
         feedsDiv.appendChild(l);
         feedsDiv.appendChild(b);
-        var value = feeds[key];
         var idpAcc = document.getElementById("idpaccordion");
         var title = document.createElement("h3");
         var cont = document.createElement("div");
-        cont.id = key;
-        title.innerHTML = key;
+        cont.id = url;
+        title.innerHTML = label;
         idpAcc.appendChild(title);
         idpAcc.appendChild(cont);
 
         var ecAcc = document.getElementById("ecaccordion");
         var ecTitle = document.createElement("h3");
         var ecCont = document.createElement("div");
-        ecCont.id = key;
-        ecTitle.innerHTML = key;
+        ecCont.id = url;
+        ecTitle.innerHTML = label;
         ecAcc.appendChild(ecTitle);
         ecAcc.appendChild(ecCont);
 
@@ -471,7 +477,7 @@ function fillFeeds() {
         var bb = document.createElement("br");
         cont.appendChild(bb);
 
-        showIdps(value, cont, ecCont, key);
+        showIdps("/feed/" + url + ".js", cont, ecCont, url);
     }
 
     $('.oc').change(function(){ regenerateFilter(); });

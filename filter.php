@@ -9,7 +9,7 @@ if(strpos($l, "cs-CZ") !== false || strpos($l, "cs") !== false || strpos($l, "sk
 }
 else {
     $locale = "en";
-}; 
+};
 
 $serverName = "\"" . $_SERVER['HTTP_HOST']  . "\"";
 
