@@ -1,1 +1,6 @@
-{ "eduGAIN":"/feed/eduGAIN.js"}
+{ 
+    "eduGAIN": {
+        "label": "eduGAIN",
+        "url": "eduGAIN"
+    }
+}
