@@ -232,7 +232,7 @@ else {
     $mobile = false;
     $dumb = false;
 
-    if($detect->isMobile() || $detect->isTablet()) {
+    if($detect->isMobile() && !$detect->isTablet() ) {
         $mobile = true;
         // if($detect->isAndroidOS() && $detect->isSafari()) {
         //    $dumb = true;
@@ -320,6 +320,7 @@ else {
 
     echo "<script type=\"text/javascript\">\n";
 
+    addVariable("isTablet", $detect->isTablet() );
     addVariable("isMobile", $mobile);
     if($mobile) {
         addVariable("osType", $osType);
