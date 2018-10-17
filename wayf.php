@@ -289,7 +289,7 @@ else {
         foreach($jFilter['allowFeeds'] as $feed => $tmpF) {
             $f .= "\"$feed\":\"/feed/$feed.js\",";
         }
-        $feeds = rtrim($f,",")."}";
+        $allFeeds = rtrim($f,",")."}";
 
       }
       else {
@@ -297,7 +297,7 @@ else {
         foreach($spInfo['feeds'] as $feed => $tmpF) {
             $f .= "\"$feed\":\"/feed/$feed.js\",";
         }
-        $feeds = rtrim($f,",")."}";
+        $allFeeds = rtrim($f,",")."}";
       }
 
     } else {
@@ -306,7 +306,7 @@ else {
         foreach($jFilter['allowFeeds'] as $feed) {
             $f .= "\"$feed\":\"/feed/$feed.js\",";
         }
-        $feeds = rtrim($f,",")."}";
+        $allFeeds = rtrim($f,",")."}";
 
       }
       else {
@@ -314,7 +314,7 @@ else {
         foreach($spInfo['feeds'] as $feed) {
             $f .= "\"$feed\":\"/feed/$feed.js\",";
         }
-        $feeds = rtrim($f,",")."}";
+        $allFeeds = rtrim($f,",")."}";
       }
     }
 
@@ -388,7 +388,7 @@ else {
     }
     addVariable("referrer", $referrer);
 
-    echo "var allFeeds = " . $feeds . ";\n";
+    echo "var allFeeds = " . $allFeeds . ";\n";
     addVariable("returnURL", $returnURL);
 
     $otherParams = "";
@@ -417,7 +417,7 @@ else {
         echo "var filter = $filter;\n";
     }
 
-    echo "var feedsStr = $feeds;\n";
+    echo "var feedsStr = $allFeeds;\n";
 
     $getParams = "";
     foreach($_GET as $key => $value) {

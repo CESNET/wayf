@@ -914,18 +914,6 @@ Wayf.prototype.isIdpInFeed = function(idp, feed) {
     return false;
 }
 
-/** function Wayf.prototype.getUrlFromFeedId - return URL of feed with feedId
-  */
-Wayf.prototype.getUrlFromFeedId = function(feedId) {
-    try {
-        var ret = allFeeds[feedId];
-        return ret;
-    }
-    catch(err) {
-        return "";
-    }
-}
-
 /** function Wayf.prototype.isInEc - exist EC in allowEC/denyEC?
   */
 Wayf.prototype.isInEc = function( allowOrDenyEcArray, ecArray ) {
@@ -1172,6 +1160,8 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
     var idpFilter = false;
     var filterAllowFeeds = false;
 
+    var af = getAllFeeds();
+
     /* load feeds */
     if(useFilter) {
       if( filterVersion == "2" ) { 
@@ -1183,11 +1173,14 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
         }
         filterAllowFeeds = true;
         if(!isSetup) {
-          var af = getAllFeeds();
           feedCount = Object.keys(filter.allowFeeds).length;
           for(feed in filter.allowFeeds) {
             feedUrl = af[feed];
-            wayf.getFeed(feed, feedUrl, false, false, true );
+            if( typeof feedUrl !== 'undefined' ) {
+              wayf.getFeed(feed, feedUrl, false, false, true );
+            } else {
+              feedCount--;
+            }
           }
 
         }
@@ -1200,11 +1193,14 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
         if("allowFeeds" in filter) {
             filterAllowFeeds = true;
             if(!isSetup) {
-                var af = getAllFeeds();
                 feedCount = Object.keys(filter["allowFeeds"]).length;
                 for(feed in filter["allowFeeds"]) {
                     feedUrl = af[filter["allowFeeds"][feed]];
-                    wayf.getFeed(filter["allowFeeds"][feed], feedUrl, false, false, true );
+                    if( typeof feedUrl !== 'undefined' ) {
+                      wayf.getFeed(filter["allowFeeds"][feed], feedUrl, false, false, true );
+                    } else {
+                      feedCount--;
+                    }
                 }
             }
         }
@@ -1214,8 +1210,12 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
         /* load all feeds, filter is not set */
         feedCount = Object.keys(allFeeds).length;
         for(var feed in allFeeds) {
-            var feedUrl = allFeeds[feed];
-            wayf.getFeed(feed, feedUrl, false, false, true );
+            var feedUrl = af[feed];
+            if( typeof feedUrl !== 'undefined' ) {
+              wayf.getFeed(feed, feedUrl, false, false, true );
+            } else {
+              feedCount--;
+            }
         }
     }
 
@@ -1589,6 +1589,7 @@ Wayf.prototype.listAllIdps = function(forceAll) {
         }
     }
 
+    var af = getAllFeeds();
     feedCount = Object.keys(allFeeds).length;
     for(var feedId in allFeeds) {
         if(feedId == "indexOf") {
@@ -1605,9 +1606,12 @@ Wayf.prototype.listAllIdps = function(forceAll) {
             }
           }
         }
-        var feedUrl = allFeeds[feedId];
-        this.getFeed(feedId, feedUrl, false, forceAll, false );
-    
+        var feedUrl = af[feedId];
+        if( typeof feedUrl !== 'undefined' ) {
+          this.getFeed(feedId, feedUrl, false, forceAll, false );
+        } else {
+          feedCount--;
+        } 
     }
 
     // sort mixela
