@@ -11,6 +11,15 @@
   $filterUsersURL = "https://wiki.geant.org/pages/viewpage.action?pageId=88769546";
   $langStyle = "txt";  // dropdown or txt (select with lang names) or img (flags) or dropdown
 
+  $feeds = "
+{ 
+    'eduGAIN': {
+        'label': 'eduGAIN',
+        'url': 'eduGAIN'
+    }
+}
+";
+
   $customLogo = "{ 
     'https://attribute-viewer.aai.switch.ch/shibboleth': { 'Label':'', 'Link':'https://www.switch.ch', 'Image':'custom/switch-logo.png', 'ImageAlt':'Switch logo' },
     'https://attribute-viewer.aai.switch.ch/interfederation-test/shibboleth': { 'Label':'', 'Link':'https://www.switch.ch', 'Image':'custom/switch-logo.png', 'ImageAlt':'Switch logo' },

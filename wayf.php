@@ -364,6 +364,12 @@ else {
     addVariable( "organizationHelpImage", $organizationHelpImage );
     addVariable( "organizationHelpImageAlt", $organizationHelpImageAlt );
 
+    if( isset( $feeds )) {
+      echo "var feeds = ".$feeds .";\n";
+    } else {
+      echo "var feeds = '';\n";
+    }
+
     if( isset( $customLogo )) {
       echo "var customLogo = ".$customLogo .";\n";
     }

@@ -142,11 +142,10 @@ function isInIframe() {
 function getAllFeeds() {
     var ret = Array();
     base = "/feed/";
-    feeds = {'ACONet':'https://wayf.aco.net/aconet-aai-metadata.xml', 'InCommon':'urn:mace:incommon', 'Kalmar2':'kalmarcentral2', 'SURFfederatie':'wayf.surfnet.nl', 'SWITCHAAI':'urn:mace:switch.ch:SWITCHaai', 
-             'UKAccessFederation':'http://ukfederation.org.uk', 'eduGAIN':'http://edugain.org/', 'eduID.cz':'https://eduid.cz/metadata', 'Hostel':'https://hostel.eduid.cz/metadata',
-             'LoginMuni':'https://login.ics.muni.cz/metadata', 'ExLibris':'ExLibris', 'Social':'Social'};
-    for(feed in feeds) {
+    if( typeof feeds !== 'undefined' ) {
+      for(feed in feeds) {
         ret[feed] = base + feed+ ".js";
+      }
     }
     return ret;
 }
