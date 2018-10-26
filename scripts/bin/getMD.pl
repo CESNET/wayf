@@ -321,6 +321,8 @@ sub get {
     };
     # navic eduGAINi MDX nema zadny nazev souboru... no nejsou to dementi? ;)
     $targetfile .= $self->{id} if ($targetfile =~ /\/$/);
+    # a jeste ke vsemu uplne zhuleny URL s obrazky
+    $targetfile =~ s/[\/\?\=\;\&]/_/g;
     warn "tt: $targetfile\n";
 
     my @cmdArgs = ('--retry', 1, '--max-time', 180, '--silent', '--show-error', '--insecure', '--location',
