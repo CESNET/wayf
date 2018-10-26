@@ -51,6 +51,10 @@ var inIframe = false;
 var feedCount = 0;
 var filterVersion = 1;  // default original version, not suitable for all cases
 
+var logos = new Object();  // temporary array for logos
+var noImage = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+var loadingImage = 'data:image/gif;base64,R0lGODlhEAAQAPIAAM7a5wAAAJ2msDU4PAAAAE9UWWlvdnZ9hCH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==';
+
 /* some variables are coming from wayf.php, for example returnURL */
 var returnUrlParamCharacter = "&";
 if( returnURL.indexOf( "?" ) == -1 ) {
@@ -393,7 +397,9 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     this.scroller = document.createElement('div');
     this.scroller.className = "scroller";
 
+
     this.mixelaHash = new Object();
+    this.keySorted = new Object();  // result of sorting
 
     if(showSetup) {
         this.bottom.appendChild(setup);
@@ -528,7 +534,11 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     var body = document.getElementsByTagName('body')[0];
     body.appendChild(this.wayfDiv);
 
-    $( document.body ).off().keyup( function(e) {
+    $( ".content" ).scroll( function() {
+      loadVisibleLogos(); }  
+    );
+
+    $( document.body ).off( "keyup" ).keyup( function(e) {
 
         var act = $( ".selected" );
         var keyUpOrDown = false;
@@ -582,6 +592,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
            if(( isListAll && (! noSearch )) || (( ! isListAll ) && (! noSearchSavedIdps ))) {
              var searchFor = search.value; // $( ".topsearch" ).val();
              searchAuto( searchFor, wayf, null, true );
+             loadVisibleLogos();
              act.removeClass("selected" );
              $( ".enabled:visible" ).eq(0).addClass("selected");
            }
@@ -639,9 +650,15 @@ View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDel
         idpDiv.appendChild(trashIcon);
     }
 
+
     var logo = document.createElement('img');
     logo.className = "logo";
-    logo.src = logoSource;
+    if( logoSource == "logo/missing.png" ) {
+      logo.src = noImage;
+    } else {
+      logo.src = loadingImage;
+    }
+    logos[ eid ] = logoSource;
 
     var idpName = document.createElement('span');
     idpName.className = "title";
@@ -703,6 +720,29 @@ View.prototype.getLabelText = function(id) {
     }
 }
 
+/* loadImages whes is visible */
+$.fn.isInViewport = function() {
+  var elementTop = $(this).offset().top;
+  var elementBottom = elementTop + $(this).outerHeight();
+  var viewportTop = $(window).scrollTop();
+  var viewportBottom = viewportTop + $(window).height();
+  return elementBottom > viewportTop && elementTop < viewportBottom;
+};
+
+function loadVisibleLogos() { 
+  $( ".scroller" ).children( ".enabled" ).each( function() {
+    // test if is already loaded
+    if( typeof logos[ this.id ] !==  "undefined" ) {
+      if( $( this ).isInViewport() ) {
+        // console.log( this.id );
+        // download and show logo of IdP
+        this.children["0"].src = logos[ this.id ];
+        delete logos[ this.id ];
+      }
+    }
+  } );
+} 
+    
 /** Contructor of object Wayf
   */
 function Wayf(divName) {
@@ -1055,13 +1095,16 @@ function searchAuto( query, wayf, callback, saveQuery ) {
   var result = [];
   var usedIdps = wayf.usedIdps;
 
-  if( saveQuery ) {
-    wayf.lastSearch = query;
-  }
+  var regexp_query = new RegExp( query, "i" );
+  var length_old = wayf.lastSearch.length;
 
-  // wayf.view.deleteContainer();  // nedava smysl, pac si clovek smaze i jquery-ui tagy
-  $( ".enabled" ).hide();  // hide all institutions
-  $( ".disabled" ).hide();  // hide even all disabled institions
+  wayf.lastSearch = query;
+
+  var idScroller = document.getElementsByClassName('scroller')[0];
+  var frag = document.createDocumentFragment();  
+  var fragScroller = document.createElement('div');
+  fragScroller.className = "scroller";
+  frag.appendChild( fragScroller );
 
   if( query.length ) {
     $( ".topsearch").css( "background-Image", "none");
@@ -1070,18 +1113,26 @@ function searchAuto( query, wayf, callback, saveQuery ) {
   }
 
   // looking at only filtered records
-  for(var entity in this.wayf.selectedIdps ) {
+  // var label;
+  for(var idLabel in wayf.view.keySorted ) {
+    var label = wayf.view.keySorted[ idLabel ];
+    var entity = wayf.view.mixelaHash[ label ].id;
     var extractedDomain = entity.split("/");
-    if( typeof extractedDomain[2] !== "undefined" && extractedDomain[2].search( new RegExp( query, "i" )) != -1 ) {
-      $( document.getElementById( entity ) ).show();
+    if( typeof extractedDomain[2] !== "undefined" && extractedDomain[2].search( regexp_query ) != -1 ) {
+      fragScroller.appendChild( wayf.view.mixelaHash[ label ] );
     } else {
-      for(var curLang in this.wayf.selectedIdps[entity]){
-        if( this.wayf.selectedIdps[entity][curLang].search( new RegExp( query, "i" )) != -1) {
-          $( document.getElementById( entity ) ).show();
+      for(var curLang in this.wayf.selectedIdps[ entity ]){
+        if( this.wayf.selectedIdps[entity][curLang].search( regexp_query ) != -1) {
+          fragScroller.appendChild( wayf.view.mixelaHash[ label ] );
+          break;
         }
       }
     }
   }
+
+  var idContent = idScroller.parentNode;
+  idContent.removeChild( idScroller );  
+  idContent.insertBefore( frag, idContent.childNodes[1] );
     
 }
 
@@ -1447,11 +1498,13 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
     }
 
     // show saved Idp
-    var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
+    wayf.view.keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
               
-    for( var key in keySorted ) {
-      wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
+    for( var key in wayf.view.keySorted ) {
+      wayf.view.scroller.appendChild( wayf.view.mixelaHash[ wayf.view.keySorted[ key ] ] );
     }
+
+    loadVisibleLogos();
 
     $( ".scroller" ).children( "div:visible" ).first().addClass( 'selected' );
 
@@ -1524,16 +1577,20 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
 
             if( feedCount == 0 ) { 
               // sort mixela
-              var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
+              wayf.view.keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
 
               // empty scroller due to duplicity
               // while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
 
               $( ".toplabel" ).text(wayf.view.getLabelText('TEXT_ALL_IDPS'));
               
-              for( var key in keySorted ) {
-                wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
+              var frag = document.createDocumentFragment();   
+              for( var key in wayf.view.keySorted ) {
+                frag.appendChild( wayf.view.mixelaHash[ wayf.view.keySorted[ key ] ] );
               }
+              wayf.view.scroller.appendChild( frag ); 
+
+              loadVisibleLogos();
 
               $( ".scroller" ).children( "div:visible" ).first().addClass( 'selected' );
 
@@ -1615,14 +1672,19 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     }
 
     // sort mixela
-    var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
+    wayf.view.keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
 
     // empty scroller due to duplicity
     // while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
-            
-    for( var key in keySorted ) {
-      wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
+         
+    var frag = document.createDocumentFragment();   
+    for( var key in wayf.view.keySorted ) {
+      frag.appendChild( wayf.view.mixelaHash[ wayf.view.keySorted[ key ] ] );
+      // wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
     }
+    wayf.view.scroller.appendChild( frag ); 
+
+    loadVisibleLogos();
 
     $( ".scroller" ).children( "div:visible" ).first().addClass( 'selected' );
 
