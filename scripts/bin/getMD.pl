@@ -305,6 +305,14 @@ sub logStatus {
   $self->{status}->logStatus;
 }
 
+sub escape_targetfile {
+  my $str = shift;
+
+  $str =~ s/[\?\=\;\&]/_/g;
+
+  return $str;
+};
+
 sub get {
   my $self = shift;
   my ($src, $opt) = $self->getSrcURL;
@@ -321,8 +329,6 @@ sub get {
     };
     # navic eduGAINi MDX nema zadny nazev souboru... no nejsou to dementi? ;)
     $targetfile .= $self->{id} if ($targetfile =~ /\/$/);
-    # a jeste ke vsemu uplne zhuleny URL s obrazky
-    $targetfile =~ s/[\/\?\=\;\&]/_/g;
     warn "tt: $targetfile\n";
 
     my @cmdArgs = ('--retry', 1, '--max-time', 180, '--silent', '--show-error', '--insecure', '--location',
@@ -404,12 +410,13 @@ sub downloadLogo {
   my ($self, $url) = @_;
   my $storedFname = $url;
   $storedFname =~ s|^[^:]*://||;
+  $storedFname = escape_targetfile($storedFname);
 
   main::info "Downloading logo from $url";
 
   # preferujeme curl kdyz je nakonfigurovan
   my $targetfile = join('/',
-			$self->{conf}->downloadLogoDir,
+		        $self->{conf}->downloadLogoDir,
 			$storedFname);
   if ($self->{conf}->cmd_curl) {
     $self->{cmd} = getMD::Cmd->new($self->{conf}->cmd_curl,
