@@ -1095,11 +1095,20 @@ function searchAuto( query, wayf, callback, saveQuery ) {
   var result = [];
   var usedIdps = wayf.usedIdps;
 
-  var regexp_query = new RegExp( query, "i" );
   var length_old = wayf.lastSearch.length;
+  var length = query.length;
 
   wayf.lastSearch = query;
 
+  if( length < 2 ) {
+    if( length_old < 2 ) {
+      return;
+    } else {
+      query = "";
+    }
+  }
+
+  var regexp_query = new RegExp( query, "i" );
   var idScroller = document.getElementsByClassName('scroller')[0];
   var frag = document.createDocumentFragment();  
   var fragScroller = document.createElement('div');
