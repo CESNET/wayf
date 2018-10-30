@@ -251,6 +251,9 @@ function getNameFromId(id) {
     if(name == null) {
         var name = id["label"]["it"];
     }
+    if (name == null) {
+        return "";
+    }
     return name;
 }
 
