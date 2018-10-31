@@ -643,13 +643,6 @@ View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDel
         idpDiv.onclick = callback;
     }
 
-    if(showDeleteIcon) {
-        var trashIcon = document.createElement('img');
-        trashIcon.className = "trashicon";
-        trashIcon.src = "trash_48.png";
-        idpDiv.appendChild(trashIcon);
-    }
-
 
     var logo = document.createElement('img');
     logo.className = "logo";
@@ -667,6 +660,14 @@ View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDel
     var hr = document.createElement('hr');
     idpDiv.appendChild(logo);
     idpDiv.appendChild(idpName);
+
+    if(showDeleteIcon) {
+        var trashIcon = document.createElement('img');
+        trashIcon.className = "trashicon";
+        trashIcon.src = "trash_48.png";
+        idpDiv.appendChild(trashIcon);
+    }
+
     idpDiv.appendChild(hr);
 
     /* idp zaradime abecedne do seznamu bez ohledu na nabodenicka */
