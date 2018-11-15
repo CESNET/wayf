@@ -909,10 +909,16 @@ Wayf.prototype.deleteUsedIdp = function(id) {
     try {
         var usedIdps = this.persistor.getItem("usedIdps");
         var usedIdpsObj = JSON.parse(usedIdps);
+        var isValidEntity = false;
         var entity = usedIdpsObj[id]['entity'];
-        var label = this.getLabelFromLabels(entity.label);
+        var label;
+        if( typeof entity == "undefined" ) {
+          isValidEntity = true;
+        } else { 
+          label = this.getLabelFromLabels(entity.label);
+        }
 
-        if(confirm(this.view.getLabelText("CONFIRM_DELETE") + label + "?")) {
+        if(isValidEntity || (confirm(this.view.getLabelText("CONFIRM_DELETE") + label + "?"))) {
             var usedIdpsObj = JSON.parse(usedIdps);
             var newUsedIdpsObj = new Object();
             var haveData = false;
@@ -1220,8 +1226,7 @@ Wayf.prototype.getLabelFromLabels = function(labels) {
 Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
     var idpFilter = false;
     var filterAllowFeeds = false;
-
-    var af = getAllFeeds();
+    var isListEnabledIdpsEmpty = true;
 
     /* load feeds */
     if(useFilter) {
@@ -1302,8 +1307,9 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
             }
 
             var entity = usedIdps[eid];
-            // When saved value is broken, ignore it
+            // When saved value is broken, delete from persistor and ignore it
             if(typeof entity.entity == 'undefined') {
+                wayf.deleteUsedIdp(eid);
                 continue;
             }
             var url = this.createEntityLink(eid);
@@ -1461,6 +1467,7 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
 
                 var callback = null;
                 if(enableIdp) {
+                    isListEnabledIdpsEmpty = false;
                     callback = (function() {
                         var murl = url;
                         var tgrt = tgt;
@@ -1505,6 +1512,12 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
         /*}
         catch(err) {
         } */
+    }
+
+    // if list of Idps is empty or contains only grey-out Idps, so show all Idps
+    if( isListEnabledIdpsEmpty ) {
+      wayf.listAllIdps(false);
+      return;
     }
 
     // show saved Idp
