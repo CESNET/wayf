@@ -1227,6 +1227,8 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
     var idpFilter = false;
     var filterAllowFeeds = false;
     var isListEnabledIdpsEmpty = true;
+    
+    var af = getAllFeeds();
 
     /* load feeds */
     if(useFilter) {
