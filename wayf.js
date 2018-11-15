@@ -1351,6 +1351,7 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
 
                       if( filterVersion == "1" ) {
                         /* filter_v1 */
+                        enableIdp = false;
                           
                         if(idpFilter && filter["allowIdPs"].indexOf(eid)>=0) {
                           /* add idp explicitly listed in allowIdps */
