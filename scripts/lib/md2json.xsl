@@ -6,6 +6,7 @@
 		xmlns:eduidmd="http://eduid.cz/schema/metadata/1.0"
 		xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
 		xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute"
+                xmlns:mdrpi="urn:oasis:names:tc:SAML:metadata:rpi"
                 version="1.0">
   <!-- Feed Label -->
   <xsl:param name="label">Unknown</xsl:param>
@@ -78,6 +79,7 @@
 	  </xsl:text>
 	  <xsl:call-template name="entityLogo"/>
 	  <xsl:call-template name="entityCategories"/>
+          <xsl:call-template name="registrationAuthority"/>
 	  <xsl:call-template name="specialEntityParams"/>
 	  <xsl:text>}</xsl:text>
 	  <xsl:if test="position()!=last()">
@@ -87,6 +89,14 @@
 	</xsl:if>
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="registrationAuthority">
+    <xsl:if test='md:Extensions/mdrpi:RegistrationInfo'>
+      <xsl:text>, "RA": "</xsl:text>
+      <xsl:value-of select="md:Extensions/mdrpi:RegistrationInfo/@registrationAuthority"/>
+      <xsl:text>"</xsl:text>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template name="entityCategories">
