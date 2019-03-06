@@ -1518,7 +1518,7 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
     }
 
     // if list of Idps is empty or contains only grey-out Idps, so show all Idps
-    if( isListEnabledIdpsEmpty ) {
+    if( !isSetup && isListEnabledIdpsEmpty ) {
       wayf.listAllIdps(false);
       return;
     }
