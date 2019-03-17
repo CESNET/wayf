@@ -4,6 +4,7 @@ include 'Mobile_Detect.php';
 include '/opt/getMD/lib/SPInfo.php';
 include 'wayf_vars.php';  // customization CESNET/eduTEAMS
 
+
 $detect = new Mobile_Detect();
 
 $edge = "<meta http-equiv=\"X-UA-Compatible\" content=\"edge\" >";
@@ -136,8 +137,11 @@ else {
     $returnIDVariable = 'entityID';
 }
 
+$checkSPDiscoveryResponseTest = false;
 if(isset($_GET['entityID'])) {
     $entityID = $_GET['entityID'];
+    $checkSPDiscoveryResponseTest = checkSPDiscoveryResponse( $entityID, $returnURL );
+
     if(($useFilter && isset($jFilter['allowFeeds']) && $jFilter['allowFeeds'] !== "") || ($useFilter && isset($jFilter['allowIdPs']) && $jFilter['allowIdPs'] !== "")) {
 //    if($useFilter && isset($jFilter['allowFeeds']) && $jFilter['allowFeeds'] !== "") {
         $spInfo = getSPInfoAllFeeds($entityID);
@@ -192,7 +196,7 @@ if(isset($fromHostelRegistrar)) {
     $returnURL = $returnURL . $otherParams;
     header("Location: " . $returnURL);
 }
-else if(!isset($entityID) || !isset($returnURL)) {
+else if(!isset($entityID) || !isset($returnURL) || !$checkSPDiscoveryResponseTest ) {
     
     echo $doctype;
     echo "<html><head>";
@@ -202,17 +206,31 @@ else if(!isset($entityID) || !isset($returnURL)) {
     echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"errorpage.css\">";
     echo "</head><body>";
 
-    echo "<div id=\"nadpis_cs\"><h1>Nastala chyba</h1>";
-    echo "Poskytovatel služby ke které se hlásíte nepředal všechny parametry potřebné pro přihlášení.<br>";
-    echo "K přihlášení jsou nutné alespoň parametry &quot;<i>entityID</i>&quot; a &quot;<i>return</i>&quot;.<br>";
-    echo "Seznam parametrů, které poskytovatel služby předal, můžete vidět v seznamu níže.<br>";
-    echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a href=\"http://www.eduid.cz/cesnet-ds\">http://www.eduid.cz/cesnet-ds</a></div>";
+    if( $checkSPDiscoveryResponseTest ) {
 
-    echo "<div id=\"nadpis_en\"><h1>An error occured</h1>";
-    echo "Service provider didn't send all parameters needed for login.<br>";
-    echo "For login are needed at least &quot;<i>entityID</i>&quot and &quot;<i>return</i>&quot.<br>";
-    echo "List of parameters sended from service provider is below.";
-    echo "<br>Documentation (in czech language) can be found at <a href=\"http://www.eduid.cz/cesnet-ds\">http://www.eduid.cz/cesnet-ds</a></div>";
+      echo "<div id=\"nadpis_cs\"><h1>Nastala chyba</h1>";
+      echo "Poskytovatel služby ke které se hlásíte nepředal všechny parametry potřebné pro přihlášení.<br>";
+      echo "K přihlášení jsou nutné alespoň parametry &quot;<i>entityID</i>&quot; a &quot;<i>return</i>&quot;.<br>";
+      echo "Seznam parametrů, které poskytovatel služby předal, můžete vidět v seznamu níže.<br>";
+      echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a href=\"http://www.eduid.cz/cesnet-ds\">http://www.eduid.cz/cesnet-ds</a></div>";
+  
+      echo "<div id=\"nadpis_en\"><h1>An error occured</h1>";
+      echo "Service provider didn't send all parameters needed for login.<br>";
+      echo "For login are needed at least &quot;<i>entityID</i>&quot and &quot;<i>return</i>&quot.<br>";
+      echo "List of parameters sended from service provider is below.";
+      echo "<br>Documentation (in czech language) can be found at <a href=\"http://www.eduid.cz/cesnet-ds\">http://www.eduid.cz/cesnet-ds</a></div>";
+
+    } else {
+
+      echo "<div id=\"nadpis_cs\"><h1>Nastala chyba</h1>";
+      echo "Poskytovatel služby ke které se hlásíte předal neplatný parametr &quot;<i>return</i>&quot;.<br>";
+      echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a href=\"http://www.eduid.cz/cesnet-ds\">http://www.eduid.cz/cesnet-ds</a></div>";
+  
+      echo "<div id=\"nadpis_en\"><h1>An error occured</h1>";
+      echo "Service provider sent invalid parameter &quot;<i>return</i>&quot;.<br>";
+      echo "Documentation (in czech language) can be found at <a href=\"http://www.eduid.cz/cesnet-ds\">http://www.eduid.cz/cesnet-ds</a></div>";
+
+    }
 
     if(!isset($_GET) || count($_GET)==0) {
         echo "<div id=\"paramlist\"><h2>Žádné parametry nebyly předány / No parameters given</h2>";
