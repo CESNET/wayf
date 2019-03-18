@@ -140,7 +140,7 @@ else {
 $checkSPDiscoveryResponseTest = false;
 if(isset($_GET['entityID'])) {
     $entityID = $_GET['entityID'];
-    // $checkSPDiscoveryResponseTest = checkSPDiscoveryResponse( $entityID, $returnURL );
+    $checkSPDiscoveryResponseTest = checkSPDiscoveryResponse( $entityID, $returnURL );
     $checkSPDiscoveryResponseTest = true;  // don't return error, only log it
 
     if(($useFilter && isset($jFilter['allowFeeds']) && $jFilter['allowFeeds'] !== "") || ($useFilter && isset($jFilter['allowIdPs']) && $jFilter['allowIdPs'] !== "")) {
