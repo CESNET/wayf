@@ -86,9 +86,10 @@ function checkSPDiscoveryResponse ($spid, $returnUrl) {
     }
   }
 
-  if( $discoRespDefined )
+  if( $discoRespDefined ) {
     error_log( addslashes( "checkSPDiscoveryResponse(): parameter return (". $returnUrl .") differs from DiscoveryResponse defined in metadata for entityID (". $spid .")" ));
     return false;
+  }
 
   $res = $db->query($q2);
   list($p1, $p2, $locRU, $p4) = explode('/', $returnUrl );
