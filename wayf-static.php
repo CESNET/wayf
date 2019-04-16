@@ -19,6 +19,7 @@ include 'wayf_vars.php';  // customization CESNET/eduTEAMS
 
 // constants
 define( "EC", "EC" );  // EC index to entities
+define( "RA", "RA" );  // RegistrationAuthority index to entities
 
 // Development mode
 $DEVEL = false;
@@ -398,6 +399,9 @@ else {
             $filterAllowIdps = false;
             $filterAllowEC = false;
             $filterDenyEC = false;
+            $filterAllowRA = false;
+            $filterDenyRA = false;
+
 
             if( isset( $jFilter['allowFeeds'][ $feed ]['denyIdPs'] )) {
               $filterDenyIdps = true;
@@ -405,6 +409,14 @@ else {
 
             if( isset( $jFilter['allowFeeds'][ $feed ]['allowIdPs'] )) {
               $filterAllowIdps = true;
+            }
+
+            if( isset( $jFilter['allowFeeds'][ $feed ]['allowRA'] )) {
+              $filterAllowRA = true;
+            }
+
+            if( isset( $jFilter['allowFeeds'][ $feed ]['denyRA'] )) {
+              $filterDenyRA = true;
             }
 
             if( isset( $jFilter['allowFeeds'][ $feed ]['allowEC'] )) {
@@ -428,6 +440,26 @@ else {
                 }
               }
               
+              if( $filterAllowRA || $filterDenyRA ) { 
+                if( isset( $c_entities[ $key ][ RA ] )) {
+                  if( $filterDenyRA && in_array( $c_entities[ $key ][ RA ], $jFilter['allowFeeds'][ $feed ]['denyRA'])) {
+                      //print_r( $c_entities[ $key ] ); echo "<br>";
+                      //print_r( $ecMetadata ); echo "<br><br>";
+                      continue;
+                  }
+                  if( $filterAllowRA && ! in_array( $c_entities[ $key ][ RA ], $jFilter['allowFeeds'][ $feed ]['allowRA'])) {
+                      continue;
+                  }
+                } else {
+                  if( $filterAllowRA ) { // || ( $filterDenyEC && ! $allowCurIdp )) 
+                    // eid has not any RegistrationAuthority => can't be on list allowedRA
+                    continue;
+                  }
+                }
+                $entities[$key] = $value;
+                continue;
+              }
+
               if( $filterAllowEC || $filterDenyEC ) { 
                 if( isset( $c_entities[ $key ][ EC ] )) {
                   foreach( $c_entities[ $key ][ EC ] as $ecMetadata ) {
