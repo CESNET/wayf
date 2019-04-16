@@ -972,12 +972,23 @@ Wayf.prototype.isInEc = function( allowOrDenyEcArray, ecArray ) {
   return false;
 }
 
+/** function Wayf.prototype.isInRA - exist RA in allowRA/denyRA?
+  */
+Wayf.prototype.isInRA = function( allowOrDenyRaArray, ra ) {
+  if( allowOrDenyRaArray.indexOf(ra)>=0) 
+    return true;
+
+  return false;
+}
+
 Wayf.prototype.listAllData = function(feedId, mdSet) {
     var idpFilter = false;
-    var filterDenyIdps = false;
-    var filterAllowIdps = false; 
-    var filterAllowEC = false;
-    var filterDenyEC = false;
+    var filterDenyIdps = false;  // particular deny Idp filter
+    var filterAllowIdps = false; // particular allow Idp filter
+    var filterAllowEC = false;  // Allow EntityCategory filter
+    var filterDenyEC = false;  // Deny EntityCategory filter
+    var filterAllowRA = false;  // Allow RegistrationAuthority filter
+    var filterDenyRA = false;  // Deny RegistrationAythority filter
 
     if( useFilter ) {
       if( filterVersion == "2" ) {
@@ -999,6 +1010,15 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
         if( typeof filter.allowFeeds[feedId].allowEC !== "undefined" ) {
           filterAllowEC = true;
         }
+        // exist denyRA?
+        if( typeof filter.allowFeeds[feedId].denyRA !== "undefined" ) {
+          filterDenyRA = true;
+        }
+        // exist allowRA?
+        if( typeof filter.allowFeeds[feedId].allowRA !== "undefined" ) {
+          filterAllowRA = true;
+        }
+
       } else {
         // filter v1
         if( ("allowIdPs" in filter)) {
@@ -1021,13 +1041,21 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
             // allowIdPs per feed
             if( filterAllowIdps ) { 
 
-              if( filter.allowFeeds[feedId].allowIdPs.indexOf(eid)>=0 || (filterAllowEC && wayf.isInEc( filter.allowFeeds[feedId].allowEC, mdSet.entities[eid].EC ))) {
+              if( filter.allowFeeds[feedId].allowIdPs.indexOf(eid)>=0 || (filterAllowEC && wayf.isInEc( filter.allowFeeds[feedId].allowEC, mdSet.entities[eid].EC )) || (filterAllowRA && wayf.isInRA( filter.allowFeeds[feedId].allowRA, mdSet.entities[eid].RA ))) {
                 // nothing, too complex if
               } else {
                 continue;
               } 
             } else {
   
+              // RegistrationAuthority, first remove denyRA, then add allowRA
+              if( filterDenyRA && wayf.isInRA( filter.allowFeeds[feedId].denyRA, mdSet.entities[eid].RA )) {
+                continue;
+              }
+              if( filterAllowRA && wayf.isInRA( filter.allowFeeds[feedId].allowRA, mdSet.entities[eid].RA )==false) {
+                continue;
+              }
+
               // entity category, first remove denyEC, then add allowEC
               if( filterDenyEC && wayf.isInEc( filter.allowFeeds[feedId].denyEC, mdSet.entities[eid].EC )) {
                 continue;
@@ -1372,6 +1400,8 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                         var filterAllowIdps;
                         var filterAllowEC;
                         var filterDenyEC;
+                        var filterAllowRA;
+                        var filterDenyRA;
                         var eidIsDeny;
                         var eidIsNotInAllow;
                         var eidAll;
@@ -1385,6 +1415,8 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                             filterAllowIdps = false;
                             filterAllowEC = false;
                             filterDenyEC = false;
+                            filterAllowRA = false;
+                            filterDenyRA = false;
                             eidIsDeny = false;
                             eidIsNotInAllow = false;
                             eidAll = true;
@@ -1409,6 +1441,16 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                               if( filterAllowIdps && filter.allowFeeds[feed].allowIdPs.indexOf(eid) < 0)
                                 eidIsNotInAllow = true;
 
+                              if( typeof filter.allowFeeds[feed].denyRA !== "undefined" ) {
+                                filterDenyRA = true;
+                                eidAll = false;
+                              }
+
+                              if( typeof filter.allowFeeds[feed].allowRA !== "undefined" ) {
+                                filterAllowRA = true;
+                                eidAll = false;
+                              }
+
                               if( typeof filter.allowFeeds[feed].denyEC !== "undefined" ) {
                                 filterDenyEC = true;
                                 eidAll = false;
@@ -1426,6 +1468,14 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                                 tmpEnableIdp = false;
                               }
                               if( filterAllowEC && wayf.isInEc( filter.allowFeeds[feed].allowEC, wayf.feedData[feed].mdSet.entities[eid].EC )==false) {
+                                tmpEnableIdp = false;
+                              }
+
+                              // RegistrationAuthority, first remove denyRA, then add allowRA
+                              if( filterDenyRA && wayf.isInRA( filter.allowFeeds[feed].denyRA, wayf.feedData[feed].mdSet.entities[eid].RA )) {
+                                tmpEnableIdp = false;
+                              }
+                              if( filterAllowRA && wayf.isInRA( filter.allowFeeds[feed].allowRA, wayf.feedData[feed].mdSet.entities[eid].RA )==false) {
                                 tmpEnableIdp = false;
                               }
      
