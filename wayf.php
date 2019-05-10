@@ -83,6 +83,24 @@ function addVariable($varName, $varValue, $isRecursion=false) {
     }
 }
 
+/* return true if returnURL is on whitelist */
+function checkReturnURLWhitelist( $returnURL ) {
+  $whitelist_array = array(
+    "https://www.sitola.cz/Shibboleth.sso/DS",
+    "https://attributes.eduid.cz/dsadev/Shibboleth.sso/Login"  // attributes.eduid.cz for developers version dsa-dev.eduid.cz
+  );
+
+  $a_return = explode( "?", $returnURL );
+
+  if( in_array( $a_return[0], $whitelist_array ) ) {
+    error_log( addslashes( "checkReturnURLWhitelist(): whitelisted returnURL ". $a_return[0] ));
+    return true;
+  }
+
+  //error_log( addslashes( "checkReturnURLWhitelist(): NO whitelisted returnURL ". $a_return[0] ));
+  return false;
+}
+
 $wayfBase = "https://" . $_SERVER['HTTP_HOST'];
 if(isset($_GET['return'])) {
   $returnURL = $_GET['return'];
@@ -141,6 +159,7 @@ $checkSPDiscoveryResponseTest = false;
 if(isset($_GET['entityID'])) {
     $entityID = $_GET['entityID'];
     $checkSPDiscoveryResponseTest = checkSPDiscoveryResponse( $entityID, $returnURL );
+    $checkSPDiscoveryResponseTest = checkReturnURLWhitelist( $returnURL );
     $checkSPDiscoveryResponseTest = true;  // don't return error, only log it
 
     if(($useFilter && isset($jFilter['allowFeeds']) && $jFilter['allowFeeds'] !== "") || ($useFilter && isset($jFilter['allowIdPs']) && $jFilter['allowIdPs'] !== "")) {
