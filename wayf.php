@@ -467,7 +467,7 @@ else {
     $ban_lib = false;
     $lib = "";
     if(isset($_GET["k-n-d"])) {
-        $handle = fopen("/var/www/wayf/libraries.dat", "r");
+        $handle = fopen("libraries.dat", "r");
         if($handle) {
             $ban_lib = true;
             $lib = '[';
