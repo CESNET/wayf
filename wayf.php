@@ -224,7 +224,7 @@ else if(!isset($entityID) || !isset($returnURL) || !$checkSPDiscoveryResponseTes
     echo $edge;
     echo "<title>Discovery service</title>";
     echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"errorpage.css\">";
-    echo "</head><body>";
+    echo "</head><body style=\"background-color:white\">";
 
     if( $checkSPDiscoveryResponseTest ) {
 
