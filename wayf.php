@@ -86,8 +86,27 @@ function addVariable($varName, $varValue, $isRecursion=false) {
 /* return true if returnURL is on whitelist */
 function checkReturnURLWhitelist( $returnURL ) {
   $whitelist_array = array(
-    "https://www.sitola.cz/Shibboleth.sso/DS",
-    "https://attributes.eduid.cz/dsadev/Shibboleth.sso/Login"  // attributes.eduid.cz for developers version dsa-dev.eduid.cz
+    "https://attributes.eduid.cz/dsadev/Shibboleth.sso/Login",  // attributes.eduid.cz for developers version dsa-dev.eduid.cz
+    "https://attribute-viewer.aai.switch.ch/Shibboleth.sso/Login",  // attribute-viewer at switch
+    "https://dspace.amu.cz/Shibboleth.sso/Login",  // RT 461479
+    "https://ftas-pa.cesnet.cz/Shibboleth.sso/DS",  // RT 465919
+    "https://gc17.cesnet.cz/Shibboleth.sso/DS",  // RT 465919
+    "https://pakiti.csirt.muni.cz/Shibboleth.sso/Login",  // RT 461482
+    "https://pakiti.egi.eu/Shibboleth.sso/Login",         // RT 461482
+    "https://validator.cesnet.cz/Shibboleth.sso/Login",  // non in eduid metadata (testing)
+    "https://bydleni.muni.cz/Shibboleth.sso/Login",  // RT 461486
+    "https://bydleni.slu.cz/Shibboleth.sso/Login",   // RT 461486
+    "http://eunis.cz/simplesamlphp/module.php/saml/sp/discoresp.php",  // RT 461480
+    "https://felk.cvut.cz/Shibboleth.sso/Login",
+    "https://sitola.fi.muni.cz/Shibboleth.sso/DS",  // RT 461485
+    "https://www.sitola.cz/Shibboleth.sso/DS",      // RT 461485
+    "https://hostel.eduid.cz/Shibboleth.sso/DS",
+    "https://atributy.eduid.cz/Shibboleth.sso/Login",
+    "https://gc1.cesnet.cz/Shibboleth.sso/DS", 
+    "https://ozzik.cesnet.cz/Shibboleth.sso/DS",
+    "https://rr.funet.fi/attribute-test/Shibboleth.sso/edugain",  // testing funet 
+    "https://portal.lf1.cuni.cz/Shibboleth.sso/WAYF",  // https://shibboleth2.lf1.cuni.cz/shibboleth/ RT 461481
+    "https://softweco.cz/Shibboleth.sso/Login",  
   );
 
   $a_return = explode( "?", $returnURL );
