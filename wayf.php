@@ -107,6 +107,7 @@ function checkReturnURLWhitelist( $returnURL ) {
     "https://rr.funet.fi/attribute-test/Shibboleth.sso/edugain",  // testing funet 
     "https://portal.lf1.cuni.cz/Shibboleth.sso/WAYF",  // https://shibboleth2.lf1.cuni.cz/shibboleth/ RT 461481
     "https://softweco.cz/Shibboleth.sso/Login",  
+    "https://idm-test.ics.muni.cz/Shibboleth.sso/Login",  // ?
   );
 
   $a_return = explode( "?", $returnURL );
@@ -256,7 +257,7 @@ else if(!isset($entityID) || !isset($returnURL) || !$checkSPDiscoveryResponseTes
       echo "<div id=\"nadpis_en\"><h1>An error occured</h1>";
       echo "Service provider didn't send all parameters needed for login.<br>";
       echo "For login are needed at least &quot;<i>entityID</i>&quot and &quot;<i>return</i>&quot.<br>";
-      echo "List of parameters sended from service provider is below.";
+      echo "List of parameters sent from service provider is below.";
       echo "<br>Documentation (in czech language) can be found at <a href=\"http://www.eduid.cz/cesnet-ds\">http://www.eduid.cz/cesnet-ds</a></div>";
 
     } else {
