@@ -181,7 +181,7 @@ $checkSPDiscoveryResponseTest = false;
 if(isset($_GET['entityID'])) {
     $entityID = $_GET['entityID'];
     $checkSPDiscoveryResponseTest = checkSPDiscoveryResponse( $entityID, $returnURL );
-    if( $checkSPDiscoveryResponse == false ) {
+    if( $checkSPDiscoveryResponseTest == false ) {
       $checkSPDiscoveryResponseTest = checkReturnURLWhitelist( $returnURL );
     }
     // $checkSPDiscoveryResponseTest = true;  // don't return error, only log it
