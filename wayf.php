@@ -108,6 +108,8 @@ function checkReturnURLWhitelist( $returnURL ) {
     "https://portal.lf1.cuni.cz/Shibboleth.sso/WAYF",  // https://shibboleth2.lf1.cuni.cz/shibboleth/ RT 461481
     "https://softweco.cz/Shibboleth.sso/Login",  
     "https://idm-test.ics.muni.cz/Shibboleth.sso/Login",  // ?
+    "https://login.cesnet.cz/proxy/module.php/saml/sp/discoresp.php",  // ?
+    "https://cebhckt-kdp.med.muni.cz/Shibboleth.sso/WAYF", 
   );
 
   $a_return = explode( "?", $returnURL );
