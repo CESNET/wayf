@@ -252,23 +252,23 @@ else if(!isset($entityID) || !isset($returnURL) || !$checkSPDiscoveryResponseTes
       echo "Poskytovatel služby ke které se hlásíte nepředal všechny parametry potřebné pro přihlášení.<br>";
       echo "K přihlášení jsou nutné alespoň parametry &quot;<i>entityID</i>&quot; a &quot;<i>return</i>&quot;.<br>";
       echo "Seznam parametrů, které poskytovatel služby předal, můžete vidět v seznamu níže.<br>";
-      echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a href=\"http://www.eduid.cz/cesnet-ds\">http://www.eduid.cz/cesnet-ds</a></div>";
+      echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a href=\"www.eduid.cz/cs/tech/wayf\">www.eduid.cz/cs/tech/wayf</a></div>";
   
       echo "<div id=\"nadpis_en\"><h1>An error occured</h1>";
       echo "Service provider didn't send all parameters needed for login.<br>";
       echo "For login are needed at least &quot;<i>entityID</i>&quot and &quot;<i>return</i>&quot.<br>";
       echo "List of parameters sent from service provider is below.";
-      echo "<br>Documentation (in czech language) can be found at <a href=\"http://www.eduid.cz/cesnet-ds\">http://www.eduid.cz/cesnet-ds</a></div>";
+      echo "<br>Documentation (in czech language) can be found at <a href=\"www.eduid.cz/en/tech/wayf\">www.eduid.cz/en/tech/wayf</a></div>";
 
     } else {
 
       echo "<div id=\"nadpis_cs\"><h1>Nastala chyba</h1>";
       echo "Poskytovatel služby ke které se hlásíte předal neplatný parametr &quot;<i>return</i>&quot;.<br>";
-      echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a href=\"http://www.eduid.cz/cesnet-ds\">http://www.eduid.cz/cesnet-ds</a></div>";
+      echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a href=\"www.eduid.cz/cs/tech/wayf\">www.eduid.cz/cs/tech/wayf</a></div>";
   
       echo "<div id=\"nadpis_en\"><h1>An error occured</h1>";
       echo "Service provider sent invalid parameter &quot;<i>return</i>&quot;.<br>";
-      echo "Documentation (in czech language) can be found at <a href=\"http://www.eduid.cz/cesnet-ds\">http://www.eduid.cz/cesnet-ds</a></div>";
+      echo "Documentation can be found at <a href=\"www.eduid.cz/en/tech/wayf\">www.eduid.cz/en/tech/wayf</a></div>";
 
     }
 
