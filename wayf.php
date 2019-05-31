@@ -86,7 +86,7 @@ function addVariable($varName, $varValue, $isRecursion=false) {
 /* return true if returnURL is on whitelist */
 function checkReturnURLWhitelist( $returnURL ) {
   $whitelist_array = array(
-    "https://attributes.eduid.cz/dsadev/Shibboleth.sso/Login",  // attributes.eduid.cz for developers version dsa-dev.eduid.cz
+//    "https://attributes.eduid.cz/dsadev/Shibboleth.sso/Login",  // attributes.eduid.cz for developers version dsa-dev.eduid.cz
     "https://attribute-viewer.aai.switch.ch/Shibboleth.sso/Login",  // attribute-viewer at switch
     "https://dspace.amu.cz/Shibboleth.sso/Login",  // RT 461479
     "https://ftas-pa.cesnet.cz/Shibboleth.sso/DS",  // RT 465919
@@ -252,23 +252,23 @@ else if(!isset($entityID) || !isset($returnURL) || !$checkSPDiscoveryResponseTes
       echo "Poskytovatel služby ke které se hlásíte nepředal všechny parametry potřebné pro přihlášení.<br>";
       echo "K přihlášení jsou nutné alespoň parametry &quot;<i>entityID</i>&quot; a &quot;<i>return</i>&quot;.<br>";
       echo "Seznam parametrů, které poskytovatel služby předal, můžete vidět v seznamu níže.<br>";
-      echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a href=\"www.eduid.cz/cs/tech/wayf\">www.eduid.cz/cs/tech/wayf</a></div>";
+      echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a href=\"https://www.eduid.cz/cs/tech/wayf\">www.eduid.cz/cs/tech/wayf</a></div>";
   
       echo "<div id=\"nadpis_en\"><h1>An error occured</h1>";
       echo "Service provider didn't send all parameters needed for login.<br>";
       echo "For login are needed at least &quot;<i>entityID</i>&quot and &quot;<i>return</i>&quot.<br>";
       echo "List of parameters sent from service provider is below.";
-      echo "<br>Documentation can be found at <a href=\"www.eduid.cz/en/tech/wayf\">www.eduid.cz/en/tech/wayf</a></div>";
+      echo "<br>Documentation (in czech language) can be found at <a href=\"https://www.eduid.cz/en/tech/wayf\">www.eduid.cz/en/tech/wayf</a></div>";
 
     } else {
 
       echo "<div id=\"nadpis_cs\"><h1>Nastala chyba</h1>";
       echo "Poskytovatel služby ke které se hlásíte předal neplatný parametr &quot;<i>return</i>&quot;.<br>";
-      echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a href=\"www.eduid.cz/cs/tech/wayf\">www.eduid.cz/cs/tech/wayf</a></div>";
+      echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a href=\"https://www.eduid.cz/cs/tech/wayf\">www.eduid.cz/cs/tech/wayf</a></div>";
   
       echo "<div id=\"nadpis_en\"><h1>An error occured</h1>";
       echo "Service provider sent invalid parameter &quot;<i>return</i>&quot;.<br>";
-      echo "Documentation can be found at <a href=\"www.eduid.cz/en/tech/wayf\">www.eduid.cz/en/tech/wayf</a></div>";
+      echo "Documentation can be found at <a href=\"https://www.eduid.cz/en/tech/wayf\">www.eduid.cz/en/tech/wayf</a></div>";
 
     }
 
