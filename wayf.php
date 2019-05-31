@@ -258,7 +258,7 @@ else if(!isset($entityID) || !isset($returnURL) || !$checkSPDiscoveryResponseTes
       echo "Service provider didn't send all parameters needed for login.<br>";
       echo "For login are needed at least &quot;<i>entityID</i>&quot and &quot;<i>return</i>&quot.<br>";
       echo "List of parameters sent from service provider is below.";
-      echo "<br>Documentation (in czech language) can be found at <a href=\"www.eduid.cz/en/tech/wayf\">www.eduid.cz/en/tech/wayf</a></div>";
+      echo "<br>Documentation can be found at <a href=\"www.eduid.cz/en/tech/wayf\">www.eduid.cz/en/tech/wayf</a></div>";
 
     } else {
 
