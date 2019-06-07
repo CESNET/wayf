@@ -282,7 +282,7 @@ else if(!isset($entityID) || !isset($returnURL) || !$checkSPDiscoveryResponseTes
     else {
         echo "<div id=\"paramlist\"><h2>Seznam parametrů / List of parameters</h2>";
         foreach($_GET as $key => $value) {
-            echo "[$key] = [$value]<br>\n";
+            echo "[$key] = [". htmlentities($value, ENT_QUOTES) ."]<br>\n";
         }
         echo "</div><div class=\"roztah\"></div>";
     }
