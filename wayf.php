@@ -110,6 +110,8 @@ function checkReturnURLWhitelist( $returnURL ) {
     "https://idm-test.ics.muni.cz/Shibboleth.sso/Login",  // ?
     "https://login.cesnet.cz/proxy/module.php/saml/sp/discoresp.php",  // ?
     "https://cebhckt-kdp.med.muni.cz/Shibboleth.sso/WAYF", 
+    "www.example.org",  // returnUrl used in filter generator 
+    "https://stats.czechelib.cz/Shibboleth.sso/Login"  // not in federation yet
   );
 
   $a_return = explode( "?", $returnURL );
