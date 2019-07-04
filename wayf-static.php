@@ -20,6 +20,7 @@ include 'wayf_vars.php';  // customization CESNET/eduTEAMS
 // constants
 define( "EC", "EC" );  // EC index to entities
 define( "RA", "RA" );  // RegistrationAuthority index to entities
+define( "HIDEFROMDISCOVERY", "http://refeds.org/category/hide-from-discovery" ); // Entity Category - Hide From Discovery
 
 // Development mode
 $DEVEL = false;
@@ -391,7 +392,9 @@ else {
 
             // echo "aktualni feed - ". $feed ." xxx ";
             $feedPath = "/opt/getMD/var/pub/current/feed/" . $feed . ".js";
-            $feedFile = file_get_contents($feedPath);
+            if( ($feedFile = file_get_contents($feedPath)) === false ) {
+              continue;  // skip non exist file
+            }
             $fd = json_decode($feedFile, true);
             $c_entities = $fd["entities"];
 
@@ -401,6 +404,7 @@ else {
             $filterDenyEC = false;
             $filterAllowRA = false;
             $filterDenyRA = false;
+            $filterHideFromDiscovery = true;
 
 
             if( isset( $jFilter['allowFeeds'][ $feed ]['denyIdPs'] )) {
@@ -421,6 +425,9 @@ else {
 
             if( isset( $jFilter['allowFeeds'][ $feed ]['allowEC'] )) {
               $filterAllowEC = true;
+              if( in_array( HIDEFROMDISCOVERY, $jFilter['allowFeeds'][ $feed ]['allowEC'] )) {
+                $filterHideFromDiscovery = false;
+              } 
             }
 
             if( isset( $jFilter['allowFeeds'][ $feed ]['denyEC'] )) {
@@ -460,7 +467,7 @@ else {
                 continue;
               }
 
-              if( $filterAllowEC || $filterDenyEC ) { 
+              if( $filterAllowEC || $filterDenyEC || $filterHideFromDiscovery ) { 
                 if( isset( $c_entities[ $key ][ EC ] )) {
                   foreach( $c_entities[ $key ][ EC ] as $ecMetadata ) {
                     if( $filterDenyEC && in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['denyEC'])) {
@@ -469,6 +476,9 @@ else {
                       continue 2;
                     }
                     if( $filterAllowEC && ! in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['allowEC'])) {
+                      continue 2;
+                    }
+                    if( $filterHideFromDiscovery && strcmp( $ecMetadata, HIDEFROMDISCOVERY ) == 0 ) {
                       continue 2;
                     }
                   }
@@ -482,7 +492,7 @@ else {
                 continue;
               }
 
-              if( ! $filterAllowIdps && ! $filterDenyIdps && ! $filterAllowEC && ! $filterDenyEC ) {
+              if( ! $filterAllowIdps && ! $filterDenyIdps && ! $filterAllowEC && ! $filterDenyEC && $filterHideFromDiscovery ) {
                 $entities[$key] = $value;
               }
             }

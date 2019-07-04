@@ -55,6 +55,8 @@ var logos = new Object();  // temporary array for logos
 var noImage = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 var loadingImage = 'data:image/gif;base64,R0lGODlhEAAQAPIAAM7a5wAAAJ2msDU4PAAAAE9UWWlvdnZ9hCH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==';
 
+var hideFromDiscoveryCategory = "http://refeds.org/category/hide-from-discovery";
+
 /* some variables are coming from wayf.php, for example returnURL */
 var returnUrlParamCharacter = "&";
 if( returnURL.indexOf( "?" ) == -1 ) {
@@ -989,6 +991,7 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
     var filterDenyEC = false;  // Deny EntityCategory filter
     var filterAllowRA = false;  // Allow RegistrationAuthority filter
     var filterDenyRA = false;  // Deny RegistrationAythority filter
+    var filterHideFromDiscovery = true;  // Filter entity-category hide-from-discovery by default
 
     if( useFilter ) {
       if( filterVersion == "2" ) {
@@ -1002,14 +1005,21 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
             filterAllowIdps = true;
           }
         }
+
         // exist denyEC?
         if( typeof filter.allowFeeds[feedId].denyEC !== "undefined" ) {
           filterDenyEC = true;
         }
+
         // exist allowEC?
         if( typeof filter.allowFeeds[feedId].allowEC !== "undefined" ) {
           filterAllowEC = true;
+          // disable filter out hide-from-discovery
+          if( filter.allowFeeds[feedId].allowEC.indexOf( hideFromDiscoveryCategory ) >= 0 ) {
+            filterHideFromDiscovery = false;
+          }
         }
+
         // exist denyRA?
         if( typeof filter.allowFeeds[feedId].denyRA !== "undefined" ) {
           filterDenyRA = true;
@@ -1061,6 +1071,10 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
                 continue;
               }
               if( filterAllowEC && wayf.isInEc( filter.allowFeeds[feedId].allowEC, mdSet.entities[eid].EC )==false) {
+                continue;
+              }
+              // filter out hide-from-discovery IdP
+              if( filterHideFromDiscovery && ( typeof mdSet.entities[eid].EC !== "undefined" ) && ( mdSet.entities[eid].EC.indexOf( hideFromDiscoveryCategory ) >= 0 )) {
                 continue;
               }
             }
@@ -1417,6 +1431,7 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                             filterDenyEC = false;
                             filterAllowRA = false;
                             filterDenyRA = false;
+                            filterHideFromDiscovery = true;
                             eidIsDeny = false;
                             eidIsNotInAllow = false;
                             eidAll = true;
@@ -1459,6 +1474,9 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                               if( typeof filter.allowFeeds[feed].allowEC !== "undefined" ) {
                                 filterAllowEC = true;
                                 eidAll = false;
+                                if( filter.allowFeeds[feed].allowEC.indexOf( hideFromDiscoveryCategory ) >= 0 ) {
+                                  filterHideFromDiscovery = false;
+                                }
                               }
 
                               /* vyhodnoceni v2 */
@@ -1470,7 +1488,11 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                               if( filterAllowEC && wayf.isInEc( filter.allowFeeds[feed].allowEC, wayf.feedData[feed].mdSet.entities[eid].EC )==false) {
                                 tmpEnableIdp = false;
                               }
-
+                              if( filterHideFromDiscovery && ( typeof wayf.feedData[feed].mdSet.entities[eid].EC !== "undefined" ) && ( wayf.feedData[feed].mdSet.entities[eid].EC.indexOf( hideFromDiscoveryCategory ) >= 0 )) {
+                                tmpEnableIdp = false;
+                                eidAll = false;
+                              }
+                              
                               // RegistrationAuthority, first remove denyRA, then add allowRA
                               if( filterDenyRA && wayf.isInRA( filter.allowFeeds[feed].denyRA, wayf.feedData[feed].mdSet.entities[eid].RA )) {
                                 tmpEnableIdp = false;
