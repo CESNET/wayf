@@ -54,6 +54,7 @@ var filterVersion = 1;  // default original version, not suitable for all cases
 var logos = new Object();  // temporary array for logos
 var noImage = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 var loadingImage = 'data:image/gif;base64,R0lGODlhEAAQAPIAAM7a5wAAAJ2msDU4PAAAAE9UWWlvdnZ9hCH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==';
+var missingLogo = "logo/missing.png";
 
 var hideFromDiscoveryCategory = "http://refeds.org/category/hide-from-discovery";
 
@@ -648,7 +649,7 @@ View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDel
 
     var logo = document.createElement('img');
     logo.className = "logo";
-    if( logoSource == "logo/missing.png" ) {
+    if( logoSource == missingLogo ) {
       logo.src = noImage;
     } else {
       logo.src = loadingImage;
@@ -733,7 +734,7 @@ $.fn.isInViewport = function() {
 };
 
 function loadVisibleLogos() { 
-  $( ".scroller" ).children( ".enabled" ).each( function() {
+  $( ".scroller" ).children().each( function() {
     // test if is already loaded
     if( typeof logos[ this.id ] !==  "undefined" ) {
       if( $( this ).isInViewport() ) {
@@ -1359,7 +1360,10 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
             var url = this.createEntityLink(eid);
             var tgt = this.view.target;
             var label = this.getLabelFromLabels(entity.entity.label);
-            var logoSource = 'data:image/png;base64,' + entity.logo;
+            var logoSource = missingLogo;
+            if( typeof entity.logo !== "undefined" ) {
+              var logoSource = 'data:image/png;base64,' + entity.logo;
+            }
             var enabled = true;
             var alert_na= this.view.getLabelText( "NOT_AVAILABLE" );
             var callback = null;
