@@ -1158,7 +1158,8 @@ function searchAuto( query, wayf, callback, saveQuery ) {
     }
   }
 
-  var regexp_query = new RegExp( query, "i" );
+  //var regexp_query = new RegExp( query, "i" );
+  var queryArray = query.split(" ");
   var idScroller = document.getElementsByClassName('scroller')[0];
   var frag = document.createDocumentFragment();  
   var fragScroller = document.createElement('div');
@@ -1177,11 +1178,11 @@ function searchAuto( query, wayf, callback, saveQuery ) {
     var label = wayf.view.keySorted[ idLabel ];
     var entity = wayf.view.mixelaHash[ label ].id;
     var extractedDomain = entity.split("/");
-    if( typeof extractedDomain[2] !== "undefined" && extractedDomain[2].search( regexp_query ) != -1 ) {
+    if( typeof extractedDomain[2] !== "undefined" && extractedDomain[2].indexOf( query.toLowerCase() ) != -1 ) {
       fragScroller.appendChild( wayf.view.mixelaHash[ label ] );
     } else {
       for(var curLang in this.wayf.selectedIdps[ entity ]){
-        if( this.wayf.selectedIdps[entity][curLang].search( regexp_query ) != -1) {
+        if( containAllSubstring( this.wayf.selectedIdps[entity][curLang], queryArray ) == true) {
           fragScroller.appendChild( wayf.view.mixelaHash[ label ] );
           break;
         }
@@ -1193,6 +1194,15 @@ function searchAuto( query, wayf, callback, saveQuery ) {
   idContent.removeChild( idScroller );  
   idContent.insertBefore( frag, idContent.childNodes[1] );
     
+}
+
+function containAllSubstring( str, substringArray ) {
+  for(var curSubstring in substringArray ) {
+    if( str.toLowerCase().indexOf( substringArray[curSubstring].toLowerCase() ) == -1 ) {
+      return false;
+    }
+  }
+  return true;
 }
 
 Wayf.prototype.getBase64Image = function(url, etag) {
