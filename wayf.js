@@ -1372,6 +1372,7 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
             var label = this.getLabelFromLabels(entity.entity.label);
             var logoSource = missingLogo;
             if( typeof entity.logo !== "undefined" ) {
+              // var je zvlastni
               var logoSource = 'data:image/png;base64,' + entity.logo;
             }
             var enabled = true;
@@ -1691,9 +1692,6 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
               // sort mixela
               wayf.view.keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
 
-              // empty scroller due to duplicity
-              // while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
-
               $( ".toplabel" ).text(wayf.view.getLabelText('TEXT_ALL_IDPS'));
               
               var frag = document.createDocumentFragment();   
@@ -1786,13 +1784,9 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     // sort mixela
     wayf.view.keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
 
-    // empty scroller due to duplicity
-    // while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
-         
     var frag = document.createDocumentFragment();   
     for( var key in wayf.view.keySorted ) {
       frag.appendChild( wayf.view.mixelaHash[ wayf.view.keySorted[ key ] ] );
-      // wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
     }
     wayf.view.scroller.appendChild( frag ); 
 
