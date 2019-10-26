@@ -2,7 +2,7 @@
   $prefLang = "en";
   $lang_ui = "en";
   $organizationLabel = "Service powered by";
-  $organizationHelpLink = "https://www.geant.org/Innovation/eduteams";
+  $organizationHelpLink = "https://wiki.geant.org/display/eduGAIN/How+to+use+as+a+Service+Provider"";
   $organizationHelpImage = "eduteams_logo28.png";
   $organizationHelpImageAlt = "eduTEAMS";
   $filterTitleCS = "Vytvoření filtru pro službu eduTEAMS Discovery";
