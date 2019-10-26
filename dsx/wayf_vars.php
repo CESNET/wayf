@@ -2,7 +2,7 @@
   $prefLang = "en";
   $lang_ui = "en";
   $organizationLabel = "Service powered by";
-  $organizationHelpLink = "https://wiki.geant.org/display/eduGAIN/How+to+use+as+a+Service+Provider"";
+  $organizationHelpLink = "https://wiki.geant.org/display/eduGAIN/How+to+use+as+a+Service+Provider";
   $organizationHelpImage = "geant-logo-gray.png";
   $organizationHelpImageAlt = "GÉANT";
   $filterTitleCS = "Vytvoření filtru pro službu DSX Discovery";
