@@ -318,16 +318,16 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     /* search field */
     var search = document.createElement('input');
     search.className = "topsearch";
-    search.style.backgroundRepeat="no-repeat";
-    search.style.backgroundPosition="right";
-    search.style.backgroundImage="url('search.png')";
-    search.style.borderRadius="3px";
-    search.style.borderStyle="1px solid #bbb";
-    search.style.position="relative";
-    search.style.cssFloat="right";
-    search.style.visibility = "visible";
-    search.style.width="200px";
-    search.style.fontSize="14px";
+    //search.style.backgroundRepeat="no-repeat";
+    // search.style.backgroundPosition="right";
+    // search.style.backgroundImage="url('search.png')";
+    // search.style.borderRadius="3px";
+    // search.style.borderStyle="1px solid #bbb";
+    // search.style.position="relative";
+    // search.style.cssFloat="right";
+    // search.style.visibility = "visible";
+    // search.style.width="200px";
+    // search.style.fontSize="14px";
 
     if( noSearch ) {
       search.style.visibility = "hidden";
@@ -790,6 +790,14 @@ function Wayf(divName) {
     var cssId = 'myCss'; 
     if (!document.getElementById(cssId)) {
         var head  = document.getElementsByTagName('head')[0];
+        var linkWayf = document.createElement('link');
+        linkWayf.id = 'wayfCss';
+        linkWayf.rel  = 'stylesheet';
+        linkWayf.type = 'text/css';
+        linkWayf.href = serverURL + 'wayf.css';
+        linkWayf.media = 'all';
+        head.appendChild(linkWayf);
+       
         var link  = document.createElement('link');
         link.id   = cssId;
         link.rel  = 'stylesheet';
@@ -1628,8 +1636,8 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
     if( ! noSearchSavedIdps ) {
       var textSearch = this.lastSearch;
       $(document).ready( function() {
-        $( ".topsearch" ).css("position", "relative");
-        $( ".topsearch" ).css( "float", "right" ); 
+        //$( ".topsearch" ).css("position", "relative");
+        //$( ".topsearch" ).css( "float", "right" ); 
         $( ".topsearch" ).focus();
         $( ".topsearch" ).val( textSearch );
       });
@@ -1797,8 +1805,8 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     var textSearch = this.lastSearch;
     $(document).ready( function() {
 
-      $( ".topsearch" ).css( "position", "relative" );
-      $( ".topsearch" ).css( "float", "right" );
+      //$( ".topsearch" ).css( "position", "relative" );
+      //$( ".topsearch" ).css( "float", "right" );
       $( ".topsearch" ).focus();
       $( ".topsearch" ).val( textSearch );
     }); 
