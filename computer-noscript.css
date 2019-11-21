@@ -39,7 +39,7 @@ div#wayf > div.top {
 }
 
 #wayf .content {
-    max-height: 450px;
+    max-height: 75vh;
     overflow: auto;
 }
 
