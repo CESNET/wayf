@@ -1,6 +1,7 @@
 <?php
   $prefLang = "en";
   $lang_ui = "en";
+  $htmlTitle = "Discovery service";
   $organizationLabel = "Service powered by";
   $organizationHelpLink = "https://wiki.geant.org/display/eduGAIN/How+to+use+as+a+Service+Provider";
   $organizationHelpImage = "geant-logo-gray.png";

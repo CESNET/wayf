@@ -2,34 +2,20 @@
 
 include 'Mobile_Detect.php';
 include '/opt/getMD/lib/SPInfo.php';
-include 'wayf_vars.php';  // customization CESNET/eduTEAMS
+include 'wayf_vars.php';  // customization CESNET/eduTEAMS/dsx/perun
 
 
 $detect = new Mobile_Detect();
 
 $edge = "<meta http-equiv=\"X-UA-Compatible\" content=\"edge\" >";
 
-//$doctype = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\" \"http://www.w3.org/TR/html4/frameset.dtd\">\n";
-//$charset = "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">";
+$doctype = "<!DOCTYPE html>\n";
+$htmlHeader = "<html><head><title>". $htmlTitle ."</title>";
+$charset = "<meta charset=\"UTF-8\">\n"; 
 
-$doctype = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n";
-$charset = "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n";
-
-//$doctype = "<!DOCTYPE html>\n";
-//$charset = "<meta charset=\"utf-8\" >";
-
-$DEVEL = false;
-
-if(isset($DEVEL) && $DEVEL == true) {
-    $failbackWayf = "/wayf-static-dev.php";
-    $script = file_get_contents("wayf-dev.js");
-    $wayfURL = "/wayf-dev.php";
-}
-else {
-    $failbackWayf = "/wayf-static.php";
-    $script = file_get_contents("wayf.js");
-    $wayfURL = "/wayf.php";
-}
+$failbackWayf = "/wayf-static.php";
+$script = file_get_contents("wayf.js");
+$wayfURL = "/wayf.php";
 
 function urldecodeToArray($url) {
     $ret_ar = array();
@@ -172,11 +158,9 @@ if(isset($extFilter)) {
     
 }
 
+$returnIDVariable = 'entityID';
 if(isset($_GET['returnIDParam'])) {
     $returnIDVariable = $_GET['returnIDParam'];
-}
-else {
-    $returnIDVariable = 'entityID';
 }
 
 $checkSPDiscoveryResponseTest = false;
@@ -245,10 +229,9 @@ if(isset($fromHostelRegistrar)) {
 else if(!isset($entityID) || !isset($returnURL) || !$checkSPDiscoveryResponseTest ) {
     
     echo $doctype;
-    echo "<html><head>";
+    echo $htmlHeader;
     echo $charset;
     echo $edge;
-    echo "<title>Discovery service</title>";
     echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"errorpage.css\">";
     echo "</head><body style=\"background-color:white\">";
 
@@ -288,8 +271,6 @@ else if(!isset($entityID) || !isset($returnURL) || !$checkSPDiscoveryResponseTes
         }
         echo "</div><div class=\"roztah\"></div>";
     }
-
-
 }
 else {
 
@@ -298,9 +279,6 @@ else {
 
     if($detect->isMobile() && !$detect->isTablet() ) {
         $mobile = true;
-        // if($detect->isAndroidOS() && $detect->isSafari()) {
-        //    $dumb = true;
-        // }
     }
 
     header("X-UA-Compatible: IE=edge");
@@ -328,7 +306,7 @@ else {
     }
 
     echo $doctype;
-    echo "<html><head><title>Discovery service</title>";
+    echo $htmlHeader;
     echo $charset;
     // echo "<link rel=\"stylesheet\" href=\"jquery-ui.min.css\" />";
     echo "<script type=\"text/javascript\" src=\"jquery.js\"></script>";
@@ -507,32 +485,6 @@ else {
     else {
         echo "var useHostel = false;\n";
     }
-
-    // ---------- Knihovny? Nein, danke! ----------
-    $ban_lib = false;
-    $lib = "";
-    if(isset($_GET["k-n-d"])) {
-        $handle = fopen("libraries.dat", "r");
-        if($handle) {
-            $ban_lib = true;
-            $lib = '[';
-            while(($line = fgets($handle)) !== false) {
-                $line = trim($line);
-                if($line != "") {
-                    $lib .= "\"" . $line . "\",";
-                }
-            }
-            $lib = rtrim($lib,",")."]";
-        } else {
-            // error opening the file.
-        }
-        fclose($handle);
-    }
-    addVariable("banLib", $ban_lib);
-    if($ban_lib) {
-        echo "var libraries = " . $lib . ";\n";
-    }
-   // -------------------------------------------
 
     echo "var noHTML5URL = \"" . $failbackWayf . "?" . $qs . "\";\n";
 
