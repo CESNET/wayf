@@ -4,18 +4,20 @@ include 'Mobile_Detect.php';
 include '/opt/getMD/lib/SPInfo.php';
 include 'wayf_vars.php';  // customization CESNET/eduTEAMS/dsx/perun
 
-
 $detect = new Mobile_Detect();
 
-$edge = "<meta http-equiv=\"X-UA-Compatible\" content=\"edge\" >";
-
-$doctype = "<!DOCTYPE html>\n";
-$htmlHeader = "<html><head><title>". $htmlTitle ."</title>";
-$charset = "<meta charset=\"UTF-8\">\n"; 
+$htmlTemplate = file_get_contents("wayf.tpl");
 
 $failbackWayf = "/wayf-static.php";
 $script = file_get_contents("wayf.js");
 $wayfURL = "/wayf.php";
+
+$searchAndReplace = array(
+    '{{title}}' => $htmlTitle,
+    '{{errorpage_style}}' => '',
+    '{{errorpage}}' => '',
+    '{{included_vars_and_script}}' => '',
+);
 
 function urldecodeToArray($url) {
     $ret_ar = array();
@@ -35,38 +37,41 @@ function urldecodeToArray($url) {
 
 /* pass variable from php to javascript */
 function addVariable($varName, $varValue, $isRecursion=false) {
+    $result = "";
     if(!is_array($varValue)) {
       $varValue = strip_tags($varValue);
     }
     if(!$isRecursion) {
-        echo "var $varName = ";
+        $result .= "var $varName = ";
     }
     if(is_array($varValue)) {
-        echo "Array(";
+        $result .= "Array(";
         $print_comma = false;
         foreach( $varValue as $value ) {
           if( $print_comma )
-            echo ", ";
+            $result .= ", ";
 
           addVariable( $varName, $value, true );
           $print_comma = true;
         }
           
-        echo ")";
+        $result .= ")";
     }
     else if(gettype($varValue) == "string") {
-        echo "\"$varValue\"";
+        $result .= "\"$varValue\"";
     }
     else if(gettype($varValue) == "boolean") {
         $str = $varValue ? "true" : "false";
-        echo $str;
+        $result .= $str;
     }
     else {
-        echo $varValue;
+        $result .= $varValue;
     }
     if(!$isRecursion) {
-        echo ";\n";
+        $result .= ";\n";
     }
+
+    return $result;
 }
 
 /* return true if returnURL is on whitelist */
@@ -131,7 +136,6 @@ else if(isset($_GET["efilter"])) {
     curl_close($ch);
 }
 
-
 $useFilter = false;
 $useHostel = false;
 $filterVersion = 1;
@@ -153,9 +157,9 @@ if(isset($extFilter)) {
           $filterVersion = 2;
         }
     } else {
-      echo "Unable decode filter.<br>\n";
+      $searchAndReplace[ '{{errorpage_style}}' ] = "<link rel=\"stylesheet\" type=\"text/css\" href=\"errorpage.css\">";
+      $searchAndReplace[ '{{errorpage}}' ] = "Unable decode filter.<br>\n";
     }    
-    
 }
 
 $returnIDVariable = 'entityID';
@@ -228,49 +232,28 @@ if(isset($fromHostelRegistrar)) {
 }
 else if(!isset($entityID) || !isset($returnURL) || !$checkSPDiscoveryResponseTest ) {
     
-    echo $doctype;
-    echo $htmlHeader;
-    echo $charset;
-    echo $edge;
-    echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"errorpage.css\">";
-    echo "</head><body style=\"background-color:white\">";
+    $searchAndReplace[ '{{errorpage_style}}' ] = "<link rel=\"stylesheet\" type=\"text/css\" href=\"errorpage.css\">";
 
     if( $checkSPDiscoveryResponseTest ) {
-
-      echo "<div id=\"nadpis_cs\"><h1>Nastala chyba</h1>";
-      echo "Poskytovatel služby ke které se hlásíte nepředal všechny parametry potřebné pro přihlášení.<br>";
-      echo "K přihlášení jsou nutné alespoň parametry &quot;<i>entityID</i>&quot; a &quot;<i>return</i>&quot;.<br>";
-      echo "Seznam parametrů, které poskytovatel služby předal, můžete vidět v seznamu níže.<br>";
-      echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a target=\"_blank\" href=\"https://www.eduid.cz/cs/tech/wayf\">www.eduid.cz/cs/tech/wayf</a></div>";
-  
-      echo "<div id=\"nadpis_en\"><h1>An error occured</h1>";
-      echo "Service provider didn't send all parameters needed for login.<br>";
-      echo "For login are needed at least &quot;<i>entityID</i>&quot and &quot;<i>return</i>&quot.<br>";
-      echo "List of parameters sent from service provider is below.";
-      echo "<br>Documentation (in czech language) can be found at <a target=\"_blank\" href=\"https://www.eduid.cz/en/tech/wayf\">www.eduid.cz/en/tech/wayf</a></div>";
-
+      // Missing required parameters
+      $error = file_get_contents("errorpage_missing_parameters.tpl");
     } else {
-
-      echo "<div id=\"nadpis_cs\"><h1>Nastala chyba</h1>";
-      echo "Poskytovatel služby ke které se hlásíte předal neplatný parametr &quot;<i>return</i>&quot;.<br>";
-      echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a target=\"_blank\" href=\"https://www.eduid.cz/cs/tech/wayf\">www.eduid.cz/cs/tech/wayf</a></div>";
-  
-      echo "<div id=\"nadpis_en\"><h1>An error occured</h1>";
-      echo "Service provider sent invalid parameter &quot;<i>return</i>&quot;.<br>";
-      echo "Documentation can be found at <a target=\"_blank\" href=\"https://www.eduid.cz/en/tech/wayf\">www.eduid.cz/en/tech/wayf</a></div>";
-
+      // Invalid value of return parameter
+      $error = file_get_contents("errorpage_invalid_return.tpl");
     }
 
     if(!isset($_GET) || count($_GET)==0) {
-        echo "<div id=\"paramlist\"><h2>Žádné parametry nebyly předány / No parameters given</h2>";
+        $error .= "<div id=\"paramlist\"><h2>Žádné parametry nebyly předány / No parameters given</h2>";
     }
     else {
-        echo "<div id=\"paramlist\"><h2>Seznam parametrů / List of parameters</h2>";
+        $error .= "<div id=\"paramlist\"><h2>Seznam parametrů / List of parameters</h2>";
         foreach($_GET as $key => $value) {
-            echo "[$key] = [". htmlentities($value, ENT_QUOTES) ."]<br>\n";
+            $error .= "[$key] = [". htmlentities($value, ENT_QUOTES) ."]<br>\n";
         }
-        echo "</div><div class=\"roztah\"></div>";
+        $error .= "</div><div class=\"roztah\"></div>";
     }
+
+    $searchAndReplace[ '{{errorpage}}' ] = $error;
 }
 else {
 
@@ -280,8 +263,6 @@ else {
     if($detect->isMobile() && !$detect->isTablet() ) {
         $mobile = true;
     }
-
-    header("X-UA-Compatible: IE=edge");
 
     if(isset($_GET["returnIDParam"])) {
         $useIDParam = true;
@@ -305,16 +286,8 @@ else {
         exit;
     }
 
-    echo $doctype;
-    echo $htmlHeader;
-    echo $charset;
-    // echo "<link rel=\"stylesheet\" href=\"jquery-ui.min.css\" />";
-    echo "<script type=\"text/javascript\" src=\"jquery.js\"></script>";
-    // echo "<script type=\"text/javascript\" src=\"jquery-ui.min.js\"></script>";
-    echo $edge;
-
     if($mobile) {
-        echo "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">";
+        // echo "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">";
         if($detect->isiOS()) {
             $osType = "ios";
         } else if($detect->isAndroidOS()) {
@@ -360,15 +333,15 @@ else {
       }
     }
 
-    echo "<script type=\"text/javascript\">\n";
+    $included_vars_and_script = "<script type=\"text/javascript\">\n";
 
-    addVariable("isTablet", $detect->isTablet() );
-    addVariable("isMobile", $mobile);
+    $included_vars_and_script .= addVariable("isTablet", $detect->isTablet() );
+    $included_vars_and_script .= addVariable("isMobile", $mobile);
     if($mobile) {
-        addVariable("osType", $osType);
+        $included_vars_and_script .= addVariable("osType", $osType);
     }
 
-    addVariable("returnIDVariable", $returnIDVariable);
+    $included_vars_and_script .= addVariable("returnIDVariable", $returnIDVariable);
 
     $server = "http";
     if($_SERVER["HTTPS"] == "on") {
@@ -380,8 +353,8 @@ else {
     }
     $wayf = $server . $_SERVER['PHP_SELF'];
     $server .= "/";
-    addVariable("serverURL", $server);
-    addVariable("wayfURL", $wayf);
+    $included_vars_and_script .= addVariable("serverURL", $server);
+    $included_vars_and_script .= addVariable("wayfURL", $wayf);
 
     // $prefLang = ""; get prefLang from wayf_vars.php
     if(isset($_GET['lang'])) {
@@ -398,40 +371,40 @@ else {
       }
     }
 
-    addVariable("prefLang", $prefLang);
+    $included_vars_and_script .= addVariable("prefLang", $prefLang);
 
     // label and link to home organization
-    addVariable( "organizationLabel", $organizationLabel );
-    addVariable( "organizationHelpLink", $organizationHelpLink );
-    addVariable( "organizationHelpImage", $organizationHelpImage );
-    addVariable( "organizationHelpImageAlt", $organizationHelpImageAlt );
+    $included_vars_and_script .= addVariable( "organizationLabel", $organizationLabel );
+    $included_vars_and_script .= addVariable( "organizationHelpLink", $organizationHelpLink );
+    $included_vars_and_script .= addVariable( "organizationHelpImage", $organizationHelpImage );
+    $included_vars_and_script .= addVariable( "organizationHelpImageAlt", $organizationHelpImageAlt );
 
     if( isset( $feeds )) {
-      echo "var feeds = ".$feeds .";\n";
+      $included_vars_and_script .= "var feeds = ".$feeds .";\n";
     } else {
-      echo "var feeds = '';\n";
+      $included_vars_and_script .= "var feeds = '';\n";
     }
 
     if( isset( $customLogo )) {
-      echo "var customLogo = ".$customLogo .";\n";
+      $included_vars_and_script .= "var customLogo = ".$customLogo .";\n";
     }
 
-    addVariable( "langStyle", $langStyle );
+    $included_vars_and_script .= addVariable( "langStyle", $langStyle );
 
     $nosearch = false;
     if( isset( $_GET['nosearch'] )) {
       $nosearch = true;
     }
-    addVariable( "noSearch", $nosearch );
+    $included_vars_and_script .= addVariable( "noSearch", $nosearch );
 
     $referrer = "";
     if(isset($_SERVER['HTTP_REFERER'])) {
 	$referrer = $_SERVER['HTTP_REFERER'];
     }
-    addVariable("referrer", $referrer);
+    $included_vars_and_script .= addVariable("referrer", $referrer);
 
-    echo "var allFeeds = " . $allFeeds . ";\n";
-    addVariable("returnURL", $returnURL);
+    $included_vars_and_script .= "var allFeeds = " . $allFeeds . ";\n";
+    $included_vars_and_script .= addVariable("returnURL", $returnURL);
 
     $otherParams = "";
     foreach($_GET as $gkey => $gval) {
@@ -446,56 +419,55 @@ else {
 	}
         // echo "// $gkey = $gval\n";
     }
-    echo "var otherParams = \"$otherParams\";\n";
-    echo "var useFilter = ";
+    $included_vars_and_script .= "var otherParams = \"$otherParams\";\n";
+    $included_vars_and_script .= "var useFilter = ";
     if($useFilter) {
-        echo "true";
+        $included_vars_and_script .= "true";
     }
     else {
-        echo "false";
+        $included_vars_and_script .= "false";
     }
-    echo ";\n";
+    $included_vars_and_script .= ";\n";
     if($useFilter) {
-        echo "var filter = $filter;\n";
+        $included_vars_and_script .= "var filter = $filter;\n";
     }
 
-    echo "var feedsStr = $allFeeds;\n";
+    $included_vars_and_script .= "var feedsStr = $allFeeds;\n";
 
     $getParams = "";
     foreach($_GET as $key => $value) {
             $gval = urlencode($value);
             $getParams .= "&" . $key . "=" . $gval;
     }
-    echo "var httpParameters = \"$getParams\";\n";
+    $included_vars_and_script .= "var httpParameters = \"$getParams\";\n";
 
     if( isset( $_GET['entityID'] )) {
-      echo "var SPentityID = \"". $_GET['entityID']."\";\n" ;
+      $included_vars_and_script .= "var SPentityID = \"". $_GET['entityID']."\";\n" ;
     }
 
     if(isset($useHostel)) {
-        echo "var useHostel = true;\n";
+        $included_vars_and_script .= "var useHostel = true;\n";
         $hostelIdpParams = "/Shibboleth.sso/Login?SAMLDS=1&" . $returnIDVariable . "=" . urlencode($hostelId);
         $hostelRegistrarParams = "?return=";
         $hostelReturnParam = $wayfURL . "?fromHostelRegistrar" . $getParams;
         $hostelRegistrarParams .= urlencode($hostelReturnParam);
         $hostelRegistrarParams .= $getParams;
         $hostelRegistrarURLWithParams = $hostelRegistrarURL . $hostelRegistrarParams;
-        echo "var hostelRegistrarURL = \"" . $hostelRegistrarURLWithParams . "\";\n";
+        $included_vars_and_script .= "var hostelRegistrarURL = \"" . $hostelRegistrarURLWithParams . "\";\n";
     }
     else {
-        echo "var useHostel = false;\n";
+        $included_vars_and_script .= "var useHostel = false;\n";
     }
 
-    echo "var noHTML5URL = \"" . $failbackWayf . "?" . $qs . "\";\n";
+    $included_vars_and_script .= "var noHTML5URL = \"" . $failbackWayf . "?" . $qs . "\";\n";
 
-    echo $script;
-    echo "</script>\n";
-    echo "<noscript>\n";
-
-    echo "<meta http-equiv=\"refresh\" content=\"2;url=" . $failbackWayf . "?" . $qs . "\">\n";
-
-    echo "</noscript>\n";
-    echo "</head>\n";
-    echo "<body onload=\"listData()\">\n";
+    $included_vars_and_script .= $script;
+    $included_vars_and_script .= "</script>\n";
+    $included_vars_and_script .= "<noscript>\n";
+    $included_vars_and_script .= "<meta http-equiv=\"refresh\" content=\"2;url=" . $failbackWayf . "?" . $qs . "\">\n";
+    $included_vars_and_script .= "</noscript>\n";
+    $searchAndReplace[ '{{included_vars_and_script}}' ] = $included_vars_and_script;
 }
-echo "</body></html>";
+
+echo str_replace( array_keys( $searchAndReplace ), array_values( $searchAndReplace), $htmlTemplate );
+

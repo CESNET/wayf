@@ -69,3 +69,6 @@ flags/cs.png,flags/cs.png
 flags/es.png,flags/es.png
 flags/sv.png,flags/sv.png
 custom/test.png,custom/test.png
+wayf.tpl,wayf.tpl
+errorpage_invalid_return.tpl,errorpage_invalid_return.tpl
+errorpage_missing_parameters.tpl,errorpage_missing_parameters.tpl
