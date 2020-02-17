@@ -1086,10 +1086,6 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
               if( filterAllowEC && wayf.isInEc( filter.allowFeeds[feedId].allowEC, mdSet.entities[eid].EC )==false) {
                 continue;
               }
-              // filter out hide-from-discovery IdP
-              if( filterHideFromDiscovery && ( typeof mdSet.entities[eid].EC !== "undefined" ) && ( mdSet.entities[eid].EC.indexOf( hideFromDiscoveryCategory ) >= 0 )) {
-                continue;
-              }
             }
           }
         } else {
@@ -1098,6 +1094,11 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
             continue;
           }
         }
+        // filter out hide-from-discovery IdP
+        if( filterHideFromDiscovery && ( typeof mdSet.entities[eid].EC !== "undefined" ) && ( mdSet.entities[eid].EC.indexOf( hideFromDiscoveryCategory ) >= 0 )) {
+          continue;
+        }
+
         var entity = mdSet.entities[eid];
         var logoSource = entity.logo;
         var label = this.getLabelFromLabels(entity.label);
