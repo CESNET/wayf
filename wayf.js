@@ -1026,6 +1026,10 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
           // disable filter out hide-from-discovery
           if( filter.allowFeeds[feedId].allowEC.indexOf( hideFromDiscoveryCategory ) >= 0 ) {
             filterHideFromDiscovery = false;
+            // singular case, allowed is only HfD, it is non-sense
+            if( filter.allowFeeds[feedId].allowEC.length == 1 ) {
+              filterAllowEC = false;
+            }
           }
         }
 
