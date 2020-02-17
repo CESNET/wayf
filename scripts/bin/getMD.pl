@@ -305,6 +305,14 @@ sub logStatus {
   $self->{status}->logStatus;
 }
 
+sub escape_targetfile {
+  my $str = shift;
+
+  $str =~ s/[\?\=\;\&]/_/g;
+
+  return $str;
+};
+
 sub get {
   my $self = shift;
   my ($src, $opt) = $self->getSrcURL;
@@ -402,12 +410,13 @@ sub downloadLogo {
   my ($self, $url) = @_;
   my $storedFname = $url;
   $storedFname =~ s|^[^:]*://||;
+  $storedFname = escape_targetfile($storedFname);
 
   main::info "Downloading logo from $url";
 
   # preferujeme curl kdyz je nakonfigurovan
   my $targetfile = join('/',
-			$self->{conf}->downloadLogoDir,
+		        $self->{conf}->downloadLogoDir,
 			$storedFname);
   if ($self->{conf}->cmd_curl) {
     $self->{cmd} = getMD::Cmd->new($self->{conf}->cmd_curl,

@@ -6,6 +6,8 @@
 		xmlns:eduidmd="http://eduid.cz/schema/metadata/1.0"
 		xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
 		xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute"
+                xmlns:mdrpi="urn:oasis:names:tc:SAML:metadata:rpi"
+                xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
                 version="1.0">
   <!-- Feed Label -->
   <xsl:param name="label">Unknown</xsl:param>
@@ -48,6 +50,14 @@
                              mode="SPReg">
           <xsl:with-param name="feedEDName" select="$feedEDName"/>
         </xsl:apply-templates>
+        <xsl:apply-templates select="md:EntityDescriptor[md:SPSSODescriptor]"
+                             mode="DisResp">
+          <xsl:with-param name="feedEDName" select="$feedEDName"/>
+        </xsl:apply-templates>
+        <xsl:apply-templates select="md:EntityDescriptor[md:SPSSODescriptor]"
+                             mode="AssertConsume">
+          <xsl:with-param name="feedEDName" select="$feedEDName"/>
+        </xsl:apply-templates>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>{"id": "</xsl:text><xsl:value-of select="@Name"/><xsl:text>",
@@ -78,6 +88,7 @@
 	  </xsl:text>
 	  <xsl:call-template name="entityLogo"/>
 	  <xsl:call-template name="entityCategories"/>
+          <xsl:call-template name="registrationAuthority"/>
 	  <xsl:call-template name="specialEntityParams"/>
 	  <xsl:text>}</xsl:text>
 	  <xsl:if test="position()!=last()">
@@ -87,6 +98,14 @@
 	</xsl:if>
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="registrationAuthority">
+    <xsl:if test='md:Extensions/mdrpi:RegistrationInfo'>
+      <xsl:text>, "RA": "</xsl:text>
+      <xsl:value-of select="md:Extensions/mdrpi:RegistrationInfo/@registrationAuthority"/>
+      <xsl:text>"</xsl:text>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template name="entityCategories">
@@ -386,10 +405,62 @@
       <xsl:with-param name="in" select="$feedEDName"/>
     </xsl:call-template>
     <xsl:text>');
- </xsl:text>
+  </xsl:text>
     <!--  -->
     <xsl:call-template name="entityDisplayNameSQL" >
     </xsl:call-template>
+  </xsl:template>
+
+  <!-- DiscoveryResponse -->
+  <xsl:template match="md:EntityDescriptor" mode="DisResp">
+    <xsl:variable name="spEntityId" select="@entityID"/>
+    <xsl:for-each select="md:SPSSODescriptor/md:Extensions/idpdisc:DiscoveryResponse/@Location">
+      <xsl:call-template name="DiscoveryResponseRecord" >
+        <xsl:with-param name="spEntityId" select="$spEntityId"/>
+        <xsl:with-param name="location" select="."/>
+      </xsl:call-template> 
+    </xsl:for-each>
+  </xsl:template>
+
+  <xsl:template name="DiscoveryResponseRecord" >
+    <xsl:param name="spEntityId"/>
+    <xsl:param name="location"/>
+    <xsl:text>insert into spDiscoveryResponse values ('</xsl:text>
+    <xsl:call-template name="escapeSQL">
+      <xsl:with-param name="in" select="$spEntityId"/>
+    </xsl:call-template>
+    <xsl:text>', '</xsl:text>
+    <xsl:call-template name="escapeSQL">
+      <xsl:with-param name="in" select="$location"/>
+    </xsl:call-template>
+    <xsl:text>');
+    </xsl:text>
+  </xsl:template>
+
+  <!-- AssertionConsumerService -->
+  <xsl:template match="md:EntityDescriptor" mode="AssertConsume">
+    <xsl:variable name="spEntityId" select="@entityID"/>
+    <xsl:for-each select="md:SPSSODescriptor/md:AssertionConsumerService/@Location">
+      <xsl:call-template name="AssertConsumeRecord" >
+        <xsl:with-param name="spEntityId" select="$spEntityId"/>
+        <xsl:with-param name="location" select="."/>
+      </xsl:call-template> 
+    </xsl:for-each>
+  </xsl:template>
+
+  <xsl:template name="AssertConsumeRecord" >
+    <xsl:param name="spEntityId"/>
+    <xsl:param name="location"/>
+    <xsl:text>insert into spAssertionConsume values ('</xsl:text>
+    <xsl:call-template name="escapeSQL">
+      <xsl:with-param name="in" select="$spEntityId"/>
+    </xsl:call-template>
+    <xsl:text>', '</xsl:text>
+    <xsl:call-template name="escapeSQL">
+      <xsl:with-param name="in" select="substring-before( substring-after( $location, '://' ), '/' )"/>
+    </xsl:call-template>
+    <xsl:text>');
+    </xsl:text>
   </xsl:template>
 
   <xsl:template name="FeedReg">

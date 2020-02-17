@@ -20,7 +20,6 @@ jquery.ui.accordion.js    - JQuery library (used only for filter application)
 jquery-ui.css             - JQuery library (used only for filter application)
 jquery-ui.js              - JQuery library (used only for filter application)
 jquery-2.0.0.js           - JQuery library (used only for filter application)
-json2.js                  - hack for browser not supporting JSON format
 libraries.dat             - hack for library institutions (list of IdPs used as access list)
 logo                      - logos directory
 missing.png_b64           - generic logo for institutions without logo in feed metadata

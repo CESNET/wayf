@@ -1,1 +1,31 @@
-{"eduID.cz":"/feed/eduID.cz.js", "eduGAIN":"/feed/eduGAIN.js", "LoginMuni":"/feed/LoginMuni.js", "Social":"/feed/Social.js", "StandaloneIdP":"/feed/StandaloneIdP.js","Haka":"/feed/Haka.js"}
+{
+    "eduID.cz": {
+        "label": "eduID.cz",
+        "url": "eduID.cz" 
+    },
+
+    "eduGAIN": {
+        "label": "eduGAIN",
+        "url": "eduGAIN"
+    },
+
+    "LoginMuni": {
+        "label": "LoginMuni",
+        "url": "LoginMuni"
+    },
+
+    "SocialIdPs": {
+        "label": "Social IdPs",
+        "url": "SocialIdPs"
+    },
+
+    "StandaloneIdP": {
+        "label": "Standalone IdPs",
+        "url": "StandaloneIdP"
+    },
+
+    "Haka": {
+        "label": "Haka",
+        "url": "Haka"
+    }
+}

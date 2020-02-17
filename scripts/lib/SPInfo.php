@@ -67,5 +67,44 @@ function getSPInfoAllFeeds ($spid) {
   return $sp;
 }
 
+/* check returnUrl against DiscoveryResponse and AssertionConsumeService */
+function checkSPDiscoveryResponse ($spid, $returnUrl) {
+  $dbf = "/opt/getMD/var/pub/current/lib/SPReg.sqlite";
+  $q1 = "select location from spDiscoveryResponse where spid='". SQLite3::escapeString($spid) ."'";
+  $q2 = "select location from spAssertionConsume where spid='".SQLite3::escapeString($spid)."'";
+  $locationsDisResp = array();
+  $locationsAssertConsume = array();
+
+  $db = new SQLite3($dbf);
+  $res = $db->query($q1);
+  $discoRespDefined = false;
+  while ($row = $res->fetchArray()) {
+    $discoRespDefined = true;
+    $position = strpos( $returnUrl, $row['location'] );
+    if( $position !== false && $position < 1 ) {
+      return true;
+    }
+  }
+
+  if( $discoRespDefined ) {
+    error_log( addslashes( "checkSPDiscoveryResponse(): parameter return (". $returnUrl .") differs from DiscoveryResponse defined in metadata for entityID (". $spid .")" ));
+    return false;
+  }
+
+  $res = $db->query($q2);
+  list($p1, $p2, $locRU, $p4) = explode('/', $returnUrl );
+  while ($row = $res->fetchArray()) {
+    if( strcmp( $row['location'] , $locRU ) == 0 ) {
+      return true;
+    }
+  }
+
+  $db->close();
+
+  error_log( addslashes( "checkSPDiscoveryResponse(): parameter return (". $returnUrl .") differs from AssertionConsumeService defined in metadata for entityID (". $spid .")" ));
+
+  return false;
+}
+
 
 ?>

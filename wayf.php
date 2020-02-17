@@ -4,6 +4,7 @@ include 'Mobile_Detect.php';
 include '/opt/getMD/lib/SPInfo.php';
 include 'wayf_vars.php';  // customization CESNET/eduTEAMS
 
+
 $detect = new Mobile_Detect();
 
 $edge = "<meta http-equiv=\"X-UA-Compatible\" content=\"edge\" >";
@@ -48,20 +49,23 @@ function urldecodeToArray($url) {
 
 /* pass variable from php to javascript */
 function addVariable($varName, $varValue, $isRecursion=false) {
-    $varValue = strip_tags($varValue);
+    if(!is_array($varValue)) {
+      $varValue = strip_tags($varValue);
+    }
     if(!$isRecursion) {
         echo "var $varName = ";
     }
     if(is_array($varValue)) {
         echo "Array(";
-        $cnt = count($varValue);
-        for($i=0; $i< $cnt; $i++) {
-            $value = $varValue[$i];
-            addVariable($varName, $value, true);
-            if($i+1<$cnt) {
-                echo ", ";
-            }
+        $print_comma = false;
+        foreach( $varValue as $value ) {
+          if( $print_comma )
+            echo ", ";
+
+          addVariable( $varName, $value, true );
+          $print_comma = true;
         }
+          
         echo ")";
     }
     else if(gettype($varValue) == "string") {
@@ -77,6 +81,48 @@ function addVariable($varName, $varValue, $isRecursion=false) {
     if(!$isRecursion) {
         echo ";\n";
     }
+}
+
+/* return true if returnURL is on whitelist */
+function checkReturnURLWhitelist( $returnURL ) {
+  $whitelist_array = array(
+    "https://attributes.eduid.cz/dsadev/Shibboleth.sso/Login",  // attributes.eduid.cz for developers version dsa-dev.eduid.cz
+    "https://attribute-viewer.aai.switch.ch/Shibboleth.sso/Login",  // attribute-viewer at switch
+    "https://dspace.amu.cz/Shibboleth.sso/Login",  // RT 461479
+    "https://ftas-pa.cesnet.cz/Shibboleth.sso/DS",  // RT 465919
+    "https://gc17.cesnet.cz/Shibboleth.sso/DS",  // RT 465919
+    "https://pakiti.csirt.muni.cz/Shibboleth.sso/Login",  // RT 461482
+    "https://pakiti.egi.eu/Shibboleth.sso/Login",         // RT 461482
+    "https://validator.cesnet.cz/Shibboleth.sso/Login",  // non in eduid metadata (testing)
+    "https://bydleni.muni.cz/Shibboleth.sso/Login",  // RT 461486
+    "https://bydleni.slu.cz/Shibboleth.sso/Login",   // RT 461486
+    "http://eunis.cz/simplesamlphp/module.php/saml/sp/discoresp.php",  // RT 461480
+    "https://felk.cvut.cz/Shibboleth.sso/Login",
+    "https://sitola.fi.muni.cz/Shibboleth.sso/DS",  // RT 461485
+    "https://www.sitola.cz/Shibboleth.sso/DS",      // RT 461485
+    "https://hostel.eduid.cz/Shibboleth.sso/DS",
+    "https://atributy.eduid.cz/Shibboleth.sso/Login",
+    "https://gc1.cesnet.cz/Shibboleth.sso/DS", 
+    "https://ozzik.cesnet.cz/Shibboleth.sso/DS",
+    "https://rr.funet.fi/attribute-test/Shibboleth.sso/edugain",  // testing funet 
+    "https://portal.lf1.cuni.cz/Shibboleth.sso/WAYF",  // https://shibboleth2.lf1.cuni.cz/shibboleth/ RT 461481
+    "https://softweco.cz/Shibboleth.sso/Login",  
+    "https://idm-test.ics.muni.cz/Shibboleth.sso/Login",  // ?
+    "https://login.cesnet.cz/proxy/module.php/saml/sp/discoresp.php",  // ?
+    "https://cebhckt-kdp.med.muni.cz/Shibboleth.sso/WAYF", 
+    "www.example.org",  // returnUrl used in filter generator 
+    "https://stats.czechelib.cz/Shibboleth.sso/Login"  // not in federation yet
+  );
+
+  $a_return = explode( "?", $returnURL );
+
+  if( in_array( $a_return[0], $whitelist_array ) ) {
+    error_log( addslashes( "checkReturnURLWhitelist(): whitelisted returnURL ". $a_return[0] ));
+    return true;
+  }
+
+  //error_log( addslashes( "checkReturnURLWhitelist(): NO whitelisted returnURL ". $a_return[0] ));
+  return false;
 }
 
 $wayfBase = "https://" . $_SERVER['HTTP_HOST'];
@@ -133,8 +179,15 @@ else {
     $returnIDVariable = 'entityID';
 }
 
+$checkSPDiscoveryResponseTest = false;
 if(isset($_GET['entityID'])) {
     $entityID = $_GET['entityID'];
+    $checkSPDiscoveryResponseTest = checkSPDiscoveryResponse( $entityID, $returnURL );
+    if( $checkSPDiscoveryResponseTest == false ) {
+      $checkSPDiscoveryResponseTest = checkReturnURLWhitelist( $returnURL );
+    }
+    // $checkSPDiscoveryResponseTest = true;  // don't return error, only log it
+
     if(($useFilter && isset($jFilter['allowFeeds']) && $jFilter['allowFeeds'] !== "") || ($useFilter && isset($jFilter['allowIdPs']) && $jFilter['allowIdPs'] !== "")) {
 //    if($useFilter && isset($jFilter['allowFeeds']) && $jFilter['allowFeeds'] !== "") {
         $spInfo = getSPInfoAllFeeds($entityID);
@@ -189,7 +242,7 @@ if(isset($fromHostelRegistrar)) {
     $returnURL = $returnURL . $otherParams;
     header("Location: " . $returnURL);
 }
-else if(!isset($entityID) || !isset($returnURL)) {
+else if(!isset($entityID) || !isset($returnURL) || !$checkSPDiscoveryResponseTest ) {
     
     echo $doctype;
     echo "<html><head>";
@@ -197,19 +250,33 @@ else if(!isset($entityID) || !isset($returnURL)) {
     echo $edge;
     echo "<title>Discovery service</title>";
     echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"errorpage.css\">";
-    echo "</head><body>";
+    echo "</head><body style=\"background-color:white\">";
 
-    echo "<div id=\"nadpis_cs\"><h1>Nastala chyba</h1>";
-    echo "Poskytovatel služby ke které se hlásíte nepředal všechny parametry potřebné pro přihlášení.<br>";
-    echo "K přihlášení jsou nutné alespoň parametry &quot;<i>entityID</i>&quot; a &quot;<i>return</i>&quot;.<br>";
-    echo "Seznam parametrů, které poskytovatel služby předal, můžete vidět v seznamu níže.<br>";
-    echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a href=\"http://www.eduid.cz/cesnet-ds\">http://www.eduid.cz/cesnet-ds</a></div>";
+    if( $checkSPDiscoveryResponseTest ) {
 
-    echo "<div id=\"nadpis_en\"><h1>An error occured</h1>";
-    echo "Service provider didn't send all parameters needed for login.<br>";
-    echo "For login are needed at least &quot;<i>entityID</i>&quot and &quot;<i>return</i>&quot.<br>";
-    echo "List of parameters sended from service provider is below.";
-    echo "<br>Documentation (in czech language) can be found at <a href=\"http://www.eduid.cz/cesnet-ds\">http://www.eduid.cz/cesnet-ds</a></div>";
+      echo "<div id=\"nadpis_cs\"><h1>Nastala chyba</h1>";
+      echo "Poskytovatel služby ke které se hlásíte nepředal všechny parametry potřebné pro přihlášení.<br>";
+      echo "K přihlášení jsou nutné alespoň parametry &quot;<i>entityID</i>&quot; a &quot;<i>return</i>&quot;.<br>";
+      echo "Seznam parametrů, které poskytovatel služby předal, můžete vidět v seznamu níže.<br>";
+      echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a target=\"_blank\" href=\"https://www.eduid.cz/cs/tech/wayf\">www.eduid.cz/cs/tech/wayf</a></div>";
+  
+      echo "<div id=\"nadpis_en\"><h1>An error occured</h1>";
+      echo "Service provider didn't send all parameters needed for login.<br>";
+      echo "For login are needed at least &quot;<i>entityID</i>&quot and &quot;<i>return</i>&quot.<br>";
+      echo "List of parameters sent from service provider is below.";
+      echo "<br>Documentation (in czech language) can be found at <a target=\"_blank\" href=\"https://www.eduid.cz/en/tech/wayf\">www.eduid.cz/en/tech/wayf</a></div>";
+
+    } else {
+
+      echo "<div id=\"nadpis_cs\"><h1>Nastala chyba</h1>";
+      echo "Poskytovatel služby ke které se hlásíte předal neplatný parametr &quot;<i>return</i>&quot;.<br>";
+      echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a target=\"_blank\" href=\"https://www.eduid.cz/cs/tech/wayf\">www.eduid.cz/cs/tech/wayf</a></div>";
+  
+      echo "<div id=\"nadpis_en\"><h1>An error occured</h1>";
+      echo "Service provider sent invalid parameter &quot;<i>return</i>&quot;.<br>";
+      echo "Documentation can be found at <a target=\"_blank\" href=\"https://www.eduid.cz/en/tech/wayf\">www.eduid.cz/en/tech/wayf</a></div>";
+
+    }
 
     if(!isset($_GET) || count($_GET)==0) {
         echo "<div id=\"paramlist\"><h2>Žádné parametry nebyly předány / No parameters given</h2>";
@@ -217,7 +284,7 @@ else if(!isset($entityID) || !isset($returnURL)) {
     else {
         echo "<div id=\"paramlist\"><h2>Seznam parametrů / List of parameters</h2>";
         foreach($_GET as $key => $value) {
-            echo "[$key] = [$value]<br>\n";
+            echo "[$key] = [". htmlentities($value, ENT_QUOTES) ."]<br>\n";
         }
         echo "</div><div class=\"roztah\"></div>";
     }
@@ -229,11 +296,11 @@ else {
     $mobile = false;
     $dumb = false;
 
-    if($detect->isMobile() || $detect->isTablet()) {
+    if($detect->isMobile() && !$detect->isTablet() ) {
         $mobile = true;
-        if($detect->isAndroidOS() && $detect->isSafari()) {
-            $dumb = true;
-        }
+        // if($detect->isAndroidOS() && $detect->isSafari()) {
+        //    $dumb = true;
+        // }
     }
 
     header("X-UA-Compatible: IE=edge");
@@ -263,9 +330,9 @@ else {
     echo $doctype;
     echo "<html><head><title>Discovery service</title>";
     echo $charset;
-    echo "<link rel=\"stylesheet\" href=\"jquery-ui.min.css\" />";
+    // echo "<link rel=\"stylesheet\" href=\"jquery-ui.min.css\" />";
     echo "<script type=\"text/javascript\" src=\"jquery.js\"></script>";
-    echo "<script type=\"text/javascript\" src=\"jquery-ui.min.js\"></script>";
+    // echo "<script type=\"text/javascript\" src=\"jquery-ui.min.js\"></script>";
     echo $edge;
 
     if($mobile) {
@@ -286,7 +353,7 @@ else {
         foreach($jFilter['allowFeeds'] as $feed => $tmpF) {
             $f .= "\"$feed\":\"/feed/$feed.js\",";
         }
-        $feeds = rtrim($f,",")."}";
+        $allFeeds = rtrim($f,",")."}";
 
       }
       else {
@@ -294,7 +361,7 @@ else {
         foreach($spInfo['feeds'] as $feed => $tmpF) {
             $f .= "\"$feed\":\"/feed/$feed.js\",";
         }
-        $feeds = rtrim($f,",")."}";
+        $allFeeds = rtrim($f,",")."}";
       }
 
     } else {
@@ -303,7 +370,7 @@ else {
         foreach($jFilter['allowFeeds'] as $feed) {
             $f .= "\"$feed\":\"/feed/$feed.js\",";
         }
-        $feeds = rtrim($f,",")."}";
+        $allFeeds = rtrim($f,",")."}";
 
       }
       else {
@@ -311,12 +378,13 @@ else {
         foreach($spInfo['feeds'] as $feed) {
             $f .= "\"$feed\":\"/feed/$feed.js\",";
         }
-        $feeds = rtrim($f,",")."}";
+        $allFeeds = rtrim($f,",")."}";
       }
     }
 
     echo "<script type=\"text/javascript\">\n";
 
+    addVariable("isTablet", $detect->isTablet() );
     addVariable("isMobile", $mobile);
     if($mobile) {
         addVariable("osType", $osType);
@@ -360,6 +428,18 @@ else {
     addVariable( "organizationHelpImage", $organizationHelpImage );
     addVariable( "organizationHelpImageAlt", $organizationHelpImageAlt );
 
+    if( isset( $feeds )) {
+      echo "var feeds = ".$feeds .";\n";
+    } else {
+      echo "var feeds = '';\n";
+    }
+
+    if( isset( $customLogo )) {
+      echo "var customLogo = ".$customLogo .";\n";
+    }
+
+    addVariable( "langStyle", $langStyle );
+
     $nosearch = false;
     if( isset( $_GET['nosearch'] )) {
       $nosearch = true;
@@ -372,7 +452,7 @@ else {
     }
     addVariable("referrer", $referrer);
 
-    echo "var allFeeds = " . $feeds . ";\n";
+    echo "var allFeeds = " . $allFeeds . ";\n";
     addVariable("returnURL", $returnURL);
 
     $otherParams = "";
@@ -386,7 +466,7 @@ else {
 	else {
             $otherParams = $otherParams . "&" . $gkey . "=" . urlencode($gval);
 	}
-        echo "// $gkey = $gval\n";
+        // echo "// $gkey = $gval\n";
     }
     echo "var otherParams = \"$otherParams\";\n";
     echo "var useFilter = ";
@@ -401,7 +481,7 @@ else {
         echo "var filter = $filter;\n";
     }
 
-    echo "var feedsStr = $feeds;\n";
+    echo "var feedsStr = $allFeeds;\n";
 
     $getParams = "";
     foreach($_GET as $key => $value) {
@@ -409,6 +489,10 @@ else {
             $getParams .= "&" . $key . "=" . $gval;
     }
     echo "var httpParameters = \"$getParams\";\n";
+
+    if( isset( $_GET['entityID'] )) {
+      echo "var SPentityID = \"". $_GET['entityID']."\";\n" ;
+    }
 
     if(isset($useHostel)) {
         echo "var useHostel = true;\n";
@@ -428,7 +512,7 @@ else {
     $ban_lib = false;
     $lib = "";
     if(isset($_GET["k-n-d"])) {
-        $handle = fopen("/var/www/wayf/libraries.dat", "r");
+        $handle = fopen("libraries.dat", "r");
         if($handle) {
             $ban_lib = true;
             $lib = '[';

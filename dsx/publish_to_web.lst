@@ -1,7 +1,7 @@
 wayf-static.php,wayf-static.php
 wayf.php,wayf.php
 wayf.js,wayf.js
-eduteams/wayf_vars.php,wayf_vars.php
+dsx/wayf_vars.php,wayf_vars.php
 trash_64.png,trash_64.png
 trash_48.png,trash_48.png
 trash_40.png,trash_40.png
@@ -25,8 +25,8 @@ filter.js,filter.js
 filter-en.js,filter-en.js
 filter-strings-en.js,filter-strings-en.js
 filter-strings.js,filter-strings.js
-eduteams/filter.css,filter.css
-eduteams/feeds.js,feeds.js
+dsx/filter.css,filter.css
+dsx/feeds.js,feeds.js
 favicon.ico,favicon.ico
 errorpage.css,errorpage.css
 ds.js,ds.js
@@ -58,7 +58,7 @@ images/ui-icons_777620_256x240.png,images/ui-icons_777620_256x240.png
 images/ui-icons_777777_256x240.png,images/ui-icons_777777_256x240.png
 images/ui-icons_cc0000_256x240.png,images/ui-icons_cc0000_256x240.png
 images/ui-icons_ffffff_256x240.png,images/ui-icons_ffffff_256x240.png
-eduteams/eduteams_logo28.png,eduteams_logo28.png
+dsx/geant-logo-gray.png,geant-logo-gray.png
 flags/nl.png,flags/nl.png
 flags/lt.png,flags/lt.png
 flags/it.png,flags/it.png

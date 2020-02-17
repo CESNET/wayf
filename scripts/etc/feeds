@@ -27,12 +27,12 @@
 https://metadata.eduid.cz/entities/eduid eduID.cz metadata.eduid.cz.crt.pem eduID.cz
 https://metadata.eduid.cz/entities/hostel Hostel metadata.eduid.cz.crt.pem Hostel
 https://metadata.eduid.cz/entities/standaloneidps StandaloneIdP metadata.eduid.cz.crt.pem StandaloneIdP
-https://metadata.eduid.cz/static/social Social metadata.eduid.cz.crt.pem Social
+https://metadata.eduid.cz/entities/socialidps SocialIdPs metadata.eduid.cz.crt.pem SocialIdPs
 !http://mds.edugain.org/ eduGAIN edugain-cert.pem eduGAIN 
 https://login.ics.muni.cz/metadata/metadata-signed.xml LoginMuni login.ics.muni.cz.pem LoginMuni
-https://idp-ext.cuni.cz/idp/profile/Metadata/SAML ExLibris ExLibris.pem ExLibris
+#https://idp-ext.cuni.cz/idp/profile/Metadata/SAML ExLibris ExLibris.pem ExLibris
 
 # Semik 15.12.2016 - docasny feed mojeID, do doby nez to budou publikovat u sebe
-https://metadata.eduid.cz/entities/mojeid mojeID metadata.eduid.cz.crt.pem mojeID
+#https://metadata.eduid.cz/entities/mojeid mojeID metadata.eduid.cz.crt.pem mojeID
 
 https://haka.funet.fi/metadata/haka-metadata.xml Haka Haka.pem Haka

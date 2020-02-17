@@ -1,10 +1,3 @@
-if (typeof JSON == 'undefined') {
-  var fileref = document.createElement('script')
-  fileref.setAttribute("type", "text/javascript")
-  fileref.setAttribute("src", "/json2.js")
-  document.getElementsByTagName("head")[0].appendChild(fileref)
-}
-
 function setOverStyle () {
     var st = document.getElementById('ds-style');
     if (st == undefined) {
@@ -47,6 +40,10 @@ function showCloser (overl) {
     };
 
     bdy.appendChild(closer);
+}
+
+function setIframeFocus(){
+  document.getElementById('overl').contentWindow.focus();
 }
 
 function startOverlay (ev) {
@@ -100,6 +97,7 @@ function startOverlay (ev) {
     overl.onload = function () {
         var ol = overl;
         showCloser(ol);
+        setTimeout(setIframeFocus, 100);
     };
     var bdy = document.getElementsByTagName('body')[0];
     bdy.appendChild(overl);

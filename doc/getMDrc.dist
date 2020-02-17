@@ -1,0 +1,55 @@
+# paths
+feedList = /opt/getMD/etc/feeds
+signerDir = /opt/getMD/etc/signers
+lockFile = /opt/getMD/var/lock
+
+# Note: myId is defined by the caller before reading this file 
+pubBase = /opt/getMD/var/pub/$myId
+
+downloadBase = /opt/getMD/var/download
+cacheDir = /opt/getMD/var/cache
+
+# The directory (or a symlink) from which the data is read by httpd
+oldPubBase = /opt/getMD/var/pub/current
+
+downloadDir = $downloadBase/feed
+downloadLogoDir = $downloadBase/logo
+statusDir = $pubBase/status
+oldStatusDir = $oldPubBase/status
+
+feedPubDir = $pubBase/feed
+logoPubDir = $pubBase/logo
+#logoPubBaseURI = https://ds.eduID.cz/logo
+logoPubBaseURI = logo
+logoListDir = $cacheDir/logolists
+
+xslFile = /opt/getMD/lib/md2json.xsl
+
+# where are the predefined logo files (missing.png...)?
+logoPredefDir = /opt/getMD/lib/logo
+
+# SP database
+[spdb]
+schema = /opt/getMD/lib/SPDBDef2.sql
+db = $pubBase/lib/SPReg.sqlite
+
+# External commands
+[cmd]
+curl = /usr/bin/curl
+wget = /usr/bin/wget
+sqlite = /usr/bin/sqlite3
+xsltproc = /usr/bin/xsltproc
+xmlsec = /usr/bin/xmlsec1
+
+# Logo parameters
+[logo]
+max_width = 160
+max_height = 40
+
+# How long to keep results fro previous runs
+[oldRun]
+# results from runs older than $max_age (in seconds) will be deleted
+max_age = 86400
+#max_age = 36000
+# minimum number of results to keep
+min_kept = 50

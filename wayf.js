@@ -3,7 +3,7 @@
  *
  * javascript version of WAYF
  *
- * @version ?.? 2013 - 2014
+ * @version ?.? 2013 - 2018
  * @author Jan Chvojka jan.chvojka@cesnet.cz
  * @author Pavel Polacek pavel.polacek@ujep.cz
  * @see getMD - TODO: add link - prepares feed for WAYF
@@ -18,29 +18,31 @@ var hostelURL  = 'https://adm.hostel.eduid.cz/registrace';
 var showedIdpList;
 var languages = new Array("en", "cs");
 var langsAvailable = {
-  'cs': { 'img':'flags/cs.png' },
-  'de': { 'img':'flags/de.png' },
-  'el': { 'img':'flags/el.png' },
-  'en': { 'img':'flags/en.png' },
-  'fr': { 'img':'flags/fr.png' },
-  'it': { 'img':'flags/it.png' },
-  'lt': { 'img':'flags/lt.png' },
-  'nl': { 'img':'flags/nl.png' }
+  'cs': { 'img':'flags/cs.png', 'name':'Čeština' },
+  'de': { 'img':'flags/de.png', 'name':'Deutsch' },
+  'el': { 'img':'flags/el.png', 'name':'Ελληνικά' },
+  'en': { 'img':'flags/en.png', 'name':'English' },
+  'es': { 'img':'flags/es.png', 'name':'Español' },
+  'fr': { 'img':'flags/fr.png', 'name':'Français' },
+  'it': { 'img':'flags/it.png', 'name':'Italiano' },
+  'lt': { 'img':'flags/lt.png', 'name':'Lietuvių' },
+  'nl': { 'img':'flags/nl.png', 'name':'Nederlands' },
+  'sv': { 'img':'flags/sv.png', 'name':'Svenska' }
 }
   
 var fallbackLanguage = "en";
 var labels = {
-    'BUTTON_NEXT': {'cs':'Jiný účet', 'en':'Another account', 'it':'Altro account', 'nl':'Ander account', 'fr':'Un autre compte', 'el':'Άλλος λογαριασμός', 'de':'Anderes Konto', 'lt':'Kita paskyra' },
-    'BUTTON_HOSTEL': {'cs':'Zřídit účet', 'en':'Create account', 'it':'Crea account', 'nl':'Maak account aan', 'fr':'Créer un compte', 'el':'Δημιουργία λογαριασμού', 'de':'Konto kreieren', 'lt':'Sukurti paskyrą' },
-    'TEXT_ALL_IDPS': {'cs':'Přihlásit účtem', 'en':'Log in with', 'it':'Login tramite', 'nl':'Login met', 'fr':'S’authentifier avec', 'el':'Σύνδεση μέσω', 'de':'Anmelden mit', 'lt':'Prisijungti su' },
-    'TEXT_ACCOUNT': {'cs':'Zřídit účet', 'en':'Create account', 'it':'Crea account', 'nl':'Maak account aan', 'fr':'Créer un compte', 'el':'Δημιουργία λογαριασμού', 'de':'Konto kreieren', 'lt':'Sukurti paskyrą' },
-    'TEXT_SAVED_IDPS': {'cs':'Přihlásit účtem', 'en':'Log in with', 'it':'Login tramite', 'nl':'Login met', 'fr':'S’authentifier avec', 'el':'Σύνδεση μέσω', 'de':'Anmelden mit', 'lt':'Prisijungti su' },
+    'BUTTON_NEXT': {'cs':'Jiný účet', 'en':'Another account', 'it':'Altro account', 'nl':'Ander account', 'fr':'Un autre compte', 'el':'Άλλος λογαριασμός', 'de':'Anderes Konto', 'lt':'Kita paskyra', 'es':'Otra cuenta', 'sv':'Annat konto' },
+    'BUTTON_HOSTEL': {'cs':'Zřídit účet', 'en':'Create account', 'it':'Crea account', 'nl':'Maak account aan', 'fr':'Créer un compte', 'el':'Δημιουργία λογαριασμού', 'de':'Konto kreieren', 'lt':'Sukurti paskyrą', 'es':'Crear cuenta', 'sv':'Skapa konto' },
+    'TEXT_ALL_IDPS': {'cs':'Přihlásit účtem', 'en':'Log in with', 'it':'Login tramite', 'nl':'Login met', 'fr':'S’authentifier avec', 'el':'Σύνδεση μέσω', 'de':'Anmelden mit', 'lt':'Prisijungti su', 'es':'Acceder con', 'sv':'Logga in med' },
+    'TEXT_ACCOUNT': {'cs':'Zřídit účet', 'en':'Create account', 'it':'Crea account', 'nl':'Maak account aan', 'fr':'Créer un compte', 'el':'Δημιουργία λογαριασμού', 'de':'Konto kreieren', 'lt':'Sukurti paskyrą', 'es':'Crear cuenta', 'sv':'Skapa konto' },
+    'TEXT_SAVED_IDPS': {'cs':'Přihlásit účtem', 'en':'Log in with', 'it':'Login tramite', 'nl':'Login met', 'fr':'S’authentifier avec', 'el':'Σύνδεση μέσω', 'de':'Anmelden mit', 'lt':'Prisijungti su', 'es':'Acceder con', 'sv':'Logga in med' },
     'IDP_HOSTEL': {'cs':'Hostel IdP', 'en':'Hostel IdP', 'it': 'IdP ospite', 'nl':'Gast IdP', 'fr':'S’authentifier avec' },
-    'SETUP': {'cs':'Nastavení', 'en':'Setup', 'it':'Setup', 'nl':'Maak aan', 'fr':'Configurer', 'el':'Παραμετροποίηση', 'de':'Einstellungen', 'lt':'Nustatymai' },
-    'CONFIRM_DELETE': {'cs':'Zapomenout ', 'en':'Forget ', 'it':'Dimentica ', 'nl':'Vergeet ', 'fr':'Enlever ', 'el':'Διαγραφή ', 'de':'Lösche ', 'lt':'Pamiršti ' },
-    'BACK_TITLE': {'cs':'Zpět', 'en':'Back', 'it':'Indietro', 'nl':'Terug', 'fr':'Retour', 'el':'Πίσω', 'de':'Zurück', 'lt':'Atgal' },
-    'NOT_AVAILABLE': {'cs':'K této službě se nelze přihlásit pomocí', 'en':'Service is not available for', 'it':'Il servizio non è disponibile per', 'nl':'Service is niet beschikbaar', 'fr':'Service non fonctionnel pour', 'el':'Ο Πάροχος Ταυτότητας δεν είναι διαθέσιμος για αυτή την υπηρεσία', 'de':'Dienst ist nicht verfügbar für', 'lt':'Paslauga neteikiama' },
-    'LOADING': {'cs': 'Načítám instituce ...', 'en':'LOADING ...', 'it':' Caricamento ...', 'nl':'Aan het laden', 'fr':'Chargement en cours', 'el':'ΦΟΡΤΩΣΗ ...', 'de':'Laden ...', 'lt':'KRAUNAMA ...' }
+    'SETUP': {'cs':'Nastavení', 'en':'Setup', 'it':'Setup', 'nl':'Maak aan', 'fr':'Configurer', 'el':'Παραμετροποίηση', 'de':'Einstellungen', 'lt':'Nustatymai', 'es':'Configurar', 'sv':'Inställningar' },
+    'CONFIRM_DELETE': {'cs':'Zapomenout ', 'en':'Forget ', 'it':'Dimentica ', 'nl':'Vergeet ', 'fr':'Enlever ', 'el':'Διαγραφή ', 'de':'Lösche ', 'lt':'Pamiršti ', 'es':'Olvidar ', 'sv':'Glöm' },
+    'BACK_TITLE': {'cs':'Zpět', 'en':'Back', 'it':'Indietro', 'nl':'Terug', 'fr':'Retour', 'el':'Πίσω', 'de':'Zurück', 'lt':'Atgal', 'es':'Atrás', 'sv':'Tillbaka' },
+    'NOT_AVAILABLE': {'cs':'K této službě se nelze přihlásit pomocí', 'en':'Service is not available for', 'it':'Il servizio non è disponibile per', 'nl':'Service is niet beschikbaar', 'fr':'Service non fonctionnel pour', 'el':'Ο Πάροχος Ταυτότητας δεν είναι διαθέσιμος για αυτή την υπηρεσία', 'de':'Dienst ist nicht verfügbar für', 'lt':'Paslauga neteikiama', 'es':'Servicio no disponible para', 'sv':'Tjänsten är inte tillgänglig för' },
+    'LOADING': {'cs': 'Načítám instituce ...', 'en':'LOADING ...', 'it':' Caricamento ...', 'nl':'Aan het laden', 'fr':'Chargement en cours', 'el':'ΦΟΡΤΩΣΗ ...', 'de':'Laden ...', 'lt':'KRAUNAMA ...', 'es':'CARGANDO...', 'sv':'Läser in...' }
 }
 
 var mobileVersion = true;
@@ -49,12 +51,17 @@ var inIframe = false;
 var feedCount = 0;
 var filterVersion = 1;  // default original version, not suitable for all cases
 
-// check support of json, otherwise use 3rd implementation
-if (typeof JSON == 'undefined') {
-  var fileref = document.createElement('script')
-  fileref.setAttribute("type", "text/javascript")
-  fileref.setAttribute("src", "/json2.js")
-  document.getElementsByTagName("head")[0].appendChild(fileref)
+var logos = new Object();  // temporary array for logos
+var noImage = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+var loadingImage = 'data:image/gif;base64,R0lGODlhEAAQAPIAAM7a5wAAAJ2msDU4PAAAAE9UWWlvdnZ9hCH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==';
+var missingLogo = "logo/missing.png";
+
+var hideFromDiscoveryCategory = "http://refeds.org/category/hide-from-discovery";
+
+/* some variables are coming from wayf.php, for example returnURL */
+var returnUrlParamCharacter = "&";
+if( returnURL.indexOf( "?" ) == -1 ) {
+  returnUrlParamCharacter = "?";
 }
 
 // check support of Array.prototype, otherwise use 3rd implementation
@@ -142,11 +149,10 @@ function isInIframe() {
 function getAllFeeds() {
     var ret = Array();
     base = "/feed/";
-    feeds = {'ACONet':'https://wayf.aco.net/aconet-aai-metadata.xml', 'InCommon':'urn:mace:incommon', 'Kalmar2':'kalmarcentral2', 'SURFfederatie':'wayf.surfnet.nl', 'SWITCHAAI':'urn:mace:switch.ch:SWITCHaai', 
-             'UKAccessFederation':'http://ukfederation.org.uk', 'eduGAIN':'http://edugain.org/', 'eduID.cz':'https://eduid.cz/metadata', 'Hostel':'https://hostel.eduid.cz/metadata',
-             'LoginMuni':'https://login.ics.muni.cz/metadata', 'ExLibris':'ExLibris', 'Social':'Social'};
-    for(feed in feeds) {
+    if( typeof feeds !== 'undefined' ) {
+      for(feed in feeds) {
         ret[feed] = base + feed+ ".js";
+      }
     }
     return ret;
 }
@@ -248,7 +254,7 @@ View.prototype.addNewHostelAccountButton = function(buttonLabel, label) {
   */
 View.prototype.addHostelIdp = function(label, isSetup) {
     var logoSource = "/logo/idp.hostel.eduid.cz.idp.shibboleth.png";
-    var url = returnURL + "&" + returnIDVariable + "=" + hostelEntityID + otherParams;
+    var url = returnURL + returnUrlParamCharacter + returnIDVariable + "=" + hostelEntityID + otherParams;
     var tgt = this.target;
     var callback = (function() {
         var veid = hostelEntityID;
@@ -272,7 +278,7 @@ View.prototype.createSetupList = function() {
 
 /** function View.prototype.createContainer - generate <div> container for IdP list
   */
-View.prototype.createContainer = function(label, showSetup, showClosing, isSetup, langCallback) {
+View.prototype.createContainer = function(label, showSetup, showClosing, isSetup, isListAll, langCallback) {
 
     this.wayfDiv = document.createElement('div');
     this.wayfDiv.id = "wayf";
@@ -312,16 +318,16 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     /* search field */
     var search = document.createElement('input');
     search.className = "topsearch";
-    search.style.backgroundRepeat="no-repeat";
-    search.style.backgroundPosition="right";
-    search.style.backgroundImage="url('search.png')";
-    search.style.borderRadius="3px";
-    search.style.borderStyle="1px solid #bbb";
-    search.style.position="relative";
-    search.style.cssFloat="right";
-    search.style.visibility = "visible";
-    search.style.width="200px";
-    search.style.fontSize="14px";
+    //search.style.backgroundRepeat="no-repeat";
+    // search.style.backgroundPosition="right";
+    // search.style.backgroundImage="url('search.png')";
+    // search.style.borderRadius="3px";
+    // search.style.borderStyle="1px solid #bbb";
+    // search.style.position="relative";
+    // search.style.cssFloat="right";
+    // search.style.visibility = "visible";
+    // search.style.width="200px";
+    // search.style.fontSize="14px";
 
     if( noSearch ) {
       search.style.visibility = "hidden";
@@ -344,6 +350,23 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
 
     var help = document.createElement('p');
     help.id = 'help';
+
+    // if customLogo is defined, then rewrite image per SP entityID
+    if( typeof customLogo !== 'undefined' && SPentityID && typeof customLogo[ SPentityID ] !== 'undefined' ) {  
+      if( typeof customLogo[ SPentityID ]["Image"] !== 'undefined' ) {
+        organizationHelpImage = customLogo[ SPentityID ]["Image"];
+      }
+      if( typeof customLogo[ SPentityID ]["Link"] !== 'undefined' ) {
+        organizationHelpLink = customLogo[ SPentityID ]["Link"];
+      }
+      if( typeof customLogo[ SPentityID ]["Label"] !== 'undefined' ) {
+        organizationLabel = customLogo[ SPentityID ]["Label"];
+      }
+       if( typeof customLogo[ SPentityID ]["ImageAlt"] !== 'undefined' ) {
+        organizationHelpImageAlt = customLogo[ SPentityID ]["ImageAlt"];
+      }
+      
+    }
 
     var cesnetLink = document.createElement('a');
     cesnetLink.href = organizationHelpLink;  // comes from wayf_vars.php
@@ -377,68 +400,111 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     this.scroller = document.createElement('div');
     this.scroller.className = "scroller";
 
+
     this.mixelaHash = new Object();
+    this.keySorted = new Object();  // result of sorting
 
     if(showSetup) {
         this.bottom.appendChild(setup);
     }
 
-/*
-    var langCS = document.createElement('div');
-    langCS.className = "lang";
-    langCS.onclick = (function() {
-        return function() {
-            prefLang = "cs";
-            langCallback();
-        }
-    })();
-    var langCSimg = document.createElement('img');
-    langCSimg.src = "cs.png";
-    langCS.appendChild(langCSimg);
-
-    var langEN = document.createElement('div');
-    langEN.className = "lang";
-    langEN.onclick = (function() {
-        return function() {
-            prefLang = "en";
-            langCallback();
-        }
-    })();
-    var langENimg = document.createElement('img');
-    langENimg.src = "gb.png";
-    langEN.appendChild(langENimg);
-*/
-    //var langDropdown = document.createElement('div');
-    //langDropdown.className = "dropdown";
-
-    //var langSpan = document.createElement('span');
-    //langSpan.innerHTML = "Lang";
-    //langDropdown.appendChild( langSpan );
-    
-    //var langDropdownContent = document.createElement('div');
-    //langDropdownContent.className = "dropdown-content";
-
-    //var flagImg = new Array();
-    for(var curLang in langsAvailable) {
-      var flag = document.createElement('div');
-      flag.className = "lang";
-      // flag.style.margin="3px";
+    /* style of ui selector */
+    if( langStyle === "dropdown" ) {
+      var langDropdown = document.createElement('div');
+      langDropdown.className = "dropdown";
+      langDropdown.onclick = (function() {
+          var langDrop = langDropdown;
+          return function() {
+            langDrop.style.display = "block";
+          }
+        })();
+ 
   
-      var flagImg = document.createElement('img');
-      flagImg.src = langsAvailable[curLang].img;
-      flagImg.onclick = (function() {
-        var lang = curLang;
-        return function() {
-          prefLang = lang;
-          langCallback();
-        }
-      })();
+      var langSpan = document.createElement('span');
+      langSpan.innerHTML = prefLang;
+      langDropdown.appendChild( langSpan );
+      
+      var langDropdownContent = document.createElement('div');
+      langDropdownContent.className = "dropdown-content";
+  
+       for(var curLang in langsAvailable) {
+        var spanLang = document.createElement('span');
+        spanLang.innerHTML = curLang;
+        spanLang.className = "span-lang";
+        spanLang.onclick = (function() {
+          var lang = curLang;
+          return function() {
+            prefLang = lang;
+            langCallback();
+          }
+        })();
 
-      flag.appendChild( flagImg );
-   
-      // langDropdownContent.appendChild( flag );
-      this.bottom.appendChild( flag );
-   
+        langDropdownContent.appendChild( spanLang );
+      }
+
+      langDropdown.appendChild( langDropdownContent );
+
+      this.bottom.appendChild( langDropdown );
+     //var flagImg = new Array();
+
+    } 
+    if( langStyle === "txt" ) {
+      var select = document.createElement('select');
+      select.className = "lang";
+      select.id = "selLang";
+      select.onchange = (function() {
+          var mySelect = select;
+          return function() {
+            if( mySelect.selectedOptions.length == 1 ) {
+              prefLang = mySelect.selectedOptions[0].value;
+              langCallback();
+            }
+          }
+        })();
+
+
+      for(var curLang in langsAvailable) {
+        var divSelect = document.createElement('div');
+        divSelect.className = "lang";
+        var option = document.createElement('option');
+        option.value = curLang;
+        option.innerHTML = langsAvailable[ curLang ].name;
+        option.onchange = (function() {
+          var lang = curLang;
+          return function() {
+            prefLang = lang;
+            langCallback();
+          }
+        })();
+
+        if( curLang === prefLang ) option.selected = true;
+        select.appendChild( option ); 
+      }
+      divSelect.appendChild( select );
+      this.bottom.appendChild( divSelect );
+    } 
+    if( langStyle === "img" ) {
+      for(var curLang in langsAvailable) {
+        var flag = document.createElement('div');
+        flag.className = "lang";
+        // flag.style.margin="3px";
+    
+        var flagImg = document.createElement('img');
+        flagImg.src = langsAvailable[curLang].img;
+        flagImg.onclick = (function() {
+          var lang = curLang;
+          return function() {
+            prefLang = lang;
+            langCallback();
+          }
+        })();
+  
+        flag.appendChild( flagImg );
+     
+        // langDropdownContent.appendChild( flag );
+        this.bottom.appendChild( flag );
+     
+      }
     }
 
     // langDropdown.appendChild( langDropdownContent );
@@ -470,6 +536,74 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
 
     var body = document.getElementsByTagName('body')[0];
     body.appendChild(this.wayfDiv);
+
+    $( ".content" ).scroll( function() {
+      loadVisibleLogos(); }  
+    );
+
+    $( document.body ).off( "keyup" ).keyup( function(e) {
+
+        var act = $( ".selected" );
+        var keyUpOrDown = false;
+        if( act.length > 0 ) {
+          var newAct = act;
+  
+          // if pressed key is enter
+          if( e.which === 13 ) {
+            // $( ".scroller" ).children( "div:visible" ).first().click();
+            act.click();
+            return;
+          }
+          // 38 -up, 40 - down
+  /*       if( isListAll ) { */
+           // listAllIdps()
+           var ind = $( ".enabled:visible" ).index( act );
+           var length = $( ".enabled:visible").length;
+           if( e.which === 40 ) {
+             keyUpOrDown = true;
+             var next = $( ".enabled:visible" ).eq(ind+1);
+             if(( ind+1 ) >= length ) {
+               next = $( ".enabled:visible" ).eq(0);  // go to first record
+             }
+             if( next.length === 1 ) {
+               act.removeClass( "selected" );
+               next.addClass( "selected" );
+               newAct = next;
+             }
+           }
+           if( e.which === 38 ) {
+             keyUpOrDown = true;
+             var prev = $( ".enabled:visible" ).eq(ind-1);
+             if(( ind-1 ) < 0 ) {
+               prev = $( ".enabled:visible" ).eq( length-1 );
+             }
+             if( prev.length === 1 ) {
+               act.removeClass( "selected" );
+               prev.addClass( "selected" );
+               newAct = prev;
+             }
+           }
+  
+           var relativePosition = newAct.offset().top;
+           var divContent = $( "div.content" );
+           // console.log( relativePosition );
+           // console.log( divContent[0].scrollTop  );
+           $( "div.content" ).scrollTop( divContent[0].scrollTop + newAct.offset().top - 200 ); 
+         }
+
+         if( ! keyUpOrDown ) {
+           if(( isListAll && (! noSearch )) || (( ! isListAll ) && (! noSearchSavedIdps ))) {
+             var searchFor = search.value; // $( ".topsearch" ).val();
+             searchAuto( searchFor, wayf, null, true );
+             loadVisibleLogos();
+             act.removeClass("selected" );
+             $( ".enabled:visible" ).eq(0).addClass("selected");
+           }
+         }
+
+    } );
+
+
 }
 
 /** function View.prototype.deleteContainer - destroy <div> container from page
@@ -512,16 +646,15 @@ View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDel
         idpDiv.onclick = callback;
     }
 
-    if(showDeleteIcon) {
-        var trashIcon = document.createElement('img');
-        trashIcon.className = "trashicon";
-        trashIcon.src = "trash_48.png";
-        idpDiv.appendChild(trashIcon);
-    }
 
     var logo = document.createElement('img');
     logo.className = "logo";
-    logo.src = logoSource;
+    if( logoSource == missingLogo ) {
+      logo.src = noImage;
+    } else {
+      logo.src = loadingImage;
+    }
+    logos[ eid ] = logoSource;
 
     var idpName = document.createElement('span');
     idpName.className = "title";
@@ -530,6 +663,14 @@ View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDel
     var hr = document.createElement('hr');
     idpDiv.appendChild(logo);
     idpDiv.appendChild(idpName);
+
+    if(showDeleteIcon) {
+        var trashIcon = document.createElement('img');
+        trashIcon.className = "trashicon";
+        trashIcon.src = "trash_48.png";
+        idpDiv.appendChild(trashIcon);
+    }
+
     idpDiv.appendChild(hr);
 
     /* idp zaradime abecedne do seznamu bez ohledu na nabodenicka */
@@ -583,6 +724,29 @@ View.prototype.getLabelText = function(id) {
     }
 }
 
+/* loadImages whes is visible */
+$.fn.isInViewport = function() {
+  var elementTop = $(this).offset().top;
+  var elementBottom = elementTop + $(this).outerHeight();
+  var viewportTop = $(window).scrollTop();
+  var viewportBottom = viewportTop + $(window).outerHeight();
+  return elementBottom > viewportTop && elementTop < viewportBottom;
+};
+
+function loadVisibleLogos() { 
+  $( ".scroller" ).children().each( function() {
+    // test if is already loaded
+    if( typeof logos[ this.id ] !==  "undefined" ) {
+      if( $( this ).isInViewport() ) {
+        // console.log( this.id );
+        // download and show logo of IdP
+        this.children["0"].src = logos[ this.id ];
+        delete logos[ this.id ];
+      }
+    }
+  } );
+} 
+    
 /** Contructor of object Wayf
   */
 function Wayf(divName) {
@@ -626,6 +790,14 @@ function Wayf(divName) {
     var cssId = 'myCss'; 
     if (!document.getElementById(cssId)) {
         var head  = document.getElementsByTagName('head')[0];
+        var linkWayf = document.createElement('link');
+        linkWayf.id = 'wayfCss';
+        linkWayf.rel  = 'stylesheet';
+        linkWayf.type = 'text/css';
+        linkWayf.href = serverURL + 'wayf.css';
+        linkWayf.media = 'all';
+        head.appendChild(linkWayf);
+       
         var link  = document.createElement('link');
         link.id   = cssId;
         link.rel  = 'stylesheet';
@@ -748,10 +920,16 @@ Wayf.prototype.deleteUsedIdp = function(id) {
     try {
         var usedIdps = this.persistor.getItem("usedIdps");
         var usedIdpsObj = JSON.parse(usedIdps);
+        var isValidEntity = false;
         var entity = usedIdpsObj[id]['entity'];
-        var label = this.getLabelFromLabels(entity.label);
+        var label;
+        if( typeof entity == "undefined" ) {
+          isValidEntity = true;
+        } else { 
+          label = this.getLabelFromLabels(entity.label);
+        }
 
-        if(confirm(this.view.getLabelText("CONFIRM_DELETE") + label + "?")) {
+        if(isValidEntity || (confirm(this.view.getLabelText("CONFIRM_DELETE") + label + "?"))) {
             var usedIdpsObj = JSON.parse(usedIdps);
             var newUsedIdpsObj = new Object();
             var haveData = false;
@@ -794,18 +972,6 @@ Wayf.prototype.isIdpInFeed = function(idp, feed) {
     return false;
 }
 
-/** function Wayf.prototype.getUrlFromFeedId - return URL of feed with feedId
-  */
-Wayf.prototype.getUrlFromFeedId = function(feedId) {
-    try {
-        var ret = allFeeds[feedId];
-        return ret;
-    }
-    catch(err) {
-        return "";
-    }
-}
-
 /** function Wayf.prototype.isInEc - exist EC in allowEC/denyEC?
   */
 Wayf.prototype.isInEc = function( allowOrDenyEcArray, ecArray ) {
@@ -817,12 +983,24 @@ Wayf.prototype.isInEc = function( allowOrDenyEcArray, ecArray ) {
   return false;
 }
 
+/** function Wayf.prototype.isInRA - exist RA in allowRA/denyRA?
+  */
+Wayf.prototype.isInRA = function( allowOrDenyRaArray, ra ) {
+  if( allowOrDenyRaArray.indexOf(ra)>=0) 
+    return true;
+
+  return false;
+}
+
 Wayf.prototype.listAllData = function(feedId, mdSet) {
     var idpFilter = false;
-    var filterDenyIdps = false;
-    var filterAllowIdps = false; 
-    var filterAllowEC = false;
-    var filterDenyEC = false;
+    var filterDenyIdps = false;  // particular deny Idp filter
+    var filterAllowIdps = false; // particular allow Idp filter
+    var filterAllowEC = false;  // Allow EntityCategory filter
+    var filterDenyEC = false;  // Deny EntityCategory filter
+    var filterAllowRA = false;  // Allow RegistrationAuthority filter
+    var filterDenyRA = false;  // Deny RegistrationAythority filter
+    var filterHideFromDiscovery = true;  // Filter entity-category hide-from-discovery by default
 
     if( useFilter ) {
       if( filterVersion == "2" ) {
@@ -836,14 +1014,30 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
             filterAllowIdps = true;
           }
         }
+
         // exist denyEC?
         if( typeof filter.allowFeeds[feedId].denyEC !== "undefined" ) {
           filterDenyEC = true;
         }
+
         // exist allowEC?
         if( typeof filter.allowFeeds[feedId].allowEC !== "undefined" ) {
           filterAllowEC = true;
+          // disable filter out hide-from-discovery
+          if( filter.allowFeeds[feedId].allowEC.indexOf( hideFromDiscoveryCategory ) >= 0 ) {
+            filterHideFromDiscovery = false;
+          }
         }
+
+        // exist denyRA?
+        if( typeof filter.allowFeeds[feedId].denyRA !== "undefined" ) {
+          filterDenyRA = true;
+        }
+        // exist allowRA?
+        if( typeof filter.allowFeeds[feedId].allowRA !== "undefined" ) {
+          filterAllowRA = true;
+        }
+
       } else {
         // filter v1
         if( ("allowIdPs" in filter)) {
@@ -866,18 +1060,30 @@ Wayf.prototype.listAllData = function(feedId, mdSet) {
             // allowIdPs per feed
             if( filterAllowIdps ) { 
 
-              if( filter.allowFeeds[feedId].allowIdPs.indexOf(eid)>=0 || (filterAllowEC && wayf.isInEc( filter.allowFeeds[feedId].allowEC, mdSet.entities[eid].EC ))) {
+              if( filter.allowFeeds[feedId].allowIdPs.indexOf(eid)>=0 || (filterAllowEC && wayf.isInEc( filter.allowFeeds[feedId].allowEC, mdSet.entities[eid].EC )) || (filterAllowRA && wayf.isInRA( filter.allowFeeds[feedId].allowRA, mdSet.entities[eid].RA ))) {
                 // nothing, too complex if
               } else {
                 continue;
               } 
             } else {
   
+              // RegistrationAuthority, first remove denyRA, then add allowRA
+              if( filterDenyRA && wayf.isInRA( filter.allowFeeds[feedId].denyRA, mdSet.entities[eid].RA )) {
+                continue;
+              }
+              if( filterAllowRA && wayf.isInRA( filter.allowFeeds[feedId].allowRA, mdSet.entities[eid].RA )==false) {
+                continue;
+              }
+
               // entity category, first remove denyEC, then add allowEC
               if( filterDenyEC && wayf.isInEc( filter.allowFeeds[feedId].denyEC, mdSet.entities[eid].EC )) {
                 continue;
               }
               if( filterAllowEC && wayf.isInEc( filter.allowFeeds[feedId].allowEC, mdSet.entities[eid].EC )==false) {
+                continue;
+              }
+              // filter out hide-from-discovery IdP
+              if( filterHideFromDiscovery && ( typeof mdSet.entities[eid].EC !== "undefined" ) && ( mdSet.entities[eid].EC.indexOf( hideFromDiscoveryCategory ) >= 0 )) {
                 continue;
               }
             }
@@ -947,13 +1153,26 @@ function searchAuto( query, wayf, callback, saveQuery ) {
   var result = [];
   var usedIdps = wayf.usedIdps;
 
-  if( saveQuery ) {
-    wayf.lastSearch = query;
+  var length_old = wayf.lastSearch.length;
+  var length = query.length;
+
+  wayf.lastSearch = query;
+
+  if( length < 2 ) {
+    if( length_old < 2 ) {
+      return;
+    } else {
+      query = "";
+    }
   }
 
-  // wayf.view.deleteContainer();  // nedava smysl, pac si clovek smaze i jquery-ui tagy
-  $( ".enabled" ).hide();  // hide all institutions
-  $( ".disabled" ).hide();  // hide even all disabled institions
+  //var regexp_query = new RegExp( query, "i" );
+  var queryArray = query.split(" ");
+  var idScroller = document.getElementsByClassName('scroller')[0];
+  var frag = document.createDocumentFragment();  
+  var fragScroller = document.createElement('div');
+  fragScroller.className = "scroller";
+  frag.appendChild( fragScroller );
 
   if( query.length ) {
     $( ".topsearch").css( "background-Image", "none");
@@ -962,27 +1181,36 @@ function searchAuto( query, wayf, callback, saveQuery ) {
   }
 
   // looking at only filtered records
-  for(var entity in this.wayf.selectedIdps ) {
+  // var label;
+  for(var idLabel in wayf.view.keySorted ) {
+    var label = wayf.view.keySorted[ idLabel ];
+    var entity = wayf.view.mixelaHash[ label ].id;
     var extractedDomain = entity.split("/");
-    if( typeof extractedDomain[2] !== "undefined" && extractedDomain[2].search( new RegExp( query, "i" )) != -1 ) {
-      $( document.getElementById( entity ) ).show();
+    if( typeof extractedDomain[2] !== "undefined" && extractedDomain[2].indexOf( query.toLowerCase() ) != -1 ) {
+      fragScroller.appendChild( wayf.view.mixelaHash[ label ] );
     } else {
-      for(var curLang in this.wayf.selectedIdps[entity]){
-        if( this.wayf.selectedIdps[entity][curLang].search( new RegExp( query, "i" )) != -1) {
-          $( document.getElementById( entity ) ).show();
+      for(var curLang in this.wayf.selectedIdps[ entity ]){
+        if( containAllSubstring( this.wayf.selectedIdps[entity][curLang], queryArray ) == true) {
+          fragScroller.appendChild( wayf.view.mixelaHash[ label ] );
+          break;
         }
       }
     }
   }
 
-  $( ".topsearch" ).keypress(function(e) {
-    // if pressed key is enter
-    if( e.which == 13 ) {
-      $( ".scroller" ).children( "div:visible" ).first().click();
+  var idContent = idScroller.parentNode;
+  idContent.removeChild( idScroller );  
+  idContent.insertBefore( frag, idContent.childNodes[1] );
+    
+}
+
+function containAllSubstring( str, substringArray ) {
+  for(var curSubstring in substringArray ) {
+    if( str.toLowerCase().indexOf( substringArray[curSubstring].toLowerCase() ) == -1 ) {
+      return false;
     }
-  });
- 
-  // callback( result );  // we don't use autocompletion list
+  }
+  return true;
 }
 
 Wayf.prototype.getBase64Image = function(url, etag) {
@@ -1059,6 +1287,9 @@ Wayf.prototype.getLabelFromLabels = function(labels) {
 Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
     var idpFilter = false;
     var filterAllowFeeds = false;
+    var isListEnabledIdpsEmpty = true;
+    
+    var af = getAllFeeds();
 
     /* load feeds */
     if(useFilter) {
@@ -1071,11 +1302,14 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
         }
         filterAllowFeeds = true;
         if(!isSetup) {
-          var af = getAllFeeds();
           feedCount = Object.keys(filter.allowFeeds).length;
           for(feed in filter.allowFeeds) {
             feedUrl = af[feed];
-            wayf.getFeed(feed, feedUrl, false, false, true );
+            if( typeof feedUrl !== 'undefined' ) {
+              wayf.getFeed(feed, feedUrl, false, false, true );
+            } else {
+              feedCount--;
+            }
           }
 
         }
@@ -1088,11 +1322,14 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
         if("allowFeeds" in filter) {
             filterAllowFeeds = true;
             if(!isSetup) {
-                var af = getAllFeeds();
                 feedCount = Object.keys(filter["allowFeeds"]).length;
                 for(feed in filter["allowFeeds"]) {
                     feedUrl = af[filter["allowFeeds"][feed]];
-                    wayf.getFeed(filter["allowFeeds"][feed], feedUrl, false, false, true );
+                    if( typeof feedUrl !== 'undefined' ) {
+                      wayf.getFeed(filter["allowFeeds"][feed], feedUrl, false, false, true );
+                    } else {
+                      feedCount--;
+                    }
                 }
             }
         }
@@ -1102,8 +1339,12 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
         /* load all feeds, filter is not set */
         feedCount = Object.keys(allFeeds).length;
         for(var feed in allFeeds) {
-            var feedUrl = allFeeds[feed];
-            wayf.getFeed(feed, feedUrl, false, false, true );
+            var feedUrl = af[feed];
+            if( typeof feedUrl !== 'undefined' ) {
+              wayf.getFeed(feed, feedUrl, false, false, true );
+            } else {
+              feedCount--;
+            }
         }
     }
 
@@ -1113,10 +1354,10 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
         wayf.listSavedIdps(isSetup,true);
     }
     if(isSetup) {
-        this.view.createContainer(this.view.getLabelText('SETUP'), false, true, true, langCallback);
+        this.view.createContainer(this.view.getLabelText('SETUP'), false, true, true, false, langCallback);
     }
     else {
-        this.view.createContainer(this.view.getLabelText('TEXT_SAVED_IDPS'), true, inIframe, false, langCallback);
+        this.view.createContainer(this.view.getLabelText('TEXT_SAVED_IDPS'), true, inIframe, false, false, langCallback);
     }
 
     /* foreach saved idp */
@@ -1129,14 +1370,19 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
             }
 
             var entity = usedIdps[eid];
-            // When saved value is broken, ignore it
+            // When saved value is broken, delete from persistor and ignore it
             if(typeof entity.entity == 'undefined') {
+                wayf.deleteUsedIdp(eid);
                 continue;
             }
             var url = this.createEntityLink(eid);
             var tgt = this.view.target;
             var label = this.getLabelFromLabels(entity.entity.label);
-            var logoSource = 'data:image/png;base64,' + entity.logo;
+            var logoSource = missingLogo;
+            if( typeof entity.logo !== "undefined" ) {
+              // var je zvlastni
+              var logoSource = 'data:image/png;base64,' + entity.logo;
+            }
             var enabled = true;
             var alert_na= this.view.getLabelText( "NOT_AVAILABLE" );
             var callback = null;
@@ -1170,6 +1416,7 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
 
                       if( filterVersion == "1" ) {
                         /* filter_v1 */
+                        enableIdp = false;
                           
                         if(idpFilter && filter["allowIdPs"].indexOf(eid)>=0) {
                           /* add idp explicitly listed in allowIdps */
@@ -1190,6 +1437,8 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                         var filterAllowIdps;
                         var filterAllowEC;
                         var filterDenyEC;
+                        var filterAllowRA;
+                        var filterDenyRA;
                         var eidIsDeny;
                         var eidIsNotInAllow;
                         var eidAll;
@@ -1203,6 +1452,9 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                             filterAllowIdps = false;
                             filterAllowEC = false;
                             filterDenyEC = false;
+                            filterAllowRA = false;
+                            filterDenyRA = false;
+                            filterHideFromDiscovery = true;
                             eidIsDeny = false;
                             eidIsNotInAllow = false;
                             eidAll = true;
@@ -1227,6 +1479,16 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                               if( filterAllowIdps && filter.allowFeeds[feed].allowIdPs.indexOf(eid) < 0)
                                 eidIsNotInAllow = true;
 
+                              if( typeof filter.allowFeeds[feed].denyRA !== "undefined" ) {
+                                filterDenyRA = true;
+                                eidAll = false;
+                              }
+
+                              if( typeof filter.allowFeeds[feed].allowRA !== "undefined" ) {
+                                filterAllowRA = true;
+                                eidAll = false;
+                              }
+
                               if( typeof filter.allowFeeds[feed].denyEC !== "undefined" ) {
                                 filterDenyEC = true;
                                 eidAll = false;
@@ -1235,6 +1497,9 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                               if( typeof filter.allowFeeds[feed].allowEC !== "undefined" ) {
                                 filterAllowEC = true;
                                 eidAll = false;
+                                if( filter.allowFeeds[feed].allowEC.indexOf( hideFromDiscoveryCategory ) >= 0 ) {
+                                  filterHideFromDiscovery = false;
+                                }
                               }
 
                               /* vyhodnoceni v2 */
@@ -1244,6 +1509,18 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                                 tmpEnableIdp = false;
                               }
                               if( filterAllowEC && wayf.isInEc( filter.allowFeeds[feed].allowEC, wayf.feedData[feed].mdSet.entities[eid].EC )==false) {
+                                tmpEnableIdp = false;
+                              }
+                              if( filterHideFromDiscovery && ( typeof wayf.feedData[feed].mdSet.entities[eid].EC !== "undefined" ) && ( wayf.feedData[feed].mdSet.entities[eid].EC.indexOf( hideFromDiscoveryCategory ) >= 0 )) {
+                                tmpEnableIdp = false;
+                                eidAll = false;
+                              }
+                              
+                              // RegistrationAuthority, first remove denyRA, then add allowRA
+                              if( filterDenyRA && wayf.isInRA( filter.allowFeeds[feed].denyRA, wayf.feedData[feed].mdSet.entities[eid].RA )) {
+                                tmpEnableIdp = false;
+                              }
+                              if( filterAllowRA && wayf.isInRA( filter.allowFeeds[feed].allowRA, wayf.feedData[feed].mdSet.entities[eid].RA )==false) {
                                 tmpEnableIdp = false;
                               }
      
@@ -1288,6 +1565,7 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
 
                 var callback = null;
                 if(enableIdp) {
+                    isListEnabledIdpsEmpty = false;
                     callback = (function() {
                         var murl = url;
                         var tgrt = tgt;
@@ -1334,51 +1612,36 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
         } */
     }
 
-    // show saved Idp
-    var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
-              
-    for( var key in keySorted ) {
-      wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
+    // if list of Idps is empty or contains only grey-out Idps, so show all Idps
+    if( !isSetup && isListEnabledIdpsEmpty ) {
+      wayf.listAllIdps(false);
+      return;
     }
+
+    // show saved Idp
+    wayf.view.keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
+              
+    for( var key in wayf.view.keySorted ) {
+      wayf.view.scroller.appendChild( wayf.view.mixelaHash[ wayf.view.keySorted[ key ] ] );
+    }
+
+    loadVisibleLogos();
+
+    $( ".scroller" ).children( "div:visible" ).first().addClass( 'selected' );
 
     if(!isSetup) {
         this.view.addButton(this.view.getLabelText('BUTTON_NEXT'));
     }
 
-    // jquery-ui
-    var textSearch = this.lastSearch;
-    $(document).ready( function() {
-      $( ".topsearch" ).css("position", "relative");
-      $( ".topsearch" ).css( "float", "right" ); 
-      $( ".topsearch" ).focus();
-      $( ".topsearch" ).val( textSearch );
-      $( ".topsearch" ).autocomplete( {
-        select: function (event, ui)
-        {
-          "use strict";
-          //console.debug('select event called');
-          //console.debug(ui.item.value);
-        },
-	      source: function( request, response) {
-          var searchFor = request.term;
-          searchAuto( searchFor, wayf, response, true);
-        },
-		    minLength: 0
+    if( ! noSearchSavedIdps ) {
+      var textSearch = this.lastSearch;
+      $(document).ready( function() {
+        //$( ".topsearch" ).css("position", "relative");
+        //$( ".topsearch" ).css( "float", "right" ); 
+        $( ".topsearch" ).focus();
+        $( ".topsearch" ).val( textSearch );
       });
-
-
-      // lastSearch action
-      searchAuto( textSearch, wayf, null, false);
-
-    });
-
-    $( document ).keypress(function(e) {
-        // if pressed key is enter
-        if( e.which == 13 ) {
-          $( ".scroller" ).children( "div:visible" ).first().click();
-        }
-   });
- 
+    }
 }
 
 
@@ -1435,18 +1698,20 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
 
             if( feedCount == 0 ) { 
               // sort mixela
-              var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
-
-              // empty scroller due to duplicity
-              // while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
+              wayf.view.keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
 
               $( ".toplabel" ).text(wayf.view.getLabelText('TEXT_ALL_IDPS'));
               
-              for( var key in keySorted ) {
-                wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
+              var frag = document.createDocumentFragment();   
+              for( var key in wayf.view.keySorted ) {
+                frag.appendChild( wayf.view.mixelaHash[ wayf.view.keySorted[ key ] ] );
               }
+              wayf.view.scroller.appendChild( frag ); 
 
-              searchAuto( textSearch, wayf, null, false );
+              loadVisibleLogos();
+
+              $( ".scroller" ).children( "div:visible" ).first().addClass( 'selected' );
+
             }
         }
     };
@@ -1473,7 +1738,7 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     noSearchSavedIdps = false;
 
     this.view.deleteContainer();
-    this.view.createContainer(this.view.getLabelText('TEXT_ALL_IDPS'), false, inIframe, false, langCallback);
+    this.view.createContainer(this.view.getLabelText('TEXT_ALL_IDPS'), false, inIframe, false, true, langCallback);
     if(useFilter &&  "allowFeeds" in filter) {
         filterAllowFeeds = true;
     }
@@ -1499,6 +1764,7 @@ Wayf.prototype.listAllIdps = function(forceAll) {
         }
     }
 
+    var af = getAllFeeds();
     feedCount = Object.keys(allFeeds).length;
     for(var feedId in allFeeds) {
         if(feedId == "indexOf") {
@@ -1515,48 +1781,39 @@ Wayf.prototype.listAllIdps = function(forceAll) {
             }
           }
         }
-        var feedUrl = allFeeds[feedId];
-        this.getFeed(feedId, feedUrl, false, forceAll, false );
-    
+        var feedUrl = af[feedId];
+        if( typeof feedUrl !== 'undefined' ) {
+          this.getFeed(feedId, feedUrl, false, forceAll, false );
+        } else {
+          feedCount--;
+        } 
     }
 
-      // sort mixela
-      var keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
+    // sort mixela
+    wayf.view.keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
 
-      // empty scroller due to duplicity
-      // while(wayf.view.scroller.firstChild) wayf.view.scroller.removeChild( wayf.view.scroller.firstChild );
-              
-      for( var key in keySorted ) {
-        wayf.view.scroller.appendChild( wayf.view.mixelaHash[ keySorted[ key ] ] );
-      }
+    var frag = document.createDocumentFragment();   
+    for( var key in wayf.view.keySorted ) {
+      frag.appendChild( wayf.view.mixelaHash[ wayf.view.keySorted[ key ] ] );
+    }
+    wayf.view.scroller.appendChild( frag ); 
 
-    searchAuto( textSearch, wayf, null, false );
+    loadVisibleLogos();
 
-    // jquery-ui
+    $( ".scroller" ).children( "div:visible" ).first().addClass( 'selected' );
+
     var textSearch = this.lastSearch;
     $(document).ready( function() {
 
-      $( ".topsearch" ).css( "position", "relative" );
-      $( ".topsearch" ).css( "float", "right" );
+      //$( ".topsearch" ).css( "position", "relative" );
+      //$( ".topsearch" ).css( "float", "right" );
       $( ".topsearch" ).focus();
       $( ".topsearch" ).val( textSearch );
-      $( ".topsearch" ).autocomplete( {
-        select: function (event, ui)
-        {
-          "use strict";
-          //console.debug('select event called');
-          //console.debug(ui.item.value);
-        },
-	      source: function( request, response) {
-          var searchFor = request.term;
-          searchAuto( searchFor, wayf, response, true);
-        },
-		    minLength: 0
-      });
-    });
+    }); 
+
 }
 
 Wayf.prototype.createEntityLink = function(eid) {
-    retURL = returnURL + "&" + returnIDVariable + "=" + eid + otherParams;
+    retURL = returnURL + returnUrlParamCharacter + returnIDVariable + "=" + eid + otherParams;
     return retURL;
 }

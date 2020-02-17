@@ -1,0 +1,50 @@
+    Installation Debian 8
+
+Required packages:
+libappconfig-perl libproc-processtable-perl perlmagick libjson-perl sqlite3 xsltproc xmlsec1 optipng at libnagios-plugin-perl curl sudo
+
+  Install DS component
+
+1) Download git repository and place code to /opt/wayf
+
+2) Copy /opt/wayf files to www root. 
+In dsx subdirectory is settings for DSX edugain instance of DS.
+
+  Install getMD component
+
+getMD component downloads metadata of federations and transform it to JSON feeds.
+Build sqlite database with more attributes (for example: value of returnURL parameter).
+getMD downloads logos of IdPs and normalize size of logos.
+
+1) Make directories:
+/opt/getMD 
+/opt/getMD/etc
+
+2) Create user getmd 
+with /bin/false shell
+with /opt/getMD/var home directory
+with daemon group
+
+3) Create symbolic links:
+ln -s /opt/wayf/scripts/lib /opt/getMD/lib
+ln -s /opt/wayf/scripts/bin /opt/getMD/bin
+ln -s /opt/wayf/scripts/etc/signers /opt/getMD/etc/signers
+ln -s /opt/wayf/scripts/etc/feeds /opt/getMD/etc/feeds
+
+feeds contains list of federations, comment federations which you don't need or add own.
+signers directory contains certificates for check of signed metadata
+
+4) Settings of getMD
+cp /opt/wayf/doc/getMDrc.dist /opt/getMD/etc/getMDrc
+
+5) First time run of getMD
+sudo -u getmd /opt/getMD/bin/getMD.pl
+
+This task takes long time, obviously 30 minutes.
+
+6) Add getMD to cronjob to automatic download fresh metadata.
+crontab -u getmd -e
+#add line
+30 * * * * /opt/getMD/bin/getMD.pl 2>&1
+
+

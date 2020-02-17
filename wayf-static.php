@@ -19,6 +19,8 @@ include 'wayf_vars.php';  // customization CESNET/eduTEAMS
 
 // constants
 define( "EC", "EC" );  // EC index to entities
+define( "RA", "RA" );  // RegistrationAuthority index to entities
+define( "HIDEFROMDISCOVERY", "http://refeds.org/category/hide-from-discovery" ); // Entity Category - Hide From Discovery
 
 // Development mode
 $DEVEL = false;
@@ -34,20 +36,22 @@ else {
 
 // Messages
 $messages = array(
-    "LOGIN" => array("cs" => "Přihlásit účtem", "en" => "Log in with", "it" => "Login tramite", "nl" => "Login met", "fr" => "S’authentifier avec", "el" => "Σύνδεση μέσω", "de" => "Anmelden mit", "lt" => "Prisijungti su" ),
-    "CREATE_ACCOUNT" => array("cs" => "Vytvořit účet", "en" => "Create account", "it" => "Crea account", "nl" => "Maak account aan", "fr" => "Créer un compte", "el" => "Δημιουργία λογαριασμού", "de" => "Konto kreieren", "lt" => "Sukurti paskyrą" ),
+    "LOGIN" => array("cs" => "Přihlásit účtem", "en" => "Log in with", "it" => "Login tramite", "nl" => "Login met", "fr" => "S’authentifier avec", "el" => "Σύνδεση μέσω", "de" => "Anmelden mit", "lt" => "Prisijungti su", "es" => "Acceder con", "sv" => "Logga in med" ),
+    "CREATE_ACCOUNT" => array("cs" => "Vytvořit účet", "en" => "Create account", "it" => "Crea account", "nl" => "Maak account aan", "fr" => "Créer un compte", "el" => "Δημιουργία λογαριασμού", "de" => "Konto kreieren", "lt" => "Sukurti paskyrą", "es" => "Crear cuenta", "sv" => "Skapa konto" ),
 );
 
 // Available languages
 $langsAvailable = array (
-  "cs" => array( "img" => "flags/cs.png" ),
-  "de" => array( "img" => "flags/de.png" ),
-  "el" => array( "img" => "flags/el.png" ),
-  "en" => array( "img" => "flags/en.png" ),
-  "fr" => array( "img" => "flags/fr.png" ),
-  "it" => array( "img" => "flags/it.png" ),
-  "lt" => array( "img" => "flags/lt.png" ),
-  "nl" => array( "img" => "flags/nl.png" ),
+  "cs" => array( "img" => "flags/cs.png", "name" => "Čeština" ),
+  "de" => array( "img" => "flags/de.png", "name" => "Deutsch" ),
+  "el" => array( "img" => "flags/el.png", "name" => "Ελληνικά" ),
+  "en" => array( "img" => "flags/en.png", "name" => "English" ),
+  "es" => array( "img" => "flags/es.png", "name" => "Español" ),
+  "fr" => array( "img" => "flags/fr.png", "name" => "Français" ),
+  "it" => array( "img" => "flags/it.png", "name" => "Italiano" ),
+  "lt" => array( "img" => "flags/lt.png", "name" => "Lietuvių" ),
+  "nl" => array( "img" => "flags/nl.png", "name" => "Nederlands" ),
+  "sv" => array( "img" => "flags/sv.png", "name" => "Svenska" )
 );
 
 /** Function returns label in prefered language from metadata
@@ -157,7 +161,7 @@ else {
  * param $logo - logo of IdP
  */
 function addIdP($label, $id, $logo) {
-    global $returnURL, $returnIDVariable, $ban_lib, $lib;
+    global $returnURL, $returnIDVariable, $ban_lib, $lib, $returnUrlParamCharacter;
 
     // if IdP is on banned list and should be banned cancel adding (library nowadays) 
     if($ban_lib) {
@@ -166,7 +170,7 @@ function addIdP($label, $id, $logo) {
         }
     }
 
-    echo "<a class=\"enabled\" title=\"" . $label . "\" href=\"" . $returnURL . "&" . $returnIDVariable . "=" . $id . "\">\n";
+    echo "<a class=\"enabled\" title=\"" . $label . "\" href=\"" . $returnURL . $returnUrlParamCharacter . $returnIDVariable . "=" . $id . "\">\n";
     echo "<img class=\"logo\" src=\"" . $logo . "\">\n";
     echo "<span class=\"title\">" . $label . "</span>\n";
     echo "<hr>";
@@ -214,6 +218,10 @@ $charset = "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8
 $wayfURL = "https://$_SERVER[SERVER_NAME]/wayf-dev-static.php";
 
 $returnURL = $_GET['return'];
+$returnUrlParamCharacter = "&";
+if( strpos( $returnURL, '?' ) === false ) {
+  $returnUrlParamCharacter = "?";
+}
 $useFilter = false;
 $entityID = $_GET['entityID'];
 $lang = "cs";
@@ -310,7 +318,7 @@ if(isset($_GET['dumb'])) {
 if(isset($fromHostelRegistrar)) {
     // Hostel hack - redirect to Hostel to authenticate
     $returnURL = urldecode($_GET['return']);
-    $returnURL = $returnURL . "&" . $returnIDVariable . "=" . $hostelId;
+    $returnURL = $returnURL . $returnUrlParamCharacter . $returnIDVariable . "=" . $hostelId;
     $otherParams = "";
     foreach($_GET as $gkey => $gval) {
         if(($gkey ==  "fromHostelRegistrar") || ($gkey == "useHostel") || ($gkey == "entityID") || ($gkey == "return")) {
@@ -384,7 +392,9 @@ else {
 
             // echo "aktualni feed - ". $feed ." xxx ";
             $feedPath = "/opt/getMD/var/pub/current/feed/" . $feed . ".js";
-            $feedFile = file_get_contents($feedPath);
+            if( ($feedFile = file_get_contents($feedPath)) === false ) {
+              continue;  // skip non exist file
+            }
             $fd = json_decode($feedFile, true);
             $c_entities = $fd["entities"];
 
@@ -392,6 +402,10 @@ else {
             $filterAllowIdps = false;
             $filterAllowEC = false;
             $filterDenyEC = false;
+            $filterAllowRA = false;
+            $filterDenyRA = false;
+            $filterHideFromDiscovery = true;
+
 
             if( isset( $jFilter['allowFeeds'][ $feed ]['denyIdPs'] )) {
               $filterDenyIdps = true;
@@ -401,8 +415,19 @@ else {
               $filterAllowIdps = true;
             }
 
+            if( isset( $jFilter['allowFeeds'][ $feed ]['allowRA'] )) {
+              $filterAllowRA = true;
+            }
+
+            if( isset( $jFilter['allowFeeds'][ $feed ]['denyRA'] )) {
+              $filterDenyRA = true;
+            }
+
             if( isset( $jFilter['allowFeeds'][ $feed ]['allowEC'] )) {
               $filterAllowEC = true;
+              if( in_array( HIDEFROMDISCOVERY, $jFilter['allowFeeds'][ $feed ]['allowEC'] )) {
+                $filterHideFromDiscovery = false;
+              } 
             }
 
             if( isset( $jFilter['allowFeeds'][ $feed ]['denyEC'] )) {
@@ -417,28 +442,59 @@ else {
               $allowCurIdp = false;
               if( $filterAllowIdps ) { 
                 if( in_array( $key, $jFilter['allowFeeds'][ $feed ]['allowIdPs'] )) {
-                  $allowCurIdp = true;
+                        $entities[$key] = $value;
+                        continue;
                 }
               }
-               
-              if( isset( $c_entities[ $key ][ EC ] )) {
-                foreach( $c_entities[ $key ][ EC ] as $ecMetadata ) {
-                  if( ! $allowCurIdp && $filterDenyEC && in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['denyEC'])) {
-                    //print_r( $c_entities[ $key ] ); echo "<br>";
-                    //print_r( $ecMetadata ); echo "<br><br>";
-                    continue 2;
+              
+              if( $filterAllowRA || $filterDenyRA ) { 
+                if( isset( $c_entities[ $key ][ RA ] )) {
+                  if( $filterDenyRA && in_array( $c_entities[ $key ][ RA ], $jFilter['allowFeeds'][ $feed ]['denyRA'])) {
+                      //print_r( $c_entities[ $key ] ); echo "<br>";
+                      //print_r( $ecMetadata ); echo "<br><br>";
+                      continue;
                   }
-                  if( ! $allowCurIdp && ( $filterAllowEC && ! in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['allowEC']))) {
-                    continue 2;
+                  if( $filterAllowRA && ! in_array( $c_entities[ $key ][ RA ], $jFilter['allowFeeds'][ $feed ]['allowRA'])) {
+                      continue;
+                  }
+                } else {
+                  if( $filterAllowRA ) { // || ( $filterDenyEC && ! $allowCurIdp )) 
+                    // eid has not any RegistrationAuthority => can't be on list allowedRA
+                    continue;
                   }
                 }
-              } else {
-                if( $filterAllowEC ) { // || ( $filterDenyEC && ! $allowCurIdp )) {
-                  // eid has not any entity-category => can't be on list allowedEC
-                  continue;
-                }
+                $entities[$key] = $value;
+                continue;
               }
-              $entities[$key] = $value;
+
+              if( $filterAllowEC || $filterDenyEC || $filterHideFromDiscovery ) { 
+                if( isset( $c_entities[ $key ][ EC ] )) {
+                  foreach( $c_entities[ $key ][ EC ] as $ecMetadata ) {
+                    if( $filterDenyEC && in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['denyEC'])) {
+                      //print_r( $c_entities[ $key ] ); echo "<br>";
+                      //print_r( $ecMetadata ); echo "<br><br>";
+                      continue 2;
+                    }
+                    if( $filterAllowEC && ! in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['allowEC'])) {
+                      continue 2;
+                    }
+                    if( $filterHideFromDiscovery && strcmp( $ecMetadata, HIDEFROMDISCOVERY ) == 0 ) {
+                      continue 2;
+                    }
+                  }
+                } else {
+                  if( $filterAllowEC ) { // || ( $filterDenyEC && ! $allowCurIdp )) 
+                    // eid has not any entity-category => can't be on list allowedEC
+                    continue;
+                  }
+                }
+                $entities[$key] = $value;
+                continue;
+              }
+
+              if( ! $filterAllowIdps && ! $filterDenyIdps && ! $filterAllowEC && ! $filterDenyEC && $filterHideFromDiscovery ) {
+                $entities[$key] = $value;
+              }
             }
 
             // print_r( $c_entities );
@@ -543,13 +599,46 @@ else {
 
     // show available languages
     $pself = $_SERVER["PHP_SELF"];
-    foreach( $langsAvailable as $key => $value ) {
-      $uri = getUri( $key );
+
+    if( $langStyle == "txt" ) {
       echo "<div class=\"lang\">\n";
-      echo "<a href=\"" . $pself . $uri . "&lang=". $key . "\">";
-      echo "<img src=\"". $value["img"] ."\">";
-      echo "</a>";
+      echo "<form action=\"". $pself ."\" method=\"GET\">\n";
+      //echo "<div class=\"form-lang\" style=\"overflow: hidden; width:200px; white-space: nowrap;\">";
+      foreach( $_GET as $key => $value) {
+        if( $key != "lang" ) {
+          echo "<input type=hidden name=\"". $key ."\" value=\"". $value ."\">\n";
+        }
+      }
+      echo "<select name=\"lang\" class=\"lang\" id=\"selLang\">";
+      foreach( $langsAvailable as $key => $value ) {
+        // $uri = getUri( $key );
+
+        //echo "<li>";
+        //echo "<a href=\"" . $pself . $uri . "&lang=". $key . "\">";
+        //echo "<img alt=\"". $value["name"] ."\" src=\"". $value["img"] ."\">";
+        //echo "</li>";
+        //echo "</a>";
+
+        $selected = ( $lang_ui == $key ? "selected" : "" ) ;
+        echo "<option value=\"". $key ,"\" $selected  >". $value["name"] ."</option>\n";
+  
+      }
+      echo "</select>\n";
+      echo "<input type=submit value=\"OK\">";
+      //echo "</div>";
+      echo "</form>\n";
       echo "</div>\n";
+    }
+
+    if( $langStyle == "img" ) {
+      foreach( $langsAvailable as $key => $value ) {
+        $uri = getUri( $key );
+        echo "<div class=\"lang\">\n";
+        echo "<a href=\"" . $pself . $uri . "&lang=". $key . "\">";
+        echo "<img alt=\"". $value["name"] ."\" src=\"". $value["img"] ."\">";
+        echo "</a>";
+        echo "</div>\n";
+      }
     }
 
 
