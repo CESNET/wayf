@@ -309,6 +309,7 @@ sub escape_targetfile {
   my $str = shift;
 
   $str =~ s/[\?\=\;\&]/_/g;
+  $str =~ s/\/$/\/logo/g;
 
   return $str;
 };
