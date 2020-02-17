@@ -345,11 +345,11 @@ else {
 
     $server = "http";
     if($_SERVER["HTTPS"] == "on") {
-	$server .= "s";
+    	$server .= "s";
     }
     $server .= "://" . $_SERVER['HTTP_HOST'];
     if(($_SERVER["HTTPS"] == "on" && $_SERVER['SERVER_PORT'] != 443) || ($_SERVER['HTTPS'] != "on" && $_SERVER['SERVER_PORT'] != 80)) {
-	$server .= ":" . $_SERVER['SERVER_PORT'];
+    	$server .= ":" . $_SERVER['SERVER_PORT'];
     }
     $wayf = $server . $_SERVER['PHP_SELF'];
     $server .= "/";
@@ -399,7 +399,7 @@ else {
 
     $referrer = "";
     if(isset($_SERVER['HTTP_REFERER'])) {
-	$referrer = $_SERVER['HTTP_REFERER'];
+	    $referrer = $_SERVER['HTTP_REFERER'];
     }
     $included_vars_and_script .= addVariable("referrer", $referrer);
 
@@ -408,15 +408,15 @@ else {
 
     $otherParams = "";
     foreach($_GET as $gkey => $gval) {
-	if(($gkey ==  "return") || ($gkey == "entityID") || ($gkey == "target") || ($gkey == "useHostel")) {
-	    continue;
-	}
-	if($gval == "") {
+	    if(($gkey ==  "return") || ($gkey == "entityID") || ($gkey == "target") || ($gkey == "useHostel")) {
+	      continue;
+	    }
+	    if($gval == "") {
             $otherParams = $otherParams . "&" . $gkey;
-	}
-	else {
+	    }
+	    else {
             $otherParams = $otherParams . "&" . $gkey . "=" . urlencode($gval);
-	}
+	    }
         // echo "// $gkey = $gval\n";
     }
     $included_vars_and_script .= "var otherParams = \"$otherParams\";\n";
