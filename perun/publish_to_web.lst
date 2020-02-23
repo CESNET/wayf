@@ -1,7 +1,8 @@
 wayf-static.php,wayf-static.php
 wayf.php,wayf.php
-wayf.js,wayf.js
+perun/wayf.js,wayf.js
 perun/wayf_vars.php,wayf_vars.php
+perun/wayf.css,wayf.css
 trash_64.png,trash_64.png
 trash_48.png,trash_48.png
 trash_40.png,trash_40.png
@@ -31,7 +32,6 @@ favicon.ico,favicon.ico
 errorpage.css,errorpage.css
 ds.js,ds.js
 cs.png,cs.png
-wayf.css,wayf.css
 computer-noscript-dumb.css,computer-noscript-dumb.css
 computer-noscript.css,computer-noscript.css
 computer-iframe.css,computer-iframe.css

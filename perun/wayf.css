@@ -1,0 +1,12 @@
+.topsearch {
+  position: relative;
+  float: right; 
+  background-repeat: no-repeat;
+  background-image: url('search.png');
+  background-position: right;
+  border-radius: 3px;
+  border-style: 1px solid #bbb;
+  width: 200px;
+  font-size: 14px;
+}
+
