@@ -34,9 +34,9 @@ var fallbackLanguage = "en";
 var labels = {
     'BUTTON_NEXT': {'cs':'Jiný účet', 'en':'Another account', 'it':'Altro account', 'nl':'Ander account', 'fr':'Un autre compte', 'el':'Άλλος λογαριασμός', 'de':'Anderes Konto', 'lt':'Kita paskyra', 'es':'Otra cuenta', 'sv':'Annat konto' },
     'BUTTON_HOSTEL': {'cs':'Zřídit účet', 'en':'Create account', 'it':'Crea account', 'nl':'Maak account aan', 'fr':'Créer un compte', 'el':'Δημιουργία λογαριασμού', 'de':'Konto kreieren', 'lt':'Sukurti paskyrą', 'es':'Crear cuenta', 'sv':'Skapa konto' },
-    'TEXT_ALL_IDPS': {'cs':'Přihlásit účtem', 'en':'Log in with', 'it':'Login tramite', 'nl':'Login met', 'fr':'S’authentifier avec', 'el':'Σύνδεση μέσω', 'de':'Anmelden mit', 'lt':'Prisijungti su', 'es':'Acceder con', 'sv':'Logga in med' },
+    'TEXT_ALL_IDPS': {'cs':'Přihlašte se přes', 'en':'Log in with', 'it':'Login tramite', 'nl':'Login met', 'fr':'S’authentifier avec', 'el':'Σύνδεση μέσω', 'de':'Anmelden mit', 'lt':'Prisijungti su', 'es':'Acceder con', 'sv':'Logga in med' },
     'TEXT_ACCOUNT': {'cs':'Zřídit účet', 'en':'Create account', 'it':'Crea account', 'nl':'Maak account aan', 'fr':'Créer un compte', 'el':'Δημιουργία λογαριασμού', 'de':'Konto kreieren', 'lt':'Sukurti paskyrą', 'es':'Crear cuenta', 'sv':'Skapa konto' },
-    'TEXT_SAVED_IDPS': {'cs':'Přihlásit účtem', 'en':'Log in with', 'it':'Login tramite', 'nl':'Login met', 'fr':'S’authentifier avec', 'el':'Σύνδεση μέσω', 'de':'Anmelden mit', 'lt':'Prisijungti su', 'es':'Acceder con', 'sv':'Logga in med' },
+    'TEXT_SAVED_IDPS': {'cs':'Přihlašte se přes', 'en':'Log in with', 'it':'Login tramite', 'nl':'Login met', 'fr':'S’authentifier avec', 'el':'Σύνδεση μέσω', 'de':'Anmelden mit', 'lt':'Prisijungti su', 'es':'Acceder con', 'sv':'Logga in med' },
     'IDP_HOSTEL': {'cs':'Hostel IdP', 'en':'Hostel IdP', 'it': 'IdP ospite', 'nl':'Gast IdP', 'fr':'S’authentifier avec' },
     'SETUP': {'cs':'Nastavení', 'en':'Setup', 'it':'Setup', 'nl':'Maak aan', 'fr':'Configurer', 'el':'Παραμετροποίηση', 'de':'Einstellungen', 'lt':'Nustatymai', 'es':'Configurar', 'sv':'Inställningar' },
     'CONFIRM_DELETE': {'cs':'Zapomenout ', 'en':'Forget ', 'it':'Dimentica ', 'nl':'Vergeet ', 'fr':'Enlever ', 'el':'Διαγραφή ', 'de':'Lösche ', 'lt':'Pamiršti ', 'es':'Olvidar ', 'sv':'Glöm' },
@@ -409,6 +409,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     }
 
     /* style of ui selector */
+/*
     if( langStyle === "dropdown" ) {
       var langDropdown = document.createElement('div');
       langDropdown.className = "dropdown";
@@ -419,7 +420,6 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
           }
         })();
  
-  
       var langSpan = document.createElement('span');
       langSpan.innerHTML = prefLang;
       langDropdown.appendChild( langSpan );
@@ -508,6 +508,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     }
 
     // langDropdown.appendChild( langDropdownContent );
+*/
 
     top.appendChild(title);
     title.appendChild(search);
@@ -537,7 +538,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     var body = document.getElementsByTagName('body')[0];
     body.appendChild(this.wayfDiv);
 
-    $( ".content" ).scroll( function() {
+    $( window ).scroll( function() {
       loadVisibleLogos(); }  
     );
 
@@ -646,6 +647,8 @@ View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDel
         idpDiv.onclick = callback;
     }
 
+    var logoDiv = document.createElement('div');
+    logoDiv.className = "logoDiv";
 
     var logo = document.createElement('img');
     logo.className = "logo";
@@ -656,13 +659,18 @@ View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDel
     }
     logos[ eid ] = logoSource;
 
+    var divName = document.createElement('div');
+    divName.className = "divName";
+
     var idpName = document.createElement('span');
     idpName.className = "title";
     idpName.innerHTML = label;
 
     var hr = document.createElement('hr');
-    idpDiv.appendChild(logo);
-    idpDiv.appendChild(idpName);
+    logoDiv.appendChild(logo);
+    idpDiv.appendChild(logoDiv);
+    divName.appendChild(idpName);
+    idpDiv.appendChild(divName);
 
     if(showDeleteIcon) {
         var trashIcon = document.createElement('img');
@@ -740,7 +748,7 @@ function loadVisibleLogos() {
       if( $( this ).isInViewport() ) {
         // console.log( this.id );
         // download and show logo of IdP
-        this.children["0"].src = logos[ this.id ];
+        this.children["0"].children["0"].src = logos[ this.id ];
         delete logos[ this.id ];
       }
     }
@@ -794,17 +802,19 @@ function Wayf(divName) {
         linkWayf.id = 'wayfCss';
         linkWayf.rel  = 'stylesheet';
         linkWayf.type = 'text/css';
-        linkWayf.href = serverURL + 'wayf.css';
+        linkWayf.href = 'wayf.css';
         linkWayf.media = 'all';
         head.appendChild(linkWayf);
-       
-        var link  = document.createElement('link');
-        link.id   = cssId;
-        link.rel  = 'stylesheet';
-        link.type = 'text/css';
-        link.href = serverURL + cssFile;
-        link.media = 'all';
-        head.appendChild(link);
+        
+        /*  
+          var link  = document.createElement('link');
+          link.id   = cssId;
+          link.rel  = 'stylesheet';
+          link.type = 'text/css';
+          link.href = serverURL + cssFile;
+          link.media = 'all';
+          head.appendChild(link); 
+        */
     }
 }
 

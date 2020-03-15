@@ -1,12 +1,75 @@
-.topsearch {
-  position: relative;
-  float: right; 
-  background-repeat: no-repeat;
-  background-image: url('search.png');
-  background-position: right;
-  border-radius: 3px;
-  border-style: 1px solid #bbb;
-  width: 200px;
-  font-size: 14px;
+/* default */
+#wayf {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  /* debug */
+  /* background-color: DodgerBlue; */
 }
+
+#wayf .top {
+    box-shadow: 0 1px 1px rgba(0,0,0,.075),0 -3px 15px rgba(34,34,34,.6);
+}
+
+#wayf .content {
+    max-height: 75vh;
+    overflow: auto;
+/*    max-height: 60%; */
+    box-shadow: 0 1px 1px rgba(0,0,0,.075),0 3px 15px rgba(34,34,34,.6);
+}
+
+#wayf div.scroller div {
+  margin: 2px;
+  color: black;
+  font-weight: normal;
+  /* height: 50px; */
+  /* border: 1px solid; */
+}
+
+#wayf div.scroller div.selected span {
+  color: #5864a3;
+  font-weight:bold;
+}
+
+#wayf div.scroller hr {
+    margin: 0;
+    /* padding: 0; */
+    /* clear: both; */
+    height: 1px;
+    border: 0; 
+    border-top: 1px solid #dbdcdc;
+    /* visibility: hidden; */
+}
+
+#wayf div.scroller div div.logoDiv {
+  display: inline-block;
+  width: 160px;
+  height: 44px;
+  vertical-align: middle;
+}
+
+#wayf div.scroller div div.divName {
+  display: inline-block; 
+  position: relative; 
+  left: 10px; 
+  vertical-align: middle;
+  /*background-color: yellow; */
+  width: 60%;
+}
+
+@media only screen and (min-width: 500px) {
+ 
+  #wayf {
+    /* display: flex;
+    flex-direction: column; */
+    /* debug */
+    /* background-color: DodgerBlue; */
+
+    width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    
+  }
+}
+
 
