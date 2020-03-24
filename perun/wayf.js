@@ -276,6 +276,108 @@ View.prototype.createSetupList = function() {
     wayf.listSavedIdps(true,true);
 }
 
+View.prototype.addLanguageSelector = function() {
+
+    if( langStyle === "dropdown" ) {
+      var langDropdown = document.createElement('div');
+      langDropdown.className = "dropdown";
+      langDropdown.onclick = (function() {
+          var langDrop = langDropdown;
+          return function() {
+            langDrop.style.display = "block";
+          }
+        })();
+ 
+      var langSpan = document.createElement('span');
+      langSpan.innerHTML = prefLang;
+      langDropdown.appendChild( langSpan );
+      
+      var langDropdownContent = document.createElement('div');
+      langDropdownContent.className = "dropdown-content";
+  
+       for(var curLang in langsAvailable) {
+        var spanLang = document.createElement('span');
+        spanLang.innerHTML = curLang;
+        spanLang.className = "span-lang";
+        spanLang.onclick = (function() {
+          var lang = curLang;
+          return function() {
+            prefLang = lang;
+            langCallback();
+          }
+        })();
+
+        langDropdownContent.appendChild( spanLang );
+      }
+
+      langDropdown.appendChild( langDropdownContent );
+
+      this.bottom.appendChild( langDropdown );
+     //var flagImg = new Array();
+
+    } 
+    if( langStyle === "txt" ) {
+      var select = document.createElement('select');
+      select.className = "lang";
+      select.id = "selLang";
+      select.onchange = (function() {
+          var mySelect = select;
+          return function() {
+            if( mySelect.selectedOptions.length == 1 ) {
+              prefLang = mySelect.selectedOptions[0].value;
+              langCallback();
+            }
+          }
+        })();
+
+
+      for(var curLang in langsAvailable) {
+        var divSelect = document.createElement('div');
+        divSelect.className = "lang";
+        var option = document.createElement('option');
+        option.value = curLang;
+        option.innerHTML = langsAvailable[ curLang ].name;
+        option.onchange = (function() {
+          var lang = curLang;
+          return function() {
+            prefLang = lang;
+            langCallback();
+          }
+        })();
+
+        if( curLang === prefLang ) option.selected = true;
+        select.appendChild( option ); 
+      }
+      divSelect.appendChild( select );
+      this.bottom.appendChild( divSelect );
+    } 
+    if( langStyle === "img" ) {
+      for(var curLang in langsAvailable) {
+        var flag = document.createElement('div');
+        flag.className = "lang";
+        // flag.style.margin="3px";
+    
+        var flagImg = document.createElement('img');
+        flagImg.src = langsAvailable[curLang].img;
+        flagImg.onclick = (function() {
+          var lang = curLang;
+          return function() {
+            prefLang = lang;
+            langCallback();
+          }
+        })();
+  
+        flag.appendChild( flagImg );
+     
+        // langDropdownContent.appendChild( flag );
+        this.bottom.appendChild( flag );
+     
+      }
+    }
+
+    // langDropdown.appendChild( langDropdownContent );
+}
+
 /** function View.prototype.createContainer - generate <div> container for IdP list
   */
 View.prototype.createContainer = function(label, showSetup, showClosing, isSetup, isListAll, langCallback) {
@@ -409,106 +511,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     }
 
     /* style of ui selector */
-/*
-    if( langStyle === "dropdown" ) {
-      var langDropdown = document.createElement('div');
-      langDropdown.className = "dropdown";
-      langDropdown.onclick = (function() {
-          var langDrop = langDropdown;
-          return function() {
-            langDrop.style.display = "block";
-          }
-        })();
- 
-      var langSpan = document.createElement('span');
-      langSpan.innerHTML = prefLang;
-      langDropdown.appendChild( langSpan );
-      
-      var langDropdownContent = document.createElement('div');
-      langDropdownContent.className = "dropdown-content";
-  
-       for(var curLang in langsAvailable) {
-        var spanLang = document.createElement('span');
-        spanLang.innerHTML = curLang;
-        spanLang.className = "span-lang";
-        spanLang.onclick = (function() {
-          var lang = curLang;
-          return function() {
-            prefLang = lang;
-            langCallback();
-          }
-        })();
-
-        langDropdownContent.appendChild( spanLang );
-      }
-
-      langDropdown.appendChild( langDropdownContent );
-
-      this.bottom.appendChild( langDropdown );
-     //var flagImg = new Array();
-
-    } 
-    if( langStyle === "txt" ) {
-      var select = document.createElement('select');
-      select.className = "lang";
-      select.id = "selLang";
-      select.onchange = (function() {
-          var mySelect = select;
-          return function() {
-            if( mySelect.selectedOptions.length == 1 ) {
-              prefLang = mySelect.selectedOptions[0].value;
-              langCallback();
-            }
-          }
-        })();
-
-
-      for(var curLang in langsAvailable) {
-        var divSelect = document.createElement('div');
-        divSelect.className = "lang";
-        var option = document.createElement('option');
-        option.value = curLang;
-        option.innerHTML = langsAvailable[ curLang ].name;
-        option.onchange = (function() {
-          var lang = curLang;
-          return function() {
-            prefLang = lang;
-            langCallback();
-          }
-        })();
-
-        if( curLang === prefLang ) option.selected = true;
-        select.appendChild( option ); 
-      }
-      divSelect.appendChild( select );
-      this.bottom.appendChild( divSelect );
-    } 
-    if( langStyle === "img" ) {
-      for(var curLang in langsAvailable) {
-        var flag = document.createElement('div');
-        flag.className = "lang";
-        // flag.style.margin="3px";
-    
-        var flagImg = document.createElement('img');
-        flagImg.src = langsAvailable[curLang].img;
-        flagImg.onclick = (function() {
-          var lang = curLang;
-          return function() {
-            prefLang = lang;
-            langCallback();
-          }
-        })();
-  
-        flag.appendChild( flagImg );
-     
-        // langDropdownContent.appendChild( flag );
-        this.bottom.appendChild( flag );
-     
-      }
-    }
-
-    // langDropdown.appendChild( langDropdownContent );
-*/
+    // wayf.view.addLanguageSelector();
 
     top.appendChild(title);
     title.appendChild(search);
@@ -538,9 +541,15 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     var body = document.getElementsByTagName('body')[0];
     body.appendChild(this.wayfDiv);
 
+    $( ".content" ).scroll( function() {
+      loadVisibleLogos(); }  
+    );
+
+/*
     $( window ).scroll( function() {
       loadVisibleLogos(); }  
     );
+*/
 
     $( document.body ).off( "keyup" ).keyup( function(e) {
 
