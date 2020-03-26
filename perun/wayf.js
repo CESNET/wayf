@@ -276,6 +276,8 @@ View.prototype.createSetupList = function() {
     wayf.listSavedIdps(true,true);
 }
 
+/** View.prototype.addLanguageSelector - show language selector
+  */
 View.prototype.addLanguageSelector = function() {
 
     if( langStyle === "dropdown" ) {
@@ -378,6 +380,70 @@ View.prototype.addLanguageSelector = function() {
     // langDropdown.appendChild( langDropdownContent );
 }
 
+/** View.prototype.handlerKeyUP - main event handler
+  */
+View.prototype.handlerKeyUP = function(e, isListAll, noSearch, noSearchSavedIdps, search) {
+
+        var act = $( ".selected" );
+        var keyUpOrDown = false;
+        if( act.length > 0 ) {
+          var newAct = act;
+  
+          // if pressed key is enter
+          if( e.which === 13 ) {
+            // $( ".scroller" ).children( "div:visible" ).first().click();
+            act.click();
+            return;
+          }
+          // 38 -up, 40 - down
+  /*       if( isListAll ) { */
+           // listAllIdps()
+           var ind = $( ".enabled:visible" ).index( act );
+           var length = $( ".enabled:visible").length;
+           if( e.which === 40 ) {
+             keyUpOrDown = true;
+             var next = $( ".enabled:visible" ).eq(ind+1);
+             if(( ind+1 ) >= length ) {
+               next = $( ".enabled:visible" ).eq(0);  // go to first record
+             }
+             if( next.length === 1 ) {
+               act.removeClass( "selected" );
+               next.addClass( "selected" );
+               newAct = next;
+             }
+           }
+           if( e.which === 38 ) {
+             keyUpOrDown = true;
+             var prev = $( ".enabled:visible" ).eq(ind-1);
+             if(( ind-1 ) < 0 ) {
+               prev = $( ".enabled:visible" ).eq( length-1 );
+             }
+             if( prev.length === 1 ) {
+               act.removeClass( "selected" );
+               prev.addClass( "selected" );
+               newAct = prev;
+             }
+           }
+  
+           var relativePosition = newAct.offset().top;
+           var divContent = $( "div.content" );
+           // console.log( relativePosition );
+           // console.log( divContent[0].scrollTop  );
+           $( "div.content" ).scrollTop( divContent[0].scrollTop + newAct.offset().top - 200 ); 
+         }
+
+         if( ! keyUpOrDown ) {
+           if(( isListAll && (! noSearch )) || (( ! isListAll ) && (! noSearchSavedIdps ))) {
+             var searchFor = search.value; // $( ".topsearch" ).val();
+             searchAuto( searchFor, wayf, null, true );
+             loadVisibleLogos();
+             act.removeClass("selected" );
+             $( ".enabled:visible" ).eq(0).addClass("selected");
+           }
+         }
+
+ } 
+
 /** function View.prototype.createContainer - generate <div> container for IdP list
   */
 View.prototype.createContainer = function(label, showSetup, showClosing, isSetup, isListAll, langCallback) {
@@ -410,7 +476,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
 
     var title = document.createElement('p');
     title.className = "toptitle";
-    title.style.width = "96%";
+    // title.style.width = "96%";
     // title.innerHTML = label;
 
     var toplabel = document.createElement('span');
@@ -420,16 +486,6 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     /* search field */
     var search = document.createElement('input');
     search.className = "topsearch";
-    //search.style.backgroundRepeat="no-repeat";
-    // search.style.backgroundPosition="right";
-    // search.style.backgroundImage="url('search.png')";
-    // search.style.borderRadius="3px";
-    // search.style.borderStyle="1px solid #bbb";
-    // search.style.position="relative";
-    // search.style.cssFloat="right";
-    // search.style.visibility = "visible";
-    // search.style.width="200px";
-    // search.style.fontSize="14px";
 
     if( noSearch ) {
       search.style.visibility = "hidden";
@@ -552,68 +608,8 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
 */
 
     $( document.body ).off( "keyup" ).keyup( function(e) {
-
-        var act = $( ".selected" );
-        var keyUpOrDown = false;
-        if( act.length > 0 ) {
-          var newAct = act;
-  
-          // if pressed key is enter
-          if( e.which === 13 ) {
-            // $( ".scroller" ).children( "div:visible" ).first().click();
-            act.click();
-            return;
-          }
-          // 38 -up, 40 - down
-  /*       if( isListAll ) { */
-           // listAllIdps()
-           var ind = $( ".enabled:visible" ).index( act );
-           var length = $( ".enabled:visible").length;
-           if( e.which === 40 ) {
-             keyUpOrDown = true;
-             var next = $( ".enabled:visible" ).eq(ind+1);
-             if(( ind+1 ) >= length ) {
-               next = $( ".enabled:visible" ).eq(0);  // go to first record
-             }
-             if( next.length === 1 ) {
-               act.removeClass( "selected" );
-               next.addClass( "selected" );
-               newAct = next;
-             }
-           }
-           if( e.which === 38 ) {
-             keyUpOrDown = true;
-             var prev = $( ".enabled:visible" ).eq(ind-1);
-             if(( ind-1 ) < 0 ) {
-               prev = $( ".enabled:visible" ).eq( length-1 );
-             }
-             if( prev.length === 1 ) {
-               act.removeClass( "selected" );
-               prev.addClass( "selected" );
-               newAct = prev;
-             }
-           }
-  
-           var relativePosition = newAct.offset().top;
-           var divContent = $( "div.content" );
-           // console.log( relativePosition );
-           // console.log( divContent[0].scrollTop  );
-           $( "div.content" ).scrollTop( divContent[0].scrollTop + newAct.offset().top - 200 ); 
-         }
-
-         if( ! keyUpOrDown ) {
-           if(( isListAll && (! noSearch )) || (( ! isListAll ) && (! noSearchSavedIdps ))) {
-             var searchFor = search.value; // $( ".topsearch" ).val();
-             searchAuto( searchFor, wayf, null, true );
-             loadVisibleLogos();
-             act.removeClass("selected" );
-             $( ".enabled:visible" ).eq(0).addClass("selected");
-           }
-         }
-
-    } );
-
-
+      wayf.view.handlerKeyUP(e, isListAll, noSearch, noSearchSavedIdps, search); } 
+    );
 }
 
 /** function View.prototype.deleteContainer - destroy <div> container from page
