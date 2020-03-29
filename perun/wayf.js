@@ -50,6 +50,8 @@ var hostelEntityID = "https://idp.hostel.eduid.cz/idp/shibboleth";
 var inIframe = false;
 var feedCount = 0;
 var filterVersion = 1;  // default original version, not suitable for all cases
+var filterFastTrackOption = false;
+var filterSocialTrackOption = false;
 
 var logos = new Object();  // temporary array for logos
 var noImage = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
@@ -444,12 +446,9 @@ View.prototype.handlerKeyUP = function(e, isListAll, noSearch, noSearchSavedIdps
 
  } 
 
-/** function View.prototype.createContainer - generate <div> container for IdP list
+/** View.prototype.addTopSection - show top section
   */
-View.prototype.createContainer = function(label, showSetup, showClosing, isSetup, isListAll, langCallback) {
-
-    this.wayfDiv = document.createElement('div');
-    this.wayfDiv.id = "wayf";
+View.prototype.addTopSection = function( label, showClosing, isSetup ) {
 
     var top = document.createElement('div');
     top.className = "top";
@@ -483,8 +482,30 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     toplabel.innerHTML = label;
     toplabel.className = "toplabel";
 
+    top.appendChild(title);
+    title.appendChild(toplabel);
+
+    if(showClosing && isSetup) {
+        if(inIframe) {
+            this.wayfDiv.appendChild(closeEFiller);
+            this.wayfDiv.appendChild(closeE);
+        } else {
+            top.appendChild(closeE);
+        }
+    }
+
+    this.wayfDiv.appendChild(top);
+
+}
+
+/** View.prototype.addSearchSection - show search section
+  */
+View.prototype.addSearchSection = function( search ) {
+
+    var searchSection = document.createElement('div');
+    searchSection.className = "searchSection";
+
     /* search field */
-    var search = document.createElement('input');
     search.className = "topsearch";
 
     if( noSearch ) {
@@ -494,6 +515,14 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     if( noSearchSavedIdps ) {
       search.style.visibility = "hidden";
     }
+
+    searchSection.appendChild(search);
+    this.wayfDiv.appendChild(searchSection);
+}
+
+/** View.prototype.addBottomSection - show bottom section
+  */
+View.prototype.addBottomSection = function( showSetup ) {
 
     this.bottom = document.createElement('div');
     this.bottom.className = "bottom";
@@ -546,6 +575,20 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     cesnetLink.appendChild(helpImage);
     help.appendChild(cesnetLink);
 
+    if(showSetup) {
+        this.bottom.appendChild(setup);
+    }
+
+    this.bottom.appendChild(help);
+
+    this.wayfDiv.appendChild(this.bottom);
+
+}
+
+/** View.prototype.addContentSection - show content section - list of IdPs
+  */
+View.prototype.addContentSection = function() {
+
     this.content = document.createElement('div');
     this.content.className = "content";
 
@@ -558,41 +601,49 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     this.scroller = document.createElement('div');
     this.scroller.className = "scroller";
 
-
-    this.mixelaHash = new Object();
-    this.keySorted = new Object();  // result of sorting
-
-    if(showSetup) {
-        this.bottom.appendChild(setup);
-    }
-
-    /* style of ui selector */
-    // wayf.view.addLanguageSelector();
-
-    top.appendChild(title);
-    title.appendChild(search);
-    title.appendChild(toplabel);
-
-    if(showClosing && isSetup) {
-        if(inIframe) {
-            this.wayfDiv.appendChild(closeEFiller);
-            this.wayfDiv.appendChild(closeE);
-        } else {
-            top.appendChild(closeE);
-        }
-    }
-
-    this.wayfDiv.appendChild(top);
     this.content.appendChild(topFiller);
     this.content.appendChild(this.scroller);
     this.content.appendChild(bottomFiller);
     this.wayfDiv.appendChild(this.content);
 
-    //this.bottom.appendChild(langCS);
-    //this.bottom.appendChild(langEN);
-    this.bottom.appendChild(help);
+}
 
-    this.wayfDiv.appendChild(this.bottom);
+/** View.prototype.addFastTrackSection - show fast track section - list of IdPs
+  */
+View.prototype.addFastTrackSection = function() {
+
+    var fastTrack = document.createElement('div');
+    fastTrack.className = "content";
+
+
+}
+
+/** function View.prototype.createContainer - generate <div> container for IdP list
+  */
+View.prototype.createContainer = function(label, showSetup, showClosing, isSetup, isListAll, langCallback) {
+
+    this.wayfDiv = document.createElement('div');
+    this.wayfDiv.id = "wayf";
+
+    /* search */
+    var search = document.createElement('input');
+
+    this.addTopSection( label, showClosing, isSetup );
+
+    if(filterFastTrackOption)
+      this.addFastTrackSection();
+
+    this.addSearchSection( search );
+
+    this.addContentSection();
+
+    this.addBottomSection( showSetup );
+
+    this.mixelaHash = new Object();
+    this.keySorted = new Object();  // result of sorting
+
+    /* style of ui selector */
+    // this.addLanguageSelector();
 
     var body = document.getElementsByTagName('body')[0];
     body.appendChild(this.wayfDiv);
@@ -1149,11 +1200,36 @@ function getFilterVersion() {
   return 1;  // default version
 }
 
+/** function getFilterFastTrackOption - return true if used fastTrack
+  */
+function getFilterFastTrackOption() {
+  if( typeof filter !== "undefined" ) { 
+    if( typeof(filter.fastTrack) !== "undefined" ) {
+      return true; 
+    }    
+  }
+  return false;
+}
+
+/** function getFilterSocialTrackOption - return true if used socialTrack
+  */
+function getFilterSocialTrackOption() {
+  if( typeof filter !== "undefined" ) { 
+    if( typeof(filter.socialTrack) !== "undefined" ) {
+      return true; 
+    }    
+  }
+  return false;
+}
+
 /** function listData - starts here - onload page
   */
 function listData() {
     inIframe = isInIframe();  // running in IFRAME?
     filterVersion = getFilterVersion();
+    filterFastTrackOption = getFilterFastTrackOption();
+    filterSocialTrackOption = getFilterSocialTrackOption();
+
     wayf = new Wayf('wayf');
     if(wayf.userHasSavedIdps()) { 
         noSearchSavedIdps = true;
