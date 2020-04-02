@@ -11,6 +11,15 @@
     box-shadow: 0 1px 1px rgba(0,0,0,.075),0 -3px 15px rgba(34,34,34,.6);
 }
 
+#wayf .fastTrack {
+  display: flex;
+  flex-display: row;
+}
+
+#wayf .fastTrackButton {
+  background-color: blue;
+}
+
 #wayf .content {
     max-height: 75vh;
     overflow: auto;

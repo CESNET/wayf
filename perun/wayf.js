@@ -612,11 +612,38 @@ View.prototype.addContentSection = function() {
   */
 View.prototype.addFastTrackSection = function() {
 
-    var fastTrack = document.createElement('div');
-    fastTrack.className = "content";
+    this.fastTrack = document.createElement('div');
+    this.fastTrack.className = "fastTrack";
 
+    this.wayfDiv.appendChild(this.fastTrack);
+}
+
+/** function View.prototype.addFastTrackButton - insert one IdP to fastTrackSection
+  */
+View.prototype.addFastTrackButton = function(eid, logoSource, label, callback) {
+
+    if(typeof label == 'undefined') {
+	return;
+    }
+
+    var idpDiv = document.createElement('div');
+    idpDiv.id = eid;
+    idpDiv.className = "fastTrackButton";
+    idpDiv.title = label;
+    
+    if(callback != null) {
+        idpDiv.onclick = callback;
+    }
+
+    var idpName = document.createElement('span');
+    idpName.className = "title";
+    idpName.innerHTML = label;
+
+    idpDiv.appendChild(idpName);
+    this.fastTrack.appendChild(idpDiv);
 
 }
+
 
 /** function View.prototype.createContainer - generate <div> container for IdP list
   */
@@ -1528,7 +1555,6 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
 
                       } else {
                         /* filter_v2 */
-
                         var filterDenyIdps;
                         var filterAllowIdps;
                         var filterAllowEC;
@@ -1885,6 +1911,9 @@ Wayf.prototype.listAllIdps = function(forceAll) {
         } 
     }
 
+    if(filterFastTrackOption)
+      wayf.readFastTrackFilter();
+
     // sort mixela
     wayf.view.keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
 
@@ -1912,4 +1941,40 @@ Wayf.prototype.listAllIdps = function(forceAll) {
 Wayf.prototype.createEntityLink = function(eid) {
     retURL = returnURL + returnUrlParamCharacter + returnIDVariable + "=" + eid + otherParams;
     return retURL;
+}
+
+/** function readFastTrackFilter() - reads fastTrack section from filter
+  */
+Wayf.prototype.readFastTrackFilter = function() {
+
+  for(var feed in filter.fastTrack) {  
+    if( typeof(filter.fastTrack[feed].IdPs) !== "undefined" ) {    
+      for(var idp in filter.fastTrack[feed].IdPs ) {
+        var eid = filter.fastTrack[feed].IdPs[idp];
+        if(wayf.feedData[feed] !== "undefined" && wayf.feedData[feed].mdSet.entities[eid] !== "undefined") {
+          var label = this.getLabelFromLabels(wayf.feedData[feed].mdSet.entities[eid].label);
+
+          var url = this.createEntityLink(eid);
+          var tgt = this.view.target;
+          var callback = (function() {
+            var veid = eid;
+            var murl = url;
+            var tgrt = tgt;
+            return function() {
+                /* dont save now
+                try {
+                    wayf.saveUsedIdp(feedId, veid);
+                }
+                catch(err) {
+                }
+                */
+                tgrt.location = murl;
+            }
+          })();
+          this.view.addFastTrackButton(eid, wayf.feedData[feed].mdSet.entities[eid].logo, label, callback);
+
+        }
+      }
+    }
+  }
 }
