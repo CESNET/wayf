@@ -11,13 +11,86 @@
     box-shadow: 0 1px 1px rgba(0,0,0,.075),0 -3px 15px rgba(34,34,34,.6);
 }
 
+#wayf .searchSection {
+  box-shadow: 0 1px 1px rgba(0,0,0,.075),0 -3px 15px rgba(34,34,34,.6);
+}
+
+/* search input field */
+#wayf .topsearch {
+  width: 95%;
+  align: middle;
+  margin: 10px;
+}
+
 #wayf .fastTrack {
   display: flex;
   flex-display: row;
+  flex-wrap: wrap;
+  box-shadow: 0 1px 1px rgba(0,0,0,.075),0 -3px 15px rgba(34,34,34,.6);
 }
 
 #wayf .fastTrackButton {
-  background-color: blue;
+  /* background-color: red;
+  color: white; */
+  margin: 3px;
+  padding: 3px;
+}
+
+#wayf .fastTrackLogoDiv {
+  display: inline-block;
+  /* width: 80px; */
+  height: 16px;
+  vertical-align: middle;
+}
+
+#wayf .fastTrackImg {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+#wayf .fastTrackLabel {
+  display: inline-block; 
+  position: relative; 
+  left: 10px; 
+  vertical-align: middle;
+  /*background-color: yellow; */
+  width: 75%; 
+  /* max-width: 100%; */
+}
+
+#wayf .socialTrack {
+  display: flex;
+  flex-display: row;
+  flex-wrap: wrap;
+  box-shadow: 0 1px 1px rgba(0,0,0,.075),0 -3px 15px rgba(34,34,34,.6);
+}
+
+#wayf .socialTrackButton {
+  /* background-color: blue;
+  color: white; */ 
+  margin: 3px;
+  padding: 3px;
+}
+
+#wayf .socialTrackLogoDiv {
+  display: inline-block;
+  /* width: 80px; */
+  height: 16px;
+  vertical-align: middle;
+}
+
+#wayf .socialTrackImg {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+#wayf .socialTrackLabel {
+  display: inline-block; 
+  position: relative; 
+  left: 10px; 
+  vertical-align: middle;
+  /*background-color: yellow; */
+  width: 75%; 
 }
 
 #wayf .content {
@@ -52,9 +125,14 @@
 
 #wayf div.scroller div div.logoDiv {
   display: inline-block;
-  width: 160px;
-  height: 44px;
+  width: 80px;
+  height: 22px;
   vertical-align: middle;
+}
+
+#wayf div.scroller div div.logoDiv img.logo {
+  max-width: 100%;
+  max-height: 100%;
 }
 
 #wayf div.scroller div div.divName {
@@ -63,7 +141,7 @@
   left: 10px; 
   vertical-align: middle;
   /*background-color: yellow; */
-  width: 60%;
+  width: 60%; 
 }
 
 @media only screen and (min-width: 500px) {
@@ -79,6 +157,15 @@
     margin-right: auto;
     
   }
+
+  #wayf div.scroller div div.logoDiv {
+    display: inline-block;
+    width: 160px;
+    height: 44px;
+    vertical-align: middle;
+  }
+
+
 }
 
 

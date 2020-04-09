@@ -579,7 +579,7 @@ View.prototype.addBottomSection = function( showSetup ) {
         this.bottom.appendChild(setup);
     }
 
-    this.bottom.appendChild(help);
+    // this.bottom.appendChild(help);
 
     this.wayfDiv.appendChild(this.bottom);
 
@@ -635,12 +635,78 @@ View.prototype.addFastTrackButton = function(eid, logoSource, label, callback) {
         idpDiv.onclick = callback;
     }
 
+    var divSmallLogo = document.createElement('div');
+    divSmallLogo.className = "fastTrackLogoDiv";
+
+    var logo = document.createElement('img');
+    logo.className = "fastTrackImg";
+    logo.src = logoSource;
+
+    var divLabel = document.createElement('div');
+    divLabel.className = "fastTrackLabel";
+
     var idpName = document.createElement('span');
     idpName.className = "title";
     idpName.innerHTML = label;
 
-    idpDiv.appendChild(idpName);
+    divSmallLogo.appendChild(logo);
+    idpDiv.appendChild(divSmallLogo);
+     
+    divLabel.appendChild(idpName);
+    idpDiv.appendChild(divLabel);
+    
     this.fastTrack.appendChild(idpDiv);
+
+}
+
+/** View.prototype.addSocialTrackSection - show social track section - list of IdPs
+  */
+View.prototype.addSocialTrackSection = function() {
+
+    this.socialTrack = document.createElement('div');
+    this.socialTrack.className = "socialTrack";
+
+    this.wayfDiv.appendChild(this.socialTrack);
+}
+
+/** function View.prototype.addSocialTrackButton - insert one IdP to socialTrackSection
+  */
+View.prototype.addSocialTrackButton = function(eid, logoSource, label, callback) {
+
+    if(typeof label == 'undefined') {
+	return;
+    }
+
+    var idpDiv = document.createElement('div');
+    idpDiv.id = eid;
+    idpDiv.className = "socialTrackButton";
+    idpDiv.title = label;
+    
+    if(callback != null) {
+        idpDiv.onclick = callback;
+    }
+
+    var divSmallLogo = document.createElement('div');
+    divSmallLogo.className = "socialTrackLogoDiv";
+
+    var logo = document.createElement('img');
+    logo.className = "socialTrackImg";
+    logo.src = logoSource;
+
+    var divLabel = document.createElement('div');
+    divLabel.className = "socialTrackLabel";
+
+    var idpName = document.createElement('span');
+    idpName.className = "title";
+    idpName.innerHTML = label;
+
+    divSmallLogo.appendChild(logo);
+    idpDiv.appendChild(divSmallLogo);
+     
+    divLabel.appendChild(idpName);
+    idpDiv.appendChild(divLabel);
+    
+    this.socialTrack.appendChild(idpDiv);
 
 }
 
@@ -663,6 +729,9 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     this.addSearchSection( search );
 
     this.addContentSection();
+
+    if(filterSocialTrackOption)
+      this.addSocialTrackSection();
 
     this.addBottomSection( showSetup );
 
@@ -1259,7 +1328,7 @@ function listData() {
 
     wayf = new Wayf('wayf');
     if(wayf.userHasSavedIdps()) { 
-        noSearchSavedIdps = true;
+        noSearchSavedIdps = false;
         wayf.listSavedIdps(false,false);  // display saved IdPs
     }
     else {
@@ -1914,6 +1983,10 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     if(filterFastTrackOption)
       wayf.readFastTrackFilter();
 
+    if(filterSocialTrackOption)
+      wayf.readSocialTrackFilter();
+
+
     // sort mixela
     wayf.view.keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
 
@@ -1978,3 +2051,40 @@ Wayf.prototype.readFastTrackFilter = function() {
     }
   }
 }
+
+/** function readSocialTrackFilter() - reads socialTrack section from filter
+  */
+Wayf.prototype.readSocialTrackFilter = function() {
+
+  for(var feed in filter.socialTrack) {  
+    if( typeof(filter.socialTrack[feed].IdPs) !== "undefined" ) {    
+      for(var idp in filter.socialTrack[feed].IdPs ) {
+        var eid = filter.socialTrack[feed].IdPs[idp];
+        if(wayf.feedData[feed] !== "undefined" && wayf.feedData[feed].mdSet.entities[eid] !== "undefined") {
+          var label = this.getLabelFromLabels(wayf.feedData[feed].mdSet.entities[eid].label);
+
+          var url = this.createEntityLink(eid);
+          var tgt = this.view.target;
+          var callback = (function() {
+            var veid = eid;
+            var murl = url;
+            var tgrt = tgt;
+            return function() {
+                /* dont save now
+                try {
+                    wayf.saveUsedIdp(feedId, veid);
+                }
+                catch(err) {
+                }
+                */
+                tgrt.location = murl;
+            }
+          })();
+          this.view.addSocialTrackButton(eid, wayf.feedData[feed].mdSet.entities[eid].logo, label, callback);
+
+        }
+      }
+    }
+  }
+}
+
