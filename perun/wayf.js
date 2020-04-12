@@ -453,6 +453,11 @@ View.prototype.addTopSection = function( label, showClosing, isSetup ) {
     var top = document.createElement('div');
     top.className = "top";
 
+    var hr = document.createElement('hr');
+    hr.className = "head";
+    top.appendChild(hr);
+
+
     if(showClosing && isSetup) {
         var closeEFiller = document.createElement('span');
         closeEFiller.className = "closeEfiller";
@@ -494,6 +499,7 @@ View.prototype.addTopSection = function( label, showClosing, isSetup ) {
         }
     }
 
+
     this.wayfDiv.appendChild(top);
 
 }
@@ -504,6 +510,7 @@ View.prototype.addSearchSection = function( search ) {
 
     var searchSection = document.createElement('div');
     searchSection.className = "searchSection";
+
 
     /* search field */
     search.className = "topsearch";
@@ -606,6 +613,20 @@ View.prototype.addContentSection = function() {
     this.content.appendChild(bottomFiller);
     this.wayfDiv.appendChild(this.content);
 
+}
+
+/** View.prototype.addSectionSeparator 
+  */
+View.prototype.addSectionSeparator = function() {
+
+    this.sectionSeparator = document.createElement('div');
+    this.sectionSeparator.className = "sectionSeparator";
+
+    var hrOr = document.createElement('hr');
+    hrOr.className = "or";
+    this.sectionSeparator.appendChild(hrOr);
+
+    this.wayfDiv.appendChild(this.sectionSeparator);
 }
 
 /** View.prototype.addFastTrackSection - show fast track section - list of IdPs
@@ -718,20 +739,27 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     this.wayfDiv = document.createElement('div');
     this.wayfDiv.id = "wayf";
 
+
     /* search */
     var search = document.createElement('input');
 
     this.addTopSection( label, showClosing, isSetup );
 
-    if(filterFastTrackOption)
+
+    if(filterFastTrackOption) {
       this.addFastTrackSection();
+      this.addSectionSeparator();
+    }
 
     this.addSearchSection( search );
+    this.addSectionSeparator();
 
     this.addContentSection();
 
-    if(filterSocialTrackOption)
+    if(filterSocialTrackOption) {
+      this.addSectionSeparator();
       this.addSocialTrackSection();
+    }
 
     this.addBottomSection( showSetup );
 
