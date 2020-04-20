@@ -1580,6 +1580,14 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
         this.view.createContainer(this.view.getLabelText('TEXT_SAVED_IDPS'), true, inIframe, false, false, langCallback);
     }
 
+
+    if(filterFastTrackOption)
+      wayf.readFastTrackFilter();
+
+    if(filterSocialTrackOption)
+      wayf.readSocialTrackFilter();
+
+
     /* foreach saved idp */
     for(var eid in usedIdps) {
         var enableIdp = true;

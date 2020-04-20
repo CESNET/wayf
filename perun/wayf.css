@@ -26,11 +26,11 @@ hr.or {
 #wayf .top {
     /* box-shadow: 7px 0 7px -7px rgba(64,64,64,.075),-7px 0 7px -7px rgba(64,64,64,.6); */
    /* box-shadow: 0 9px 0px 0px rgba(255,255,255,1.0), 0 -9px 0px 0px rgba(255,255,255,1.0), 6px 0 15px -4px rgba(164, 164, 164, 0.8), -6px 0 15px -4px rgba(164, 164, 164, 0.8); */
-  padding: 10px;
 }
 
 #wayf div.top p.toptitle {
   font-size: 150%;
+  padding: 10px;
 }
 
 #wayf div.top hr.head {
@@ -120,8 +120,8 @@ hr.or {
   position: relative; 
   left: 10px; 
   vertical-align: middle;
-  /*background-color: yellow; */
-  width: 75%; 
+  /* background-color: yellow;  */
+  width: 70%; 
 }
 
 #wayf .sectionSeparator {
@@ -176,7 +176,7 @@ hr.or {
   left: 10px; 
   vertical-align: middle;
   /* max-height: 100%; */
-  background-color: yellow; 
+  /* background-color: yellow;  */
   overflow: hidden;
   width: 70%; 
 }
@@ -187,7 +187,7 @@ hr.or {
   /* background-color: yellow;  */
 }
 
-@media only screen and (min-width: 600px) {
+@media only screen and (min-width: 700px) {
  
   #wayf {
     /* display: flex;
@@ -195,7 +195,7 @@ hr.or {
     /* debug */
     /* background-color: DodgerBlue; */
 
-    width: 95vw;
+    width: 700px;
     margin-left: auto;
     margin-right: auto;
     
@@ -211,7 +211,7 @@ hr.or {
 
 }
 
-@media only screen and (min-width: 800px) {
+@media only screen and (min-width: 900px) {
  
   #wayf {
     /* display: flex;
@@ -219,7 +219,7 @@ hr.or {
     /* debug */
     /* background-color: DodgerBlue; */
 
-    width: 85vw;
+    width: 900px;
     margin-left: auto;
     margin-right: auto;
     
