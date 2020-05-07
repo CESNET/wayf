@@ -268,12 +268,12 @@ else if(!isset($entityID) || !isset($returnURL) || !$checkSPDiscoveryResponseTes
 
     } else {
 
-      echo "<div id=\"nadpis_cs\"><h1>Nastala chyba</h1>";
-      echo "Poskytovatel služby ke které se hlásíte předal neplatný parametr &quot;<i>return</i>&quot;.<br>";
+      echo "<div id=\"nadpis_cs\"><h1>Něco se pokazilo</h1>";
+      echo "Z bezpečnostních důvodů musí hodnota parametru  &quot;<i>return</i>&quot; odpovídat tomu, co je uvedeno v metadatech služby (SP).<br><br>";
       echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a target=\"_blank\" href=\"https://www.eduid.cz/cs/tech/wayf\">www.eduid.cz/cs/tech/wayf</a></div>";
   
       echo "<div id=\"nadpis_en\"><h1>An error occured</h1>";
-      echo "Service provider sent invalid parameter &quot;<i>return</i>&quot;.<br>";
+      echo "For security reasons must parameter &quot;<i>return</i>&quot; match value used in metadata of service (SP).<br><br>";
       echo "Documentation can be found at <a target=\"_blank\" href=\"https://www.eduid.cz/en/tech/wayf\">www.eduid.cz/en/tech/wayf</a></div>";
 
     }
