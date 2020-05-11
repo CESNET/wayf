@@ -508,23 +508,24 @@ View.prototype.addTopSection = function( label, showClosing, isSetup ) {
   */
 View.prototype.addSearchSection = function( search ) {
 
-    var searchSection = document.createElement('div');
-    searchSection.className = "searchSection";
+    if( !noSearch && !noSearchSavedIdps ) {
+      var searchSection = document.createElement('div');
+      searchSection.className = "searchSection";
 
+      /* search field */
+      search.className = "topsearch";
 
-    /* search field */
-    search.className = "topsearch";
+      if( noSearch ) {
+        search.style.visibility = "hidden";
+      }
 
-    if( noSearch ) {
-      search.style.visibility = "hidden";
+      if( noSearchSavedIdps ) {
+        search.style.visibility = "hidden";
+      }
+
+      searchSection.appendChild(search);
+      this.wayfDiv.appendChild(searchSection);
     }
-
-    if( noSearchSavedIdps ) {
-      search.style.visibility = "hidden";
-    }
-
-    searchSection.appendChild(search);
-    this.wayfDiv.appendChild(searchSection);
 }
 
 /** View.prototype.addBottomSection - show bottom section
@@ -1356,7 +1357,7 @@ function listData() {
 
     wayf = new Wayf('wayf');
     if(wayf.userHasSavedIdps()) { 
-        noSearchSavedIdps = false;
+        noSearchSavedIdps = true;
         wayf.listSavedIdps(false,false);  // display saved IdPs
     }
     else {
@@ -1580,13 +1581,13 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
         this.view.createContainer(this.view.getLabelText('TEXT_SAVED_IDPS'), true, inIframe, false, false, langCallback);
     }
 
-
+    /*
     if(filterFastTrackOption)
       wayf.readFastTrackFilter();
 
     if(filterSocialTrackOption)
       wayf.readSocialTrackFilter();
-
+    */
 
     /* foreach saved idp */
     for(var eid in usedIdps) {

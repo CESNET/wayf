@@ -1,5 +1,6 @@
 /* default */
 #wayf {
+  font-family: Verdana,Geneva,sans-serif; 
   display: flex;
   flex-direction: column;
   height: 95vh;
@@ -29,7 +30,7 @@ hr.or {
 }
 
 #wayf div.top p.toptitle {
-  font-size: 150%;
+  font-size: 100%;
   padding: 10px;
 }
 
@@ -55,7 +56,7 @@ hr.or {
 
 #wayf .fastTrack {
   display: flex;
-  flex-display: row;
+  flex-direction: row;
   flex-wrap: wrap;
   /* box-shadow: 0 9px 0px 0px rgba(255,255,255,1.0), 0 -9px 0px 0px rgba(255,255,255,1.0), 6px 0 15px -4px rgba(164, 164, 164, 0.8), -6px 0 15px -4px rgba(164, 164, 164, 0.8); */
 }
@@ -63,8 +64,9 @@ hr.or {
 #wayf .fastTrackButton {
   /* background-color: red;
   color: white; */
-  margin: 3px;
-  padding: 3px;
+  width: 31%;
+  /* margin: 3px; */
+  padding: 1%;
 }
 
 #wayf .fastTrackLogoDiv {
@@ -91,7 +93,7 @@ hr.or {
 
 #wayf .socialTrack {
   display: flex;
-  flex-display: row;
+  flex-direction: row;
   flex-wrap: wrap;
   /* box-shadow: 0 9px 0px 0px rgba(255,255,255,1.0), 0 -9px 0px 0px rgba(255,255,255,1.0), 6px 0 15px -4px rgba(164, 164, 164, 0.8), -6px 0 15px -4px rgba(164, 164, 164, 0.8); */
 }
@@ -99,8 +101,9 @@ hr.or {
 #wayf .socialTrackButton {
   /* background-color: blue;
   color: white; */ 
-  margin: 3px;
-  padding: 3px;
+  width: 31%;
+  /* margin: 3px; */
+  padding: 1%;
 }
 
 #wayf .socialTrackLogoDiv {
@@ -160,55 +163,35 @@ hr.or {
 
 #wayf div.scroller div div.logoDiv {
   display: inline-block;
-  width: 80px;
-  height: 22px;
+  /* width: 80px;
+  height: 22px; */
+  width: 20%;
   vertical-align: middle;
 }
 
 #wayf div.scroller div div.logoDiv img.logo {
+  display: block;
+  margin: auto;
   max-width: 100%;
   max-height: 100%;
+  padding-left: 5%;
 }
 
 #wayf div.scroller div div.divName {
   display: inline-block; 
   /* position: relative;  */
-  left: 10px; 
+  padding-left: 5%; 
   vertical-align: middle;
   /* max-height: 100%; */
   /* background-color: yellow;  */
   overflow: hidden;
-  width: 70%; 
+  width: 72%; 
 }
 
 #wayf div.scroller div div.divName span {
   max-width: 100%;
   max-height: 100%;
   /* background-color: yellow;  */
-}
-
-@media only screen and (min-width: 700px) {
- 
-  #wayf {
-    /* display: flex;
-    flex-direction: column; */
-    /* debug */
-    /* background-color: DodgerBlue; */
-
-    width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-    
-  }
-
-  #wayf div.scroller div div.logoDiv {
-    display: inline-block;
-    width: 160px;
-    height: 44px;
-    vertical-align: middle;
-  }
-
-
 }
 
 @media only screen and (min-width: 900px) {
@@ -219,19 +202,16 @@ hr.or {
     /* debug */
     /* background-color: DodgerBlue; */
 
-    width: 900px;
+    width: 840px;
     margin-left: auto;
     margin-right: auto;
-    
+   
   }
 
-  #wayf div.scroller div div.logoDiv {
-    display: inline-block;
-    width: 160px;
-    height: 44px;
-    vertical-align: middle;
+  #wayf div.top p.toptitle {
+    font-size: 150%;
+    padding: 10px;
   }
-
 
 }
 
