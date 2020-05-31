@@ -258,13 +258,13 @@ else if(!isset($entityID) || !isset($returnURL) || !$checkSPDiscoveryResponseTes
       echo "Poskytovatel služby ke které se hlásíte nepředal všechny parametry potřebné pro přihlášení.<br>";
       echo "K přihlášení jsou nutné alespoň parametry &quot;<i>entityID</i>&quot; a &quot;<i>return</i>&quot;.<br>";
       echo "Seznam parametrů, které poskytovatel služby předal, můžete vidět v seznamu níže.<br>";
-      echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a target=\"_blank\" href=\"https://www.eduid.cz/cs/tech/wayf\">www.eduid.cz/cs/tech/wayf</a></div>";
+      echo "Dokumetaci k přihlašovací službě můžete najít na adrese <a target=\"_blank\" href=\"https://www.eduid.cz/cs/tech/wayf/sp#kontrola_parametru_return\">https://www.eduid.cz/cs/tech/wayf/sp#kontrola_parametru_return</a></div>";
   
       echo "<div id=\"nadpis_en\"><h1>An error occured</h1>";
       echo "Service provider didn't send all parameters needed for login.<br>";
       echo "For login are needed at least &quot;<i>entityID</i>&quot and &quot;<i>return</i>&quot.<br>";
       echo "List of parameters sent from service provider is below.";
-      echo "<br>Documentation (in czech language) can be found at <a target=\"_blank\" href=\"https://www.eduid.cz/en/tech/wayf\">www.eduid.cz/en/tech/wayf</a></div>";
+      echo "<br>Documentation (in czech language) can be found at <a target=\"_blank\" href=\"https://www.eduid.cz/en/tech/wayf/sp#return_parameter_check\">www.eduid.cz/en/tech/wayf/sp#return_parameter_check</a></div>";
 
     } else {
 
