@@ -252,7 +252,7 @@ else if(!isset($entityID) || !isset($returnURL) || !$checkSPDiscoveryResponseTes
     echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"errorpage.css\">";
     echo "</head><body style=\"background-color:white\">";
 
-    if( $checkSPDiscoveryResponseTest ) {
+    if( !isset($entityID) || !isset($returnURL) ) {
 
       echo "<div id=\"nadpis_cs\"><h1>Nastala chyba</h1>";
       echo "Poskytovatel služby ke které se hlásíte nepředal všechny parametry potřebné pro přihlášení.<br>";
