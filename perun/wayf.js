@@ -60,6 +60,11 @@ var missingLogo = "logo/missing.png";
 
 var hideFromDiscoveryCategory = "http://refeds.org/category/hide-from-discovery";
 
+var trackLastNo = 0;
+var trackLastAlone = 1;
+var trackLast1of2 = 12;
+var trackLast2of2 = 22;
+
 /* some variables are coming from wayf.php, for example returnURL */
 var returnUrlParamCharacter = "&";
 if( returnURL.indexOf( "?" ) == -1 ) {
@@ -642,15 +647,26 @@ View.prototype.addFastTrackSection = function() {
 
 /** function View.prototype.addFastTrackButton - insert one IdP to fastTrackSection
   */
-View.prototype.addFastTrackButton = function(eid, logoSource, label, callback) {
+View.prototype.addFastTrackButton = function(eid, logoSource, label, isLastRow, callback) {
 
     if(typeof label == 'undefined') {
 	return;
     }
 
+    var lastClass = " col-md-4";
+    if( isLastRow == trackLastAlone ) {
+      lastClass = " col-md-offset-4";
+    }
+    if( isLastRow == trackLast1of2 ) {
+      lastClass = " col-md-6";
+    }
+    if( isLastRow == trackLast2of2 ) {
+      lastClass = " col-md-6";
+    }
+
     var idpDiv = document.createElement('div');
     idpDiv.id = eid;
-    idpDiv.className = "fastTrackButton";
+    idpDiv.className = "fastTrackButton" + lastClass;
     idpDiv.title = label;
     
     if(callback != null) {
@@ -693,15 +709,26 @@ View.prototype.addSocialTrackSection = function() {
 
 /** function View.prototype.addSocialTrackButton - insert one IdP to socialTrackSection
   */
-View.prototype.addSocialTrackButton = function(eid, logoSource, label, callback) {
+View.prototype.addSocialTrackButton = function(eid, logoSource, label, isLastRow, callback) {
 
     if(typeof label == 'undefined') {
 	return;
     }
 
+    var lastClass = " col-md-4";
+    if( isLastRow == trackLastAlone ) {
+      lastClass = " col-md-offset-4";
+    }
+    if( isLastRow == trackLast1of2 ) {
+      lastClass = " col-md-6";
+    }
+    if( isLastRow == trackLast2of2 ) {
+      lastClass = " col-md-6";
+    }
+
     var idpDiv = document.createElement('div');
     idpDiv.id = eid;
-    idpDiv.className = "socialTrackButton";
+    idpDiv.className = "socialTrackButton" + lastClass;
     idpDiv.title = label;
     
     if(callback != null) {
@@ -860,7 +887,8 @@ View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDel
         idpDiv.appendChild(trashIcon);
     }
 
-    idpDiv.appendChild(hr);
+    idpDiv.appendChild(hr); 
+    /* hr.after(idpDiv); */
 
     /* idp zaradime abecedne do seznamu bez ohledu na nabodenicka */
     var upLabel = toAscii(label.toUpperCase());
@@ -2053,13 +2081,46 @@ Wayf.prototype.createEntityLink = function(eid) {
     return retURL;
 }
 
+Wayf.prototype.isLastRow = function( actual, lastRow, remain ) {
+
+  var isLastRow = trackLastNo;          
+  if( actual > lastRow ) {
+    if( remain == 1 ) {
+      isLastRow = trackLastAlone;
+    }
+    if( remain == 2 ) {
+      if(( actual % 3) == 1 ) {
+        isLastRow = trackLast1of2;
+      }
+      if(( actual % 3 ) == 2 ) {
+        isLastRow = trackLast2of2;
+      }
+    }
+  }
+  return isLastRow;
+}
+
 /** function readFastTrackFilter() - reads fastTrack section from filter
   */
 Wayf.prototype.readFastTrackFilter = function() {
 
+  // count numbers of fastTrack IdPs
+  var i = 0;
+  for(var feed in filter.fastTrack) {  
+    i += filter.fastTrack[feed].IdPs.length;
+  }
+  var remain = i % 3;
+  var lastRow = i - remain;
+
+  var j = 0;
+  var isLastRow = trackLastNo;
+
   for(var feed in filter.fastTrack) {  
     if( typeof(filter.fastTrack[feed].IdPs) !== "undefined" ) {    
       for(var idp in filter.fastTrack[feed].IdPs ) {
+        j++;
+        isLastRow = this.isLastRow( j, lastRow, remain );        
+
         var eid = filter.fastTrack[feed].IdPs[idp];
         if(wayf.feedData[feed] !== "undefined" && wayf.feedData[feed].mdSet.entities[eid] !== "undefined") {
           var label = this.getLabelFromLabels(wayf.feedData[feed].mdSet.entities[eid].label);
@@ -2071,17 +2132,10 @@ Wayf.prototype.readFastTrackFilter = function() {
             var murl = url;
             var tgrt = tgt;
             return function() {
-                /* dont save now
-                try {
-                    wayf.saveUsedIdp(feedId, veid);
-                }
-                catch(err) {
-                }
-                */
                 tgrt.location = murl;
             }
           })();
-          this.view.addFastTrackButton(eid, wayf.feedData[feed].mdSet.entities[eid].logo, label, callback);
+          this.view.addFastTrackButton(eid, wayf.feedData[feed].mdSet.entities[eid].logo, label, isLastRow, callback);
 
         }
       }
@@ -2093,9 +2147,23 @@ Wayf.prototype.readFastTrackFilter = function() {
   */
 Wayf.prototype.readSocialTrackFilter = function() {
 
+  // count numbers of socialTrack IdPs
+  var i = 0;
+  for(var feed in filter.socialTrack) {  
+    i += filter.socialTrack[feed].IdPs.length;
+  }
+  var remain = i % 3;
+  var lastRow = i - remain;
+
+  var j = 0;
+  var isLastRow = trackLastNo;
+  
   for(var feed in filter.socialTrack) {  
     if( typeof(filter.socialTrack[feed].IdPs) !== "undefined" ) {    
       for(var idp in filter.socialTrack[feed].IdPs ) {
+        j++;
+        isLastRow = this.isLastRow( j, lastRow, remain );        
+        
         var eid = filter.socialTrack[feed].IdPs[idp];
         if(wayf.feedData[feed] !== "undefined" && wayf.feedData[feed].mdSet.entities[eid] !== "undefined") {
           var label = this.getLabelFromLabels(wayf.feedData[feed].mdSet.entities[eid].label);
@@ -2107,17 +2175,10 @@ Wayf.prototype.readSocialTrackFilter = function() {
             var murl = url;
             var tgrt = tgt;
             return function() {
-                /* dont save now
-                try {
-                    wayf.saveUsedIdp(feedId, veid);
-                }
-                catch(err) {
-                }
-                */
                 tgrt.location = murl;
             }
           })();
-          this.view.addSocialTrackButton(eid, wayf.feedData[feed].mdSet.entities[eid].logo, label, callback);
+          this.view.addSocialTrackButton(eid, wayf.feedData[feed].mdSet.entities[eid].logo, label, isLastRow, callback);
 
         }
       }

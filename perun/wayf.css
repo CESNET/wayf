@@ -64,9 +64,9 @@ hr.or {
 #wayf .fastTrackButton {
   /* background-color: red;
   color: white; */
-  width: 31%;
+  /* width: 31%; */
   /* margin: 3px; */
-  padding: 1%;
+  /* padding: 1%; */
 }
 
 #wayf .fastTrackLogoDiv {
@@ -74,6 +74,7 @@ hr.or {
   /* width: 80px; */
   height: 16px;
   vertical-align: middle;
+  padding: 5px;
 }
 
 #wayf .fastTrackImg {
@@ -84,10 +85,10 @@ hr.or {
 #wayf .fastTrackLabel {
   display: inline-block; 
   position: relative; 
-  left: 10px; 
+  /* left: 10px;  */
   vertical-align: middle;
   /*background-color: yellow; */
-  width: 75%; 
+  /* width: 75%; */
   /* max-width: 100%; */
 }
 
@@ -101,9 +102,10 @@ hr.or {
 #wayf .socialTrackButton {
   /* background-color: blue;
   color: white; */ 
-  width: 31%;
+  /* width: 31.333333%;  */
+  /* width: 33.3333333%; */
   /* margin: 3px; */
-  padding: 1%;
+  /* padding: 1%; */
 }
 
 #wayf .socialTrackLogoDiv {
@@ -111,6 +113,7 @@ hr.or {
   /* width: 80px; */
   height: 16px;
   vertical-align: middle;
+  padding: 5px;
 }
 
 #wayf .socialTrackImg {
@@ -121,10 +124,10 @@ hr.or {
 #wayf .socialTrackLabel {
   display: inline-block; 
   position: relative; 
-  left: 10px; 
+  /* left: 10px; */
   vertical-align: middle;
   /* background-color: yellow;  */
-  width: 70%; 
+  /* width: 70%; */
 }
 
 #wayf .sectionSeparator {
@@ -163,8 +166,8 @@ hr.or {
 
 #wayf div.scroller div div.logoDiv {
   display: inline-block;
-  /* width: 80px;
-  height: 22px; */
+  /* width: 80px; */
+  height: 22px; 
   width: 20%;
   vertical-align: middle;
 }
@@ -194,6 +197,30 @@ hr.or {
   /* background-color: yellow;  */
 }
 
+#wayf .col-md-offset-4 {
+    margin-left: 33.33333333%;
+}
+
+#wayf .col-md-4 {
+    width: 33.33333333%;
+}
+
+#wayf .col-md-6 {
+    width: 50%;
+}
+
+#wayf .button {
+    padding: 5px;
+    border: none;
+    color: #5864a3;
+    font-weight: bolder;
+    background: none;
+}
+
+#wayf div.enabled {
+  /* height: 46px; */
+}
+
 @media only screen and (min-width: 900px) {
  
   #wayf {
@@ -211,6 +238,10 @@ hr.or {
   #wayf div.top p.toptitle {
     font-size: 150%;
     padding: 10px;
+  }
+
+  #wayf div.scroller div div.logoDiv {
+    height: 44px; 
   }
 
 }
