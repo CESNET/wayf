@@ -153,6 +153,7 @@ if(isset($extFilter)) {
                 $useHostel = true;
             }
         }
+        $useHostel = false;  /* force turn off hostel */
         if(isset($jFilter['ver']) && $jFilter['ver'] == "2" ) {
           $filterVersion = 2;
         }

@@ -1,4 +1,8 @@
 /* default */
+body {
+  font-family: Verdana,Geneva,sans-serif; 
+}
+
 #wayf {
   font-family: Verdana,Geneva,sans-serif; 
   display: flex;
@@ -229,7 +233,7 @@ hr.or {
     /* debug */
     /* background-color: DodgerBlue; */
 
-    width: 840px;
+    width: 880px;
     margin-left: auto;
     margin-right: auto;
    
