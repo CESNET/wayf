@@ -446,7 +446,7 @@ else {
       $included_vars_and_script .= "var SPentityID = \"". $_GET['entityID']."\";\n" ;
     }
 
-    if(isset($useHostel)) {
+    if($useHostel) {
         $included_vars_and_script .= "var useHostel = true;\n";
         $hostelIdpParams = "/Shibboleth.sso/Login?SAMLDS=1&" . $returnIDVariable . "=" . urlencode($hostelId);
         $hostelRegistrarParams = "?return=";

@@ -1750,6 +1750,8 @@ Wayf.prototype.listAllIdps = function(forceAll) {
 
     var useHostelIdp = false;
     var allowHostelRegistration = false;
+    /*
+     * force turn off Hostel
     if(useFilter) {
         if("allowHostel" in filter) {
             useHostelIdp = filter.allowHostel;
@@ -1758,6 +1760,7 @@ Wayf.prototype.listAllIdps = function(forceAll) {
             allowHostelRegistration = filter.allowHostelReg;
         }
     }
+    */
 
     if(useHostelIdp) {
         var hostelLabel = { "en":this.view.getLabelText('IDP_HOSTEL') };

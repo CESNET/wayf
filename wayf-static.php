@@ -274,12 +274,15 @@ if(isset($extFilter)) {
     $jFilter = json_decode($filter, true);
     if($jFilter !== NULL) {
         $useFilter = true;
+        /*
+         * force turn off hostel
         if(isset($jFilter['allowHostel']) && $jFilter['allowHostel'] == true) {
             $useHostel = true;
             if(isset($jFilter['allowHostelReg']) && $jFilter['allowHostelReg'] == true) {
                 $useHostel = true;
             }
         }
+         */
         if(isset($jFilter['ver']) && $jFilter['ver'] == "2" ) {
           $filterVersion = 2;
         }
