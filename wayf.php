@@ -538,7 +538,7 @@ else {
 
     /* decommission dsx alert hack */
     if( $organizationHelpImage == "geant-logo-gray.png" ) {
-      $included_vars_and_script .= "var alertDsx = true;\n";
+      echo "var alertDsx = true;\n";
     }
 
     echo $script;
