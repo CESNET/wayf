@@ -536,6 +536,11 @@ else {
 
     echo "var noHTML5URL = \"" . $failbackWayf . "?" . $qs . "\";\n";
 
+    /* decommission dsx alert hack */
+    if( $organizationHelpImage == "geant-logo-gray.png" ) {
+      $included_vars_and_script .= "var alertDsx = true;\n";
+    }
+
     echo $script;
     echo "</script>\n";
     echo "<noscript>\n";
