@@ -639,6 +639,9 @@ View.prototype.addIdpToList = function(eid, logoSource, label, callback, showDel
         idpDiv.title = label;
     }
     else {
+        if (hideFiltered) {
+            return;
+        }
         idpDiv.className = "disabled";
         idpDiv.title = this.getLabelText( "NOT_AVAILABLE" ) + ' - ' + label;
     }
