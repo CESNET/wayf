@@ -136,6 +136,8 @@ else if(isset($_GET["efilter"])) {
     curl_close($ch);
 }
 
+$hideFiltered = (isset($_GET['hideFilteredOutIdps']) && $_GET['hideFilteredOutIdps'] != 0) ? true : false;
+
 $useFilter = false;
 $useHostel = false;
 $filterVersion = 1;
@@ -379,6 +381,8 @@ else {
     $included_vars_and_script .= addVariable( "organizationHelpLink", $organizationHelpLink );
     $included_vars_and_script .= addVariable( "organizationHelpImage", $organizationHelpImage );
     $included_vars_and_script .= addVariable( "organizationHelpImageAlt", $organizationHelpImageAlt );
+
+    $included_vars_and_script .= addVariable( "hideFiltered", $hideFiltered );
 
     if( isset( $feeds )) {
       $included_vars_and_script .= "var feeds = ".$feeds .";\n";
