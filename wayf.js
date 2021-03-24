@@ -48,7 +48,8 @@ var labels = {
 var mobileVersion = true;
 var hostelEntityID = "https://idp.hostel.eduid.cz/idp/shibboleth";
 var inIframe = false;
-var feedCount = 0;
+var feedCount = 0;  // number feed to download 
+var feedDownloaded = {};
 var filterVersion = 1;  // default original version, not suitable for all cases
 
 var logos = new Object();  // temporary array for logos
@@ -1663,9 +1664,17 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
 
     // optimization
     var tmpFeed;
-    if(typeof wayf.feedData[id] != 'undefined' && typeof wayf.feedData[id]["mdSet"] != 'undefined' ) {
+    if(typeof wayf.feedData[id] !== 'undefined' ) {
       // data is in memory, so add it to list
       wayf.listAllData( id, wayf.feedData[id]["mdSet"]);
+      return;
+    }
+
+    // check is data is downloading or is downloaded
+    if( feedDownloaded[id] !== 'undefined' ) {
+      feedDownloaded[id] = true;
+    } else {
+      // we should wait for previous download
       return;
     }
 
@@ -1708,7 +1717,7 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
 
             feedCount--;
 
-            if( feedCount == 0 ) { 
+            if( feedCount <= 0 ) { 
               // sort mixela
               wayf.view.keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
 
