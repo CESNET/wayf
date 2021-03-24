@@ -1663,7 +1663,7 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
 
     // optimization
     var tmpFeed;
-    if(typeof wayf.feedData[id] != 'undefined' ) {
+    if(typeof wayf.feedData[id] != 'undefined' && typeof wayf.feedData[id]["mdSet"] != 'undefined' ) {
       // data is in memory, so add it to list
       wayf.listAllData( id, wayf.feedData[id]["mdSet"]);
       return;
