@@ -49,7 +49,6 @@ var mobileVersion = true;
 var hostelEntityID = "https://idp.hostel.eduid.cz/idp/shibboleth";
 var inIframe = false;
 var feedCount = 0;  // number feed to download 
-var feedDownloaded = {};
 var filterVersion = 1;  // default original version, not suitable for all cases
 
 var logos = new Object();  // temporary array for logos
@@ -968,8 +967,8 @@ Wayf.prototype.isIdpInFeed = function(idp, feed) {
         return false;
     }
     else {
-        feedData = JSON.parse(feedStr);
-        if(idp in feedData["mdSet"]["entities"]) {
+        var tmpFeedData = JSON.parse(feedStr);
+        if(idp in tmpFeedData["mdSet"]["entities"]) {
             return true;
         }
     }
@@ -1664,19 +1663,13 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
 
     // optimization
     var tmpFeed;
-    if(typeof wayf.feedData[id] !== 'undefined' ) {
+    if( typeof wayf.feedData[id] !== 'undefined' ) {
       // data is in memory, so add it to list
       wayf.listAllData( id, wayf.feedData[id]["mdSet"]);
+      feedCount--;
       return;
     }
 
-    // check is data is downloading or is downloaded
-    if( feedDownloaded[id] !== 'undefined' ) {
-      feedDownloaded[id] = true;
-    } else {
-      // we should wait for previous download
-      return;
-    }
 
    $( ".toplabel" ).text(wayf.view.getLabelText('LOADING'));
 
@@ -1722,7 +1715,8 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
               wayf.view.keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
 
               $( ".toplabel" ).text(wayf.view.getLabelText('TEXT_ALL_IDPS'));
-              
+              $( ".scroller" ).children( "div:visible" ).first().removeClass( 'selected' );
+             
               var frag = document.createDocumentFragment();   
               for( var key in wayf.view.keySorted ) {
                 frag.appendChild( wayf.view.mixelaHash[ wayf.view.keySorted[ key ] ] );
@@ -1737,7 +1731,7 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
         }
     };
     var feedStr = wayf.persistor.getItem(savedFeedPrefix + id);
-    etag = 0;
+    var etag = 0;
     if(feedStr != null) {
         wayf.feedData[id] = JSON.parse(feedStr);
         etag = wayf.feedData[id].etag;
