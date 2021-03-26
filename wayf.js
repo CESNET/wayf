@@ -967,8 +967,8 @@ Wayf.prototype.isIdpInFeed = function(idp, feed) {
         return false;
     }
     else {
-        feedData = JSON.parse(feedStr);
-        if(idp in feedData["mdSet"]["entities"]) {
+        var tmpFeedData = JSON.parse(feedStr);
+        if(idp in tmpFeedData["mdSet"]["entities"]) {
             return true;
         }
     }
@@ -1662,6 +1662,7 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
     if(typeof wayf.feedData[id] != 'undefined' ) {
       // data is in memory, so add it to list
       wayf.listAllData( id, wayf.feedData[id]["mdSet"]);
+      feedCount--;
       return;
     }
 
@@ -1709,6 +1710,7 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
               wayf.view.keySorted = Object.keys( wayf.view.mixelaHash ).sort( function(a,b) { return a>b?1:-1; } );
 
               $( ".toplabel" ).text(wayf.view.getLabelText('TEXT_ALL_IDPS'));
+              $( ".scroller" ).children( "div:visible" ).first().removeClass( 'selected' );
               
               var frag = document.createDocumentFragment();   
               for( var key in wayf.view.keySorted ) {
@@ -1724,7 +1726,7 @@ Wayf.prototype.getFeed = function(id, url, asynchronous, all, dontShow ) {
         }
     };
     var feedStr = wayf.persistor.getItem(savedFeedPrefix + id);
-    etag = 0;
+    var etag = 0;
     if(feedStr != null) {
         wayf.feedData[id] = JSON.parse(feedStr);
         etag = wayf.feedData[id].etag;
