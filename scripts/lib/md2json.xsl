@@ -117,7 +117,7 @@
   </xsl:template>
 
   <xsl:template match="saml:AttributeValue">
-    <xsl:text>"</xsl:text><xsl:value-of select="."/><xsl:text>"</xsl:text>
+    <xsl:text>"</xsl:text><xsl:value-of select="normalize-space(.)"/><xsl:text>"</xsl:text>
     <xsl:if test="position()!=last()">
       <xsl:text>,
       </xsl:text>
