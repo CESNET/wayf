@@ -42,7 +42,9 @@ var labels = {
     'CONFIRM_DELETE': {'cs':'Zapomenout ', 'en':'Forget ', 'it':'Dimentica ', 'nl':'Vergeet ', 'fr':'Enlever ', 'el':'Διαγραφή ', 'de':'Lösche ', 'lt':'Pamiršti ', 'es':'Olvidar ', 'sv':'Glöm' },
     'BACK_TITLE': {'cs':'Zpět', 'en':'Back', 'it':'Indietro', 'nl':'Terug', 'fr':'Retour', 'el':'Πίσω', 'de':'Zurück', 'lt':'Atgal', 'es':'Atrás', 'sv':'Tillbaka' },
     'NOT_AVAILABLE': {'cs':'K této službě se nelze přihlásit pomocí', 'en':'Service is not available for', 'it':'Il servizio non è disponibile per', 'nl':'Service is niet beschikbaar', 'fr':'Service non fonctionnel pour', 'el':'Ο Πάροχος Ταυτότητας δεν είναι διαθέσιμος για αυτή την υπηρεσία', 'de':'Dienst ist nicht verfügbar für', 'lt':'Paslauga neteikiama', 'es':'Servicio no disponible para', 'sv':'Tjänsten är inte tillgänglig för' },
-    'LOADING': {'cs': 'Načítám instituce ...', 'en':'LOADING ...', 'it':' Caricamento ...', 'nl':'Aan het laden', 'fr':'Chargement en cours', 'el':'ΦΟΡΤΩΣΗ ...', 'de':'Laden ...', 'lt':'KRAUNAMA ...', 'es':'CARGANDO...', 'sv':'Läser in...' }
+    'LOADING': {'cs': 'Načítám instituce ...', 'en':'LOADING ...', 'it':' Caricamento ...', 'nl':'Aan het laden', 'fr':'Chargement en cours', 'el':'ΦΟΡΤΩΣΗ ...', 'de':'Laden ...', 'lt':'KRAUNAMA ...', 'es':'CARGANDO...', 'sv':'Läser in...' },
+    'GDPR_TEXT': {'cs': 'Zpracování osobních údajů', 'en':'Personal data processing', 'it':'Personal data processing', 'nl':'Personal data processing', 'fr':'Personal data processing', 'el':'Personal data processing', 'de':'Personal data processing', 'lt':'Personal data processing', 'es':'Personal data processing', 'sv':'Personal data processing' },
+    'GDPR_LINK': {'cs': 'https://www.cesnet.cz/zpracovani-osobnich-udaju/cookies', 'en':'https://www.cesnet.cz/personal-data-processing/cookies-en/?lang=en', 'it':'https://www.cesnet.cz/personal-data-processing/cookies-en/?lang=en', 'nl':'https://www.cesnet.cz/personal-data-processing/cookies-en/?lang=en', 'fr':'https://www.cesnet.cz/personal-data-processing/cookies-en/?lang=en', 'el':'https://www.cesnet.cz/personal-data-processing/cookies-en/?lang=en', 'de':'https://www.cesnet.cz/personal-data-processing/cookies-en/?lang=en', 'lt':'https://www.cesnet.cz/personal-data-processing/cookies-en/?lang=en', 'es':'https://www.cesnet.cz/personal-data-processing/cookies-en/?lang=en', 'sv':'https://www.cesnet.cz/personal-data-processing/cookies-en/?lang=en' }
 }
 
 var mobileVersion = true;
@@ -388,6 +390,21 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     cesnetLink.appendChild(helpImage);
     help.appendChild(cesnetLink);
 
+
+    // GDPR cookie link
+    var cookieBar = document.createElement('span');
+    var cookieLink = document.createElement('a');
+    cookieLink.href = this.getLabelText('GDPR_LINK');
+    cookieLink.target="_blank";
+    cookieLink.id = "cookielink";
+    var cookieText = document.createTextNode(this.getLabelText('GDPR_TEXT'));
+    cookieLink.append(cookieText);
+    cookieBar.appendChild(cookieLink);
+    cookieBar.id = "cookiebar";
+    
+
+
+
     this.content = document.createElement('div');
     this.content.className = "content";
 
@@ -531,6 +548,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     //this.bottom.appendChild(langCS);
     //this.bottom.appendChild(langEN);
     this.bottom.appendChild(help);
+    this.bottom.appendChild(cookieBar);
 
     this.wayfDiv.appendChild(this.bottom);
 

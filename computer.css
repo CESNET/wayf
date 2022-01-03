@@ -297,3 +297,15 @@ span.span-lang {
 span.span-lang:hover {
     background-color: lightblue;
 }
+
+#cookiebar {
+    text-align: right;
+    font-size: 75%;
+}
+
+#cookielink {
+    text-decoration: none;
+    color: #CCCCCC;
+    position: relative;
+    right: -18;
+}
