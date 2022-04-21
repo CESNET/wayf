@@ -99,14 +99,6 @@ switch($locale) {
 		"v jejichž metadatech je váš SP. Poskytovatelé identity jsou rozděleni podle skupin, kam patří.";
 	$str5 = "Vyberte skupiny";
 	$str6 = "Vyberte IdP";
-	$str7 = "Přidejte Hostel IdP";
-	$str8 = "Pokud chcete poskytnout přístup ke své službě i uživatelům, kteří nemají účet u žádného poskytovatele ". 
-		"itentity výše, můžete použít speciálního poskytovatele identity <a href=\"http://hostel.eduid.cz/\">Hostel IdP</a>. " . 
-		"K založení účtu s nejnižším ověřením na <a href=\"http://hostel.eduid.cz/\">Hostel IdP</a> stačí uživateli platný email. Pokud chcete uživatelům " .
-		"umožnit založení účtu na <a href=\"http://hostel.eduid.cz/\">Hostel IdP</a> přímo z WAYFu, zaškrtněte volbu " .
-		"<i>Dovolit uživatelům vytvoření...</i>".
-	$str9 = "Umožnit použití Hostel IdP";
-	$str10 = "Dovolit uživatelům vytvoření nového účtu na Hostel IdP";
 	$str11 = "Filtr zatím nebyl vygenerován. Vygenerujte filtr vybráním některých voleb výše.";
 	$str12 = "Vygenerujte filtr vybráním některých voleb výše nebo sem zkopírujte váš existující filtr.";
 	$str13 = "Pokud již existující filtr používáte,<br>vložte jeho hodnotu do pole výše<br>a stiskněte toto tlačítko.";
@@ -136,14 +128,6 @@ switch($locale) {
             "The list of Idps may be further adjusted by selecting entity categories. When used together with entity categories filtering, the list shown comprises of IdPs not filtered out by categories filter with possible additions of IdP allow list or possible deductions of IdP deny list.";
 	$str5 = "Select groups";
 	$str6 = "Select individual IdPs";
-	$str7 = "Add hostel IdP";
-	$str8 = "if you want to allow access to users out of federations, you can use special identity provider ". 
-		"<a href=\"http://hostel.eduid.cz/\">Hostel IdP</a>. " . 
-		"Only valid email is required on <a href=\"http://hostel.eduid.cz/\">Hostel IdP</a> for LoA 1 account. If you want to allow " .
-		"<a href=\"http://hostel.eduid.cz/\">Hostel IdP</a> account creation from WAYF, check option " .
-		"<i>Allow account creation on Hostel IdP</i>.";
-	$str9 = "Allow usage of Hostel IdP";
-	$str10 = "Allow account creation on Hostel IdP";
 	$str11 = "Filter was not generated yet. Generate filter using check boxes above.";;
 	$str12 = "Generate filter using checkboxes or copy existing filter.";
 	$str13 = "If you already have a filter, copy its value to the field above<br>and press this button.";
@@ -195,13 +179,6 @@ switch($locale) {
 <div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str4 ?></div>
 <div id="idpaccordion">
 </div>
-</div>
-
-<h3 class="acchostel"><?php echo $str7 ?></h3>
-<div class="acchostel">
-<div class="info"><span class="ui-icon ui-icon-info" style="float: left; margin: 0 7px 50px 0;"></span><?php echo $str8 ?></div>
-<input type="checkbox" name="Hostel" id="hostel" value="Use Hostel" class="oc"><?php echo $str9 ?><br>
-<input type="checkbox" name="HostelReg" id="hostelreg" value="Use Hostel Reg" class="oc"><?php echo $str10 ?>
 </div>
 
 </div><!-- accordion -->

@@ -41,10 +41,8 @@ function regenerateFilter() {
     var filterVal = document.getElementById('filterval');
     var rawFilterArea = document.getElementById('rawfilter');
     var filterKey = "filter=";
-    var hostel = document.getElementById('hostel');
     var social = document.getElementById('social');
-    var hostelreg = document.getElementById('hostelreg');
-    var kontrola = document.getElementById('kontrola');
+     var kontrola = document.getElementById('kontrola');
     var filter = "";
     var checkedFeeds = new Array();
     var useFeeds = false;
@@ -90,13 +88,6 @@ function regenerateFilter() {
             if(deniedEC.length > 0) {
                 fo.allowFeeds[feed.value][denyEC] = deniedEC;
             }
-        }
-    }
-
-    if(hostel.checked) {
-        fo.allowHostel = hostel.checked;
-        if(hostel.checked) {
-            fo.allowHostelReg = hostelreg.checked;
         }
     }
 
@@ -192,26 +183,6 @@ function decodeFilter() {
                 sp.classList.add("ecitem");
                 sp.innerText = ec;
                 zero.append(sp);
-            }
-        }
-        if(filter.allowHostel != null) {
-            if(filter.allowHostel instanceof Array) {
-                throw "allowHostel is an Array";
-            }
-            else {
-                if(filter.allowHostel == true) {
-                    $('#hostel').click();
-                    if(filter.allowHostelReg != null) {
-                        if(filter.allowHostelReg instanceof Array) {
-                            throw "allowHostelReg is an Array";
-                        }
-                        else {
-                            if(filter.allowHostelReg == true) {
-                                $('#hostelreg').click();
-                            }
-                        }
-                    }
-                }
             }
         }
         if(kontrola.innerText !== decoded) {

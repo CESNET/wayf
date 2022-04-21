@@ -3,7 +3,7 @@
  *
  * javascript version of WAYF
  *
- * @version ?.? 2013 - 2018
+ * @version 1.1 2013 - 2022
  * @author Jan Chvojka jan.chvojka@cesnet.cz
  * @author Pavel Polacek pavel.polacek@ujep.cz
  * @see getMD - TODO: add link - prepares feed for WAYF
@@ -14,7 +14,6 @@
 
 
 var wayf = "";
-var hostelURL  = 'https://adm.hostel.eduid.cz/registrace';
 var showedIdpList;
 var languages = new Array("en", "cs");
 var langsAvailable = {
@@ -33,11 +32,9 @@ var langsAvailable = {
 var fallbackLanguage = "en";
 var labels = {
     'BUTTON_NEXT': {'cs':'Jiný účet', 'en':'Another account', 'it':'Altro account', 'nl':'Ander account', 'fr':'Un autre compte', 'el':'Άλλος λογαριασμός', 'de':'Anderes Konto', 'lt':'Kita paskyra', 'es':'Otra cuenta', 'sv':'Annat konto' },
-    'BUTTON_HOSTEL': {'cs':'Zřídit účet', 'en':'Create account', 'it':'Crea account', 'nl':'Maak account aan', 'fr':'Créer un compte', 'el':'Δημιουργία λογαριασμού', 'de':'Konto kreieren', 'lt':'Sukurti paskyrą', 'es':'Crear cuenta', 'sv':'Skapa konto' },
     'TEXT_ALL_IDPS': {'cs':'Přihlásit účtem', 'en':'Log in with', 'it':'Login tramite', 'nl':'Login met', 'fr':'S’authentifier avec', 'el':'Σύνδεση μέσω', 'de':'Anmelden mit', 'lt':'Prisijungti su', 'es':'Acceder con', 'sv':'Logga in med' },
     'TEXT_ACCOUNT': {'cs':'Zřídit účet', 'en':'Create account', 'it':'Crea account', 'nl':'Maak account aan', 'fr':'Créer un compte', 'el':'Δημιουργία λογαριασμού', 'de':'Konto kreieren', 'lt':'Sukurti paskyrą', 'es':'Crear cuenta', 'sv':'Skapa konto' },
     'TEXT_SAVED_IDPS': {'cs':'Přihlásit účtem', 'en':'Log in with', 'it':'Login tramite', 'nl':'Login met', 'fr':'S’authentifier avec', 'el':'Σύνδεση μέσω', 'de':'Anmelden mit', 'lt':'Prisijungti su', 'es':'Acceder con', 'sv':'Logga in med' },
-    'IDP_HOSTEL': {'cs':'Hostel IdP', 'en':'Hostel IdP', 'it': 'IdP ospite', 'nl':'Gast IdP', 'fr':'S’authentifier avec' },
     'SETUP': {'cs':'Nastavení', 'en':'Setup', 'it':'Setup', 'nl':'Maak aan', 'fr':'Configurer', 'el':'Παραμετροποίηση', 'de':'Einstellungen', 'lt':'Nustatymai', 'es':'Configurar', 'sv':'Inställningar' },
     'CONFIRM_DELETE': {'cs':'Zapomenout ', 'en':'Forget ', 'it':'Dimentica ', 'nl':'Vergeet ', 'fr':'Enlever ', 'el':'Διαγραφή ', 'de':'Lösche ', 'lt':'Pamiršti ', 'es':'Olvidar ', 'sv':'Glöm' },
     'BACK_TITLE': {'cs':'Zpět', 'en':'Back', 'it':'Indietro', 'nl':'Terug', 'fr':'Retour', 'el':'Πίσω', 'de':'Zurück', 'lt':'Atgal', 'es':'Atrás', 'sv':'Tillbaka' },
@@ -218,62 +215,6 @@ View.prototype.addButton = function(label) {
     }
 }
 
-/** function View.prototype.addNewHostelAccountButton - insert button for creating new account in Hostel
-  */
-View.prototype.addNewHostelAccountButton = function(buttonLabel, label) {
-    var bWrap = document.createElement('div');
-    bWrap.className = "bwrap";
-
-    var nb = document.createElement('button');
-    nb.className = "button";
-
-    var nlabel = document.createElement('label');
-    nlabel.className = "label";
-    nlabel.innerHTML = label;
-    var tgt = this.target;
-
-    nb.onclick = function() {
-        var localReturnURL = encodeURIComponent(wayfURL + "?fromHostel" + otherParams + "&return=" + encodeURIComponent(returnURL));
-        var newLocation = hostelURL + "?r" + otherParams + "&return=" + localReturnURL;
-        var tgrt = tgt;
-        tgrt.location = newLocation;
-    };
-
-    nb.appendChild(nlabel);
-    bWrap.appendChild(nb);
-
-    if(this.bottom.hasChildNodes()) {
-        var f = this.bottom.firstChild;
-        this.bottom.insertBefore(bWrap, f);
-    }
-    else {
-        this.bottom.appendChild(bWrap);
-    }
-
-}
-
-/** View.prototype.addHostelIdp - add Hostel to IdP list
-  */
-View.prototype.addHostelIdp = function(label, isSetup) {
-    var logoSource = "/logo/idp.hostel.eduid.cz.idp.shibboleth.png";
-    var url = returnURL + returnUrlParamCharacter + returnIDVariable + "=" + hostelEntityID + otherParams;
-    var tgt = this.target;
-    var callback = (function() {
-        var veid = hostelEntityID;
-        var murl = url;
-        var tgrt = tgt;
-        return function() {
-            try {
-                wayf.saveUsedHostelIdp();
-            }
-            catch(err) {
-            }
-            tgrt.location = murl;
-        }
-    })();
-    this.addIdpToList(hostelEntityID, logoSource, label, callback, isSetup, true);
-}
-
 View.prototype.createSetupList = function() {
     wayf.listSavedIdps(true,true);
 }
@@ -402,9 +343,6 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
     cookieBar.appendChild(cookieLink);
     cookieBar.id = "cookiebar";
     
-
-
-
     this.content = document.createElement('div');
     this.content.className = "content";
 
@@ -435,8 +373,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
             langDrop.style.display = "block";
           }
         })();
- 
-  
+
       var langSpan = document.createElement('span');
       langSpan.innerHTML = prefLang;
       langDropdown.appendChild( langSpan );
@@ -478,7 +415,6 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
             }
           }
         })();
-
 
       for(var curLang in langsAvailable) {
         var divSelect = document.createElement('div');
@@ -890,49 +826,6 @@ Wayf.prototype.saveUsedIdp = function(feedId, id) {
     }
     usedIdpsObj[key] = idp;
     wayf.persistor.setItem("usedIdps", JSON.stringify(usedIdpsObj));
-}
-
-/** function Wayf.prototype.saveUsedHostelIdp - save selected Hostel to local persistant memory
-  */
-Wayf.prototype.saveUsedHostelIdp = function() {
-    var hostelEntity = {"label": {"en": "Hostel IdP", "cs":"Hostel IdP"}, "logo": "/logo/idp.hostel.eduid.cz.idp.shibboleth.png"};
-    var date = new Date();
-    var time = date.getTime();
-    this.etag = 0;
-    try {
-        var usedIdps = this.persistor.getItem("usedIdps");
-    }
-    catch(err) {
-    }
-    var usedIdpsObj;
-    var idp;
-    if(usedIdps == null) {
-        usedIdpsObj = new Object;
-        idp = new Object();
-    }
-    else {
-        usedIdpsObj = JSON.parse(usedIdps);
-        idp = null;
-        try {
-            idp = usedIdpsObj[hostelEntityID];
-        }
-        catch(err) {
-        }
-        if(idp == null) {
-            idp = new Object();
-        }
-        else {
-            this.blogo = idp.logo;
-            this.etag = idp.logo_etag;
-        }
-    }
-    this.getBase64Image("/logo/idp.hostel.eduid.cz.idp.shibboleth.png" + "_b64", this.etag);
-    idp.logo = this.blogo;
-    idp.logo_etag = this.blogo_etag;
-    idp.lastused = time;
-    idp.entity = hostelEntity;
-    usedIdpsObj[hostelEntityID] = idp;
-    this.persistor.setItem("usedIdps", JSON.stringify(usedIdpsObj));
 }
 
 /** function Wayf.prototype.deleteUsedIdp - dalete selected IdP from local persistant memory
@@ -1427,9 +1320,7 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
             }
             else {
                 if(eid == hostelEntityID) {
-                    if(useFilter && filter.allowHostel==true) {
-                        enableIdp = true;
-                    } 
+                    enableIdp = false;
                 }
                 else {
                     
@@ -1602,19 +1493,10 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                         var logo_src = entity.logo;
                         var local_eid = eid;
                         return function() {
-                            if(local_eid == hostelEntityID) {
-                                try {
-                                    wayf.saveUsedHostelIdp();
-                                }
-                                catch(err) {
-                                }
+                            try {
+                                wayf.saveUsedIdp("eduID.cz", local_eid);
                             }
-                            else {
-                                try {
-                                    wayf.saveUsedIdp("eduID.cz", local_eid);
-                                }
-                                catch(err) {
-                                }
+                            catch(err) {
                             }
                             tgrt.location = murl;
                         }
@@ -1774,27 +1656,6 @@ Wayf.prototype.listAllIdps = function(forceAll) {
     this.view.createContainer(this.view.getLabelText('TEXT_ALL_IDPS'), false, inIframe, false, true, langCallback);
     if(useFilter &&  "allowFeeds" in filter) {
         filterAllowFeeds = true;
-    }
-
-    var useHostelIdp = false;
-    var allowHostelRegistration = false;
-    if(useFilter) {
-        if("allowHostel" in filter) {
-            useHostelIdp = filter.allowHostel;
-        }
-        if("allowHostelReg" in filter) {
-            allowHostelRegistration = filter.allowHostelReg;
-        }
-    }
-
-    if(useHostelIdp) {
-        var hostelLabel = { "en":this.view.getLabelText('IDP_HOSTEL') };
-        this.selectedIdps[ hostelEntityID ] = hostelLabel;
-        // this.view.addHostelIdp(this.view.getLabelText('IDP_HOSTEL'), false);
-        this.view.addHostelIdp('Hostel IdP', false);
-        if(allowHostelRegistration) {
-            this.view.addNewHostelAccountButton(this.view.getLabelText('BUTTON_HOSTEL'), this.view.getLabelText('TEXT_ACCOUNT'));
-        }
     }
 
     var af = getAllFeeds();
