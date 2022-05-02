@@ -722,6 +722,7 @@ function Wayf(divName) {
     var ifr = false;
     var cssFile = "";
 
+    this.deleteHostelIdp();
     if(inIframe) {
         ifr = true;
         this.view.target = window.parent;
@@ -869,6 +870,39 @@ Wayf.prototype.deleteUsedIdp = function(id) {
         return;
     }
 }
+
+/** function Wayf.prototype.deleteHostelIdp - dalete Hostel IdP from local persistant memory
+ */
+Wayf.prototype.deleteHostelIdp = function() {
+    try {
+        var id = hostelEntityID;
+        var usedIdps = this.persistor.getItem("usedIdps");
+        var usedIdpsObj = JSON.parse(usedIdps);
+        var isValidEntity = false;
+        var entity = usedIdpsObj[id]['entity'];
+        var label;
+
+
+        var usedIdpsObj = JSON.parse(usedIdps);
+        var newUsedIdpsObj = new Object();
+        var haveData = false;
+        for(var key in usedIdpsObj)  {
+            if(key != id) {
+                var val = usedIdpsObj[key];
+                newUsedIdpsObj[key] = val;
+                haveData = true;
+            }
+        }
+        this.persistor.removeItem("usedIdps");
+        if(haveData) {
+            this.persistor.setItem("usedIdps", JSON.stringify(newUsedIdpsObj));
+        }
+    }
+    catch(err) {
+        return;
+    }
+}
+
 
 /** function Wayf.prototype.isIdpInFeed - return true if IdP is in locally stored feed
   */
