@@ -5,13 +5,12 @@
  *
  * static version of WAYF (without javascript)
  *
- * @version ?.? 2013 - 2014
+ * @version 1.1 2013 - 2022
  * @author Jan Chvojka jan.chvojka@cesnet.cz
  * @see getMD - TODO: add link - prepares feed for WAYF
  * @see Mobile Detect - TODO: add link - browser detection
  *
  */
-
 
 include 'Mobile_Detect.php';  // Browser detection library
 include '/opt/getMD/lib/SPInfo.php';  // Feed preparation
@@ -126,25 +125,6 @@ function getUri($lang) {
     return $uri;
 }
 
-/** function getHostelRegistrarUrl - ?
- *
- * @return $uri 
- */
-function getHostelRegistrarUrl() {
-    global $wayfURL, $lang, $hostelRegistrarURL;
-    $uri = $hostelRegistrarURL . "?";
-    foreach($_GET as $key => $value) {
-        $uri .= $key . "=";
-        if($key == "return") {
-            $uri .= urlencode($wayfURL . getUri($lang) .  "fromHostel=true");
-        }
-        else {
-            $uri .= urlencode($value) . "&";
-        }
-    }
-    return $uri;
-}
-
 // Check if SP specified special return entityID variable
 if(isset($_GET['returnIDParam'])) {
     $returnIDVariable = $_GET['returnIDParam'];
@@ -226,23 +206,9 @@ $useFilter = false;
 $entityID = $_GET['entityID'];
 $lang = "cs";
 
-// Hostel
-if(isset($_GET['LoA'])) {
-    $loa = $_GET['LoA'];
-}
 if(isset($_GET['kerberos'])) {
     $kerberos = $_GET['kerberos'];
 }
-if(isset($_GET['fromHostel'])) {
-  $fromHostelRegistrar = $_GET['fromHostel'];  // after registration on Hostel
-}
-
-$hostelRegistrarURL = 'https://adm.hostel.eduid.cz/registrace';
-$hostelId = "https://idp.hostel.eduid.cz/idp/shibboleth";
-$hostelLabel = "Hostel IdP";
-$hostelLogo = "/logo/idp.hostel.eduid.cz.idp.shibboleth.png";
-$allowHostel = false;
-$allowHostelReg = false;
 
 // $_GET["filter"] = "eyAiYWxsb3dGZWVkcyI6IEFycmF5KCJlZHVJRC5jeiIpLCAgImFsbG93SG9zdGVsIjogdHJ1ZSwgImFsbG93SG9zdGVsUmVnIjogdHJ1ZX0=";
 
@@ -263,7 +229,6 @@ else if(isset($_GET["efilter"])) {
 }
 
 $useFilter = false;
-$useHostel = false;
 $filterVersion = 1;
 if(isset($extFilter)) {
     $rawFilter = $extFilter;
@@ -274,12 +239,6 @@ if(isset($extFilter)) {
     $jFilter = json_decode($filter, true);
     if($jFilter !== NULL) {
         $useFilter = true;
-        if(isset($jFilter['allowHostel']) && $jFilter['allowHostel'] == true) {
-            $useHostel = true;
-            if(isset($jFilter['allowHostelReg']) && $jFilter['allowHostelReg'] == true) {
-                $useHostel = true;
-            }
-        }
         if(isset($jFilter['ver']) && $jFilter['ver'] == "2" ) {
           $filterVersion = 2;
         }
@@ -315,26 +274,7 @@ if(isset($_GET['dumb'])) {
 }
 
 
-if(isset($fromHostelRegistrar)) {
-    // Hostel hack - redirect to Hostel to authenticate
-    $returnURL = urldecode($_GET['return']);
-    $returnURL = $returnURL . $returnUrlParamCharacter . $returnIDVariable . "=" . $hostelId;
-    $otherParams = "";
-    foreach($_GET as $gkey => $gval) {
-        if(($gkey ==  "fromHostelRegistrar") || ($gkey == "useHostel") || ($gkey == "entityID") || ($gkey == "return")) {
-            continue;
-        }
-        if($gval == "") {
-            $otherParams = $otherParams . "&" . $gkey;
-        }
-        else {
-            $otherParams = $otherParams . "&" . $gkey . "=" . urlencode($gval);
-        }
-    }
-    $returnURL = $returnURL . $otherParams;
-    header("Location: " . $returnURL);
-}
-else if(!isset($entityID)) {
+if(!isset($entityID)) {
     // missing entityID
     echo $doctype;
     echo "<html><head>";
@@ -557,45 +497,16 @@ else {
     echo "<div class=\"topfiller\"></div>\n";
     echo "<div class=\"scroller\">\n";
 
-    $hostelInserted = false;
-
    foreach($entities as $key => $value) {
         $label = getLabelFromEntity($value);
-        if($useHostel && !$hostelInserted) {
-            if(strCompare($label, $hostelLabel) > 0) {
-                addIdp($hostelLabel, $hostelId, $hostelLogo);
-                $hostelInserted = true;
-            }
-        }
         addIdp($label, $key, $value["logo"]);
     }
 
-/*
-    foreach($entities as $key => $value) {
-        $label = getLabelFromEntity($value);
-        if($allowHostel && !$hostelInserted) {
-            if(strCompare($label, $hostelLabel) > 0) {
-                addIdp($hostelLabel, $hostelId, $hostelLogo);
-                $hostelInserted = true;
-            }
-        }
-        addIdp($label, $key, $value["logo"]);
-    }
-*/
     echo "</div>\n";
     echo "<div class=\"bottomfiller\"></div>\n";
     echo "</div>\n";
 
     echo "<div class=\"bottom\">\n";
-
-    if($useHostel && $allowHostelReg) {
-        $label = $messages["CREATE_ACCOUNT"][$lang_ui];
-        echo "<div class=\"bwrap\">\n";
-        echo "<a href=\"" . getHostelRegistrarUrl() . "\" class=\"button\">";
-        echo $label;
-        echo "</a>";
-        echo "</div>\n";
-    }
 
     // show available languages
     $pself = $_SERVER["PHP_SELF"];
