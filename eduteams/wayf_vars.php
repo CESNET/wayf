@@ -9,7 +9,7 @@
   $filterTitleEN = "eduTEAMS Discovery filter generation";
   $filterAdminsURL = "https://wiki.geant.org/display/eduGAIN/How+to+use+as+a+Service+Provider";
   $filterUsersURL = "https://wiki.geant.org/pages/viewpage.action?pageId=88769546";
-  $langStyle = "txt";  // dropdown or txt (select with lang names) or img (flags) or dropdown
+  $langStyle = "img";  // dropdown or txt (select with lang names) or img (flags) or dropdown
 
   $feeds = "
 { 
