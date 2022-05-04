@@ -36,9 +36,7 @@ function regenerateFilter() {
     var filterVal = document.getElementById('filterval');
     var rawFilterArea = document.getElementById('rawfilter');
     var filterKey = "filter=";
-    var hostel = document.getElementById('hostel');
     var social = document.getElementById('social');
-    var hostelreg = document.getElementById('hostelreg');
     var kontrola = document.getElementById('kontrola');
     var filter = "";
     var checkedFeeds = new Array();
@@ -71,11 +69,6 @@ function regenerateFilter() {
                 fo.allowFeeds[feed.value] = {};
             }
         }
-    }
-
-    fo.allowHostel = hostel.checked;
-    if(hostel.checked) {
-        fo.allowHostelReg = hostelreg.checked;
     }
 
     var filter = JSON.stringify(fo);
@@ -162,26 +155,6 @@ function decodeFilter() {
                     $("[name='" + feed + "-filterType'][value='blacklist']").click();
                     for(idp in filter.allowFeeds[feed].denyIdPs) {
                         $("input[value='" + filter.allowFeeds[feed].denyIdPs[idp] + "']").click();
-                    }
-                }
-            }
-        }
-        if(filter.allowHostel != null) {
-            if(filter.allowHostel instanceof Array) {
-                throw "allowHostel is an Array";
-            }
-            else {
-                if(filter.allowHostel == true) {
-                    $('#hostel').click();
-                    if(filter.allowHostelReg != null) {
-                        if(filter.allowHostelReg instanceof Array) {
-                            throw "allowHostelReg is an Array";
-                        }
-                        else {
-                            if(filter.allowHostelReg == true) {
-                                $('#hostelreg').click();
-                            }
-                        }
                     }
                 }
             }
