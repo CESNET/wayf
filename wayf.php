@@ -91,7 +91,6 @@ function checkReturnURLWhitelist( $returnURL ) {
     "https://felk.cvut.cz/Shibboleth.sso/Login",
     "https://sitola.fi.muni.cz/Shibboleth.sso/DS",  // RT 461485
     "https://www.sitola.cz/Shibboleth.sso/DS",      // RT 461485
-    "https://hostel.eduid.cz/Shibboleth.sso/DS",
     "https://atributy.eduid.cz/Shibboleth.sso/Login",
     "https://gc1.cesnet.cz/Shibboleth.sso/DS", 
     "https://ozzik.cesnet.cz/Shibboleth.sso/DS",
@@ -139,7 +138,6 @@ else if(isset($_GET["efilter"])) {
 $hideFiltered = (isset($_GET['hideFilteredOutIdps']) && $_GET['hideFilteredOutIdps'] != 0) ? true : false;
 
 $useFilter = false;
-$useHostel = false;
 $filterVersion = 1;
 if(isset($extFilter)) {
     $rawFilter = $extFilter;
@@ -149,13 +147,6 @@ if(isset($extFilter)) {
     $jFilter = json_decode($filter, true);
     if($jFilter !== NULL) {
         $useFilter = true;
-        if(isset($jFilter['allowHostel']) && $jFilter['allowHostel'] == true) {
-            $useHostel = true;
-            if(isset($jFilter['allowHostelReg']) && $jFilter['allowHostelReg'] == true) {
-                $useHostel = true;
-            }
-        }
-        $useHostel = false;  /* force turn off hostel */
         if(isset($jFilter['ver']) && $jFilter['ver'] == "2" ) {
           $filterVersion = 2;
         }
@@ -188,20 +179,8 @@ if(isset($_GET['entityID'])) {
     }
 }
 
-// Hostel
-if(isset($_GET['LoA'])) {
-    $_GET['LoA'];
-}
-
 if(isset($_GET['kerberos'])) {
     $kerberos = $_GET['kerberos'];
-}
-
-$hostelRegistrarURL = 'https://adm.hostel.eduid.cz/registrace';
-$hostelId = "https://idp.hostel.eduid.cz/idp/shibboleth";
-
-if(isset($_GET['fromHostel'])) {
-    $fromHostelRegistrar = $_GET['fromHostel'];
 }
 
 $supportedBrowser = true;
@@ -214,26 +193,7 @@ if( strpos( $server_http_agent, 'MSIE 8' ) === TRUE ) {
   $supportedBrowser = false;
 }
 
-if(isset($fromHostelRegistrar)) {
-
-    $returnURL = urldecode($_GET['return']);
-    $returnURL = $returnURL . "&" . $returnIDVariable . "=https://idp.hostel.eduid.cz/idp/shibboleth";
-    $otherParams = "";
-    foreach($_GET as $gkey => $gval) {
-	if(($gkey ==  "fromHostelRegistrar") || ($gkey == "useHostel") || ($gkey == "entityID") || ($gkey == "return")) {
-	    continue;
-	}
-	if($gval == "") {
-            $otherParams = $otherParams . "&" . $gkey;
-	}
-	else {
-            $otherParams = $otherParams . "&" . $gkey . "=" . urlencode($gval);
-	}
-    }
-    $returnURL = $returnURL . $otherParams;
-    header("Location: " . $returnURL);
-}
-else if(!isset($entityID) || !isset($returnURL) || !$checkSPDiscoveryResponseTest ) {
+if(!isset($entityID) || !isset($returnURL) || !$checkSPDiscoveryResponseTest ) {
     
     $searchAndReplace[ '{{errorpage_style}}' ] = "<link rel=\"stylesheet\" type=\"text/css\" href=\"errorpage.css\">";
 
@@ -413,7 +373,7 @@ else {
 
     $otherParams = "";
     foreach($_GET as $gkey => $gval) {
-	    if(($gkey ==  "return") || ($gkey == "entityID") || ($gkey == "target") || ($gkey == "useHostel")) {
+	    if(($gkey ==  "return") || ($gkey == "entityID") || ($gkey == "target")) {
 	      continue;
 	    }
 	    if($gval == "") {
@@ -448,20 +408,6 @@ else {
 
     if( isset( $_GET['entityID'] )) {
       $included_vars_and_script .= "var SPentityID = \"". $_GET['entityID']."\";\n" ;
-    }
-
-    if($useHostel) {
-        $included_vars_and_script .= "var useHostel = true;\n";
-        $hostelIdpParams = "/Shibboleth.sso/Login?SAMLDS=1&" . $returnIDVariable . "=" . urlencode($hostelId);
-        $hostelRegistrarParams = "?return=";
-        $hostelReturnParam = $wayfURL . "?fromHostelRegistrar" . $getParams;
-        $hostelRegistrarParams .= urlencode($hostelReturnParam);
-        $hostelRegistrarParams .= $getParams;
-        $hostelRegistrarURLWithParams = $hostelRegistrarURL . $hostelRegistrarParams;
-        $included_vars_and_script .= "var hostelRegistrarURL = \"" . $hostelRegistrarURLWithParams . "\";\n";
-    }
-    else {
-        $included_vars_and_script .= "var useHostel = false;\n";
     }
 
     $included_vars_and_script .= "var noHTML5URL = \"" . $failbackWayf . "?" . $qs . "\";\n";

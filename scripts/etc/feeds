@@ -25,7 +25,6 @@
 #http://kalmar2.org/simplesaml/module.php/aggregator/?id=kalmarcentral2&set=saml2 Kalmar2 Kalmar2.pem Kalmar2
 
 https://metadata.eduid.cz/entities/eduid eduID.cz metadata.eduid.cz.crt.pem eduID.cz
-https://metadata.eduid.cz/entities/hostel Hostel metadata.eduid.cz.crt.pem Hostel
 https://metadata.eduid.cz/entities/standaloneidps StandaloneIdP metadata.eduid.cz.crt.pem StandaloneIdP
 https://metadata.eduid.cz/entities/socialidps SocialIdPs metadata.eduid.cz.crt.pem SocialIdPs
 !http://mds.edugain.org/ eduGAIN edugain-cert.pem eduGAIN 

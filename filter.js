@@ -5,11 +5,11 @@ var allowEC = "allowEC";
 var denyEC = "denyEC";
 
 function normalizeFeeds() {
-    for(var feed in feeds)  {
+    for (var feed in feeds) {
         var checked = $("input[name='" + feed + "-idp[]']:checked");
-        if(checked.length > 0) {
+        if (checked.length > 0) {
             var ft = ($("input[value='" + feed + "']"))[0];
-            if(!ft.checked) {
+            if (!ft.checked) {
                 ft.click();
             }
         }
@@ -18,16 +18,15 @@ function normalizeFeeds() {
 
 
 function colorIdPs() {
-    for(var key in feeds)  {
+    for (var key in feeds) {
         var feed = feeds[key].url;
         var ft = ($("input[name='" + feed + "-filterType']:checked"))[0];
         var checked = $("input[name='" + feed + "-idp[]']:checked").next();
         var unchecked = $("input[name='" + feed + "-idp[]']:not(:checked)").next();
-        if(ft.value == "whitelist") {
+        if (ft.value == "whitelist") {
             checked.removeClass("black red").addClass("green");
             unchecked.removeClass("green red").addClass("black");
-        }
-        else {
+        } else {
             checked.removeClass("black green").addClass("red");
             unchecked.removeClass("green red").addClass("black");
         }
@@ -41,9 +40,7 @@ function regenerateFilter() {
     var filterVal = document.getElementById('filterval');
     var rawFilterArea = document.getElementById('rawfilter');
     var filterKey = "filter=";
-    var hostel = document.getElementById('hostel');
     var social = document.getElementById('social');
-    var hostelreg = document.getElementById('hostelreg');
     var kontrola = document.getElementById('kontrola');
     var filter = "";
     var checkedFeeds = new Array();
@@ -54,9 +51,9 @@ function regenerateFilter() {
     colorIdPs();
     normalizeFeeds();
     var checkedFeeds = $("input[name='feed[]']:checked");
-    if(checkedFeeds.length>0) {
+    if (checkedFeeds.length > 0) {
         fo.allowFeeds = {};
-        for(var i=0; i<checkedFeeds.length; i++) {
+        for (var i = 0; i < checkedFeeds.length; i++) {
             var feed = checkedFeeds[i];
             fo.allowFeeds[feed.value] = {};
 
@@ -65,9 +62,9 @@ function regenerateFilter() {
             var ecLen = checkedEC.length;
 
             var checkedIdPs = $("input[name='" + feed.value + "-idp[]']:checked");
-            if(checkedIdPs.length>0) {
+            if (checkedIdPs.length > 0) {
                 var fds = Array();
-                for(var j=0; j<checkedIdPs.length; j++) {
+                for (var j = 0; j < checkedIdPs.length; j++) {
                     var idp = checkedIdPs[j];
                     var idpVal = idp.value;
                     fds.push(idpVal);
@@ -76,27 +73,19 @@ function regenerateFilter() {
                 var filterType = ft[0];
                 var fts = filterType.value == "whitelist" ? "allowIdPs" : "denyIdPs";
                 fo.allowFeeds[feed.value][fts] = fds;
-            }
-            else {
+            } else {
                 fo.allowFeeds[feed.value] = {};
             }
 
             var allowedEC = ecList[feed.value][allowEC];
-            if(allowedEC.length > 0) {
+            if (allowedEC.length > 0) {
                 fo.allowFeeds[feed.value][allowEC] = allowedEC;
             }
 
             var deniedEC = ecList[feed.value][denyEC];
-            if(deniedEC.length > 0) {
+            if (deniedEC.length > 0) {
                 fo.allowFeeds[feed.value][denyEC] = deniedEC;
             }
-        }
-    }
-
-    if(hostel.checked) {
-        fo.allowHostel = hostel.checked;
-        if(hostel.checked) {
-            fo.allowHostelReg = hostelreg.checked;
         }
     }
 
@@ -123,7 +112,7 @@ function decodeFilter() {
         var filter = JSON.parse(decoded);
         var encoded = Base64.encode(decoded);
         var kontrola = document.getElementById('kontrola');
-        if(filter.ver == null) {
+        if (filter.ver == null) {
             throw "This is not compatible filter version.";
         }
         $(':checkbox').attr('checked', false);
@@ -131,35 +120,34 @@ function decodeFilter() {
         $("[container='zero']").empty();
         $("[container='allowEC']").empty();
         $("[container='denyEC']").empty();
-        for(var key in feeds) {
+        for (var key in feeds) {
             var feed = feeds[key].url;
             ecList[feed][allowEC] = Array();
             ecList[feed][denyEC] = Array();
         }
-        if(filter.allowFeeds != null) {
-            for(var feed in filter.allowFeeds) {
+        if (filter.allowFeeds != null) {
+            for (var feed in filter.allowFeeds) {
                 var zero = $("[feed='" + feed + "'][container='zero']");
                 var allow = $("[feed='" + feed + "'][container='allowEC']");
                 var deny = $("[feed='" + feed + "'][container='denyEC']");
                 $("input[value='" + feed + "']").click();
-                if(filter.allowFeeds[feed].allowIdPs != null) {
-                    for(var kidp in filter.allowFeeds[feed].allowIdPs) {
+                if (filter.allowFeeds[feed].allowIdPs != null) {
+                    for (var kidp in filter.allowFeeds[feed].allowIdPs) {
                         var idp = filter.allowFeeds[feed].allowIdPs[kidp];
                         var i = $("input[name='" + feed + "-idp[]'][value='" + idp + "']");
                         i.click();
                     }
-                }
-                else if(filter.allowFeeds[feed].denyIdPs != null) {
+                } else if (filter.allowFeeds[feed].denyIdPs != null) {
                     $("[name='" + feed + "-filterType'][value='blacklist']").click();
-                    for(var kidp in filter.allowFeeds[feed].denyIdPs) {
+                    for (var kidp in filter.allowFeeds[feed].denyIdPs) {
                         var idp = filter.allowFeeds[feed].denyIdPs[kidp];
                         var i = $("input[name='" + feed + "-idp[]'][value='" + idp + "']");
                         i.click();
                     }
                 }
 
-                if(filter.allowFeeds[feed].allowEC != null) {
-                    for(var kec in filter.allowFeeds[feed].allowEC) {
+                if (filter.allowFeeds[feed].allowEC != null) {
+                    for (var kec in filter.allowFeeds[feed].allowEC) {
                         var ec = filter.allowFeeds[feed].allowEC[kec];
                         ecList[feed].allowEC.push(ec);
                         var sp = document.createElement("li");
@@ -169,8 +157,8 @@ function decodeFilter() {
                     }
                     regenerateFilter();
                 }
-                if(filter.allowFeeds[feed].denyEC != null) {
-                    for(var kec in filter.allowFeeds[feed].denyEC) {
+                if (filter.allowFeeds[feed].denyEC != null) {
+                    for (var kec in filter.allowFeeds[feed].denyEC) {
                         var ec = filter.allowFeeds[feed].denyEC[kec];
                         ecList[feed].denyEC.push(ec);
                         var sp = document.createElement("li");
@@ -183,10 +171,10 @@ function decodeFilter() {
 
             }
         }
-        for(var key in feeds) {
+        for (var key in feeds) {
             var feed = feeds[key].url;
             var zero = $("[feed='" + feed + "'][container='zero']");
-            for(var kec in ecList[feed].allEC) {
+            for (var kec in ecList[feed].allEC) {
                 var ec = ecList[feed].allEC[kec];
                 var sp = document.createElement("li");
                 sp.classList.add("ecitem");
@@ -194,31 +182,10 @@ function decodeFilter() {
                 zero.append(sp);
             }
         }
-        if(filter.allowHostel != null) {
-            if(filter.allowHostel instanceof Array) {
-                throw "allowHostel is an Array";
-            }
-            else {
-                if(filter.allowHostel == true) {
-                    $('#hostel').click();
-                    if(filter.allowHostelReg != null) {
-                        if(filter.allowHostelReg instanceof Array) {
-                            throw "allowHostelReg is an Array";
-                        }
-                        else {
-                            if(filter.allowHostelReg == true) {
-                                $('#hostelreg').click();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if(kontrola.innerText !== decoded) {
+        if (kontrola.innerText !== decoded) {
             $("#dfdialog").dialog("open");
         }
-    }
-    catch(err) {
+    } catch (err) {
         alert(err);
         $("#errdialog").dialog("open");
         $('#filterval').addClass("errorfilter");
@@ -226,29 +193,27 @@ function decodeFilter() {
 }
 
 function sortEntities(e1, e2) {
-    if(e1 == e2) {
+    if (e1 == e2) {
         return 0;
-    }
-    else if(e1 < e2) {
+    } else if (e1 < e2) {
         return -1;
-    }
-    else {
+    } else {
         return 1;
     }
 }
 
 function getNameFromId(id) {
     var name = id["label"]["cs"];
-    if(name == null) {
+    if (name == null) {
         var name = id["label"]["en"];
     }
-    if(name == null) {
+    if (name == null) {
         var name = id["label"]["de"];
     }
-    if(name == null) {
+    if (name == null) {
         var name = id["label"]["fr"];
     }
-    if(name == null) {
+    if (name == null) {
         var name = id["label"]["it"];
     }
     if (name == null) {
@@ -267,10 +232,10 @@ function sortIdps(a, b) {
 
 function showIdps(url, idpContent, ecContent, feed) {
     var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
-        return function(cont, ecCont, fd) {
-            if(xmlhttp.readyState == 4 ) {
-                switch(xmlhttp.status) {
+    xmlhttp.onreadystatechange = function () {
+        return function (cont, ecCont, fd) {
+            if (xmlhttp.readyState == 4) {
+                switch (xmlhttp.status) {
                     case 200:
                         var feedData = JSON.parse(xmlhttp.responseText);
                         var eArray = feedData.entities;
@@ -283,16 +248,16 @@ function showIdps(url, idpContent, ecContent, feed) {
                             }
                         }
                         keys.sort(sortIdps);
-                        for(var e in keys) {
+                        for (var e in keys) {
                             var ent = keys[e];
                             var value = eArray[ent];
                             var idpName = getNameFromId(value);
                             var i = document.createElement("input");
                             var l = document.createElement("label");
-                            if(typeof value.EC !== 'undefined') {
-                                for(var keyEC in value.EC) {
+                            if (typeof value.EC !== 'undefined') {
+                                for (var keyEC in value.EC) {
                                     var ec = value.EC[keyEC];
-                                    if(ecSet.indexOf(ec) == -1) {
+                                    if (ecSet.indexOf(ec) == -1) {
                                         ecSet.push(ec);
                                     }
                                 }
@@ -327,18 +292,18 @@ function showIdps(url, idpContent, ecContent, feed) {
                         minus.setAttribute("feed", fd);
                         minus.setAttribute("container", "denyEC");
 
-                        for(var key in ecSet) {
+                        for (var key in ecSet) {
                             var ec = ecSet[key];
                             var sp = document.createElement("li");
                             sp.classList.add("ecitem");
                             sp.innerText = ec;
                             zero.appendChild(sp);
                             ecList[fd].allEC.push(ec);
-                       }
+                        }
 
-                       ecContent.appendChild(zero);
-                       ecContent.appendChild(plus);
-                       ecContent.appendChild(minus);
+                        ecContent.appendChild(zero);
+                        ecContent.appendChild(plus);
+                        ecContent.appendChild(minus);
                         break;
                     case 304:
                         break;
@@ -355,7 +320,7 @@ function showIdps(url, idpContent, ecContent, feed) {
 
 function deleteKeyFromArray(key, array) {
     var i = array.indexOf(key);
-    if(i != -1) {
+    if (i != -1) {
         array.splice(i, 1);
     }
 }
@@ -371,7 +336,7 @@ function addECStringToList(ecString, feed, listType) {
     var feedList = ecList[feed];
     var aList = feedList["allowEC"];
     var dList = feedList["denyEC"];
-    switch(listType) {
+    switch (listType) {
 
         case "zero":
             deleteKeyFromArray(ecString, aList);
@@ -401,7 +366,7 @@ function fillFeeds() {
         closeOnEscape: false,
     });
     var feedsDiv = document.getElementById("feedsDiv");
-    for(var key in feeds)  {
+    for (var key in feeds) {
 
         var label = feeds[key].label;
         var url = feeds[key].url;
@@ -483,10 +448,12 @@ function fillFeeds() {
         showIdps("/feed/" + url + ".js", cont, ecCont, url);
     }
 
-    $('.oc').change(function(){ regenerateFilter(); });
+    $('.oc').change(function () {
+        regenerateFilter();
+    });
     $(".zero,.allow,.deny").sortable({
         connectWith: ".zero,.allow,.deny",
-        receive: function(event, ui) {
+        receive: function (event, ui) {
             var ec = $(ui.item).text();
             var feed = $(this).attr("feed");
             var cont = $(this).attr("container");
@@ -499,19 +466,27 @@ function fillFeeds() {
     });
     $("#tabs").tabs();
     $(".info").addClass('ui-state-highlight ui-corner-all').css('margin-bottom', '1em').css('padding', '1em 1em');
-    $("button").button().click(function(event) {
+    $("button").button().click(function (event) {
         event.preventDefault();
         decodeFilter();
     });
     $("#errdialog").dialog({
         autoOpen: false,
-        buttons: [ {text: "Ok", click: function(){ $(this).dialog("close"); } } ],
+        buttons: [{
+            text: "Ok", click: function () {
+                $(this).dialog("close");
+            }
+        }],
         dialogClass: "alert",
         modal: true
     });
     $("#dfdialog").dialog({
         autoOpen: false,
-        buttons: [ {text: "Ok", click: function(){ $(this).dialog("close"); } } ],
+        buttons: [{
+            text: "Ok", click: function () {
+                $(this).dialog("close");
+            }
+        }],
         dialogClass: "alert",
         modal: true
     });
