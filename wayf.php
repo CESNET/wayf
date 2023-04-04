@@ -144,13 +144,12 @@ else if(isset($_GET["efilter"])) {
     curl_close($ch);
 }
 
-$extFilter = htmlspecialchars($extFilter);
-
 $hideFiltered = (isset($_GET['hideFilteredOutIdps']) && $_GET['hideFilteredOutIdps'] != 0) ? true : false;
 
 $useFilter = false;
 $filterVersion = 1;
 if(isset($extFilter)) {
+    $extFilter = htmlspecialchars($extFilter);
     $rawFilter = $extFilter;
     $filter = base64_decode($rawFilter);
     $filter = str_replace("Array(", "[", $filter);
