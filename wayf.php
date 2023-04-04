@@ -144,6 +144,8 @@ else if(isset($_GET["efilter"])) {
     curl_close($ch);
 }
 
+$extFilter = htmlspecialchars($extFilter);
+
 $hideFiltered = (isset($_GET['hideFilteredOutIdps']) && $_GET['hideFilteredOutIdps'] != 0) ? true : false;
 
 $useFilter = false;
@@ -425,10 +427,10 @@ else {
 	    continue;
 	}
 	if($gval == "") {
-            $otherParams = $otherParams . "&" . $gkey;
+            $otherParams = $otherParams . "&" . urlencode($gkey);
 	}
 	else {
-            $otherParams = $otherParams . "&" . $gkey . "=" . urlencode($gval);
+            $otherParams = $otherParams . "&" . urlencode($gkey) . "=" . urlencode($gval);
 	}
         // echo "// $gkey = $gval\n";
     }
@@ -442,13 +444,15 @@ else {
     }
     echo ";\n";
     if($useFilter) {
-        echo "var filter = $filter;\n";
+        $f = urlencode($filter);
+        echo "var filter = $f;\n";
     }
 
     echo "var feedsStr = $allFeeds;\n";
 
     $getParams = "";
     foreach($_GET as $key => $value) {
+            $kval = urlencode($key);
             $gval = urlencode($value);
             $getParams .= "&" . $key . "=" . $gval;
     }

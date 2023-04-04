@@ -150,6 +150,7 @@ function addIdP($label, $id, $logo) {
         }
     }
 
+
     echo "<a class=\"enabled\" title=\"" . $label . "\" href=\"" . $returnURL . $returnUrlParamCharacter . $returnIDVariable . "=" . $id . "\">\n";
     echo "<img class=\"logo\" src=\"" . $logo . "\">\n";
     echo "<span class=\"title\">" . $label . "</span>\n";
@@ -228,6 +229,8 @@ else if(isset($_GET["efilter"])) {
     curl_close($ch);
 }
 
+$extFilter = htmlspecialchars($extFilter);
+
 $useFilter = false;
 $filterVersion = 1;
 if(isset($extFilter)) {
@@ -298,8 +301,9 @@ if(!isset($entityID)) {
     echo"<div id=\"paramlist\"><h2>Seznam parametrů / List of parameters</h2>";
 
     foreach($_GET as $key => $value) {
-        $gval = $_GET[$gparam];
-        echo "[$key] = [$value]<br>\n";
+        $gkey = urlencode($_GET[$key]);
+        $gval = urlencode($_GET[$value]);
+        echo "[$gkey] = [$gval]<br>\n";
     }
     echo "</div><div class=\"roztah\"></div>";
 
@@ -500,7 +504,7 @@ else {
    foreach($entities as $key => $value) {
         $label = getLabelFromEntity($value);
         addIdp($label, $key, $value["logo"]);
-    }
+   }
 
     echo "</div>\n";
     echo "<div class=\"bottomfiller\"></div>\n";
