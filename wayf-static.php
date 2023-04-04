@@ -114,6 +114,7 @@ function idpCmp($a, $b) {
 function getUri($lang) {
     $uri = "?";
     foreach($_GET as $key => $value) {
+        $key = filter_var($key, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $uri .= $key . "=";
         if($key == "lang") {
             $uri .= $lang . "&";
