@@ -443,16 +443,15 @@ else {
     }
     echo ";\n";
     if($useFilter) {
-        $f = urlencode($filter);
-        echo "var filter = $f;\n";
+        echo "var filter = $filter;\n";
     }
 
     echo "var feedsStr = $allFeeds;\n";
 
     $getParams = "";
     foreach($_GET as $key => $value) {
-            $kval = urlencode($key);
-            $gval = urlencode($value);
+            $kval = filter_var($key, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $gval = filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $getParams .= "&" . $key . "=" . $gval;
     }
     echo "var httpParameters = \"$getParams\";\n";
