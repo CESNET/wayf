@@ -452,7 +452,7 @@ else {
     foreach($_GET as $key => $value) {
             $kval = filter_var($key, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $gval = filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $getParams .= "&" . $key . "=" . $gval;
+            $getParams .= "&" . $kval . "=" . $gval;
     }
     echo "var httpParameters = \"$getParams\";\n";
 
