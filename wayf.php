@@ -20,6 +20,15 @@ $charset = "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8
 
 $DEVEL = false;
 
+function sanitizeURL($data) {
+    $ret = $data;
+    $ret = str_replace("<", "", $ret);
+    $ret = str_replace(">", "", $ret);
+    $ret = str_replace("(", "", $ret);
+    $ret = str_replace(")", "", $ret);
+    $ret = str_replace("\"", "", $ret);
+    return $ret;
+}
 
 if(isset($DEVEL) && $DEVEL == true) {
     $failbackWayf = "/wayf-static-dev.php";
@@ -457,7 +466,7 @@ else {
     echo "var httpParameters = \"$getParams\";\n";
 
     if( isset( $_GET['entityID'] )) {
-      echo "var SPentityID = \"". $_GET['entityID']."\";\n" ;
+      echo "var SPentityID = \"". sanitizeURL($_GET['entityID'])."\";\n" ;
     }
 
     // ---------- Knihovny? Nein, danke! ----------
