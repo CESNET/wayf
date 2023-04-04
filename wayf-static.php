@@ -119,7 +119,7 @@ function getUri($lang) {
             $uri .= $lang . "&";
         }
         else {
-            $uri .= urlencode($value) . "&";
+            $uri .= filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS) . "&";
         }
     }
     return $uri;
@@ -299,8 +299,8 @@ if(!isset($entityID)) {
     echo"<div id=\"paramlist\"><h2>Seznam parametrů / List of parameters</h2>";
 
     foreach($_GET as $key => $value) {
-        $gkey = urlencode($_GET[$key]);
-        $gval = urlencode($_GET[$value]);
+        $gkey = filter_var($_GET[$key], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $gval = filter_var($_GET[$value], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         echo "[$gkey] = [$gval]<br>\n";
     }
     echo "</div><div class=\"roztah\"></div>";
@@ -518,8 +518,10 @@ else {
       echo "<form action=\"". $pself ."\" method=\"GET\">\n";
       //echo "<div class=\"form-lang\" style=\"overflow: hidden; width:200px; white-space: nowrap;\">";
       foreach( $_GET as $key => $value) {
+          $gkey = filter_var($key, FILTER_SANITIZE_SPECIAL_CHARS);
+          $gval = filter_var($value, FILTER_SANITIZE_SPECIAL_CHARS);
         if( $key != "lang" ) {
-          echo "<input type=hidden name=\"". $key ."\" value=\"". $value ."\">\n";
+          echo "<input type=hidden name=\"". $gkey ."\" value=\"". $gval ."\">\n";
         }
       }
       echo "<select name=\"lang\" class=\"lang\" id=\"selLang\">";
