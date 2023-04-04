@@ -232,7 +232,6 @@ else if(isset($_GET["efilter"])) {
 $useFilter = false;
 $filterVersion = 1;
 if(isset($extFilter)) {
-    $extFilter = htmlspecialchars($extFilter);
     $rawFilter = $extFilter;
     $filter = base64_decode($rawFilter);
     $filter = str_replace("Array(", "[", $filter);

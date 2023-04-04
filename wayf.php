@@ -20,6 +20,7 @@ $charset = "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8
 
 $DEVEL = false;
 
+
 if(isset($DEVEL) && $DEVEL == true) {
     $failbackWayf = "/wayf-static-dev.php";
     $script = file_get_contents("wayf-dev.js");
@@ -149,7 +150,6 @@ $hideFiltered = (isset($_GET['hideFilteredOutIdps']) && $_GET['hideFilteredOutId
 $useFilter = false;
 $filterVersion = 1;
 if(isset($extFilter)) {
-    $extFilter = htmlspecialchars($extFilter);
     $rawFilter = $extFilter;
     $filter = base64_decode($rawFilter);
     $filter = str_replace("Array(", "[", $filter);
@@ -426,10 +426,10 @@ else {
 	    continue;
 	}
 	if($gval == "") {
-            $otherParams = $otherParams . "&" . urlencode($gkey);
+            $otherParams = $otherParams . "&" . filter_var($gkey, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 	}
 	else {
-            $otherParams = $otherParams . "&" . urlencode($gkey) . "=" . urlencode($gval);
+            $otherParams = $otherParams . "&" . filter_var($gkey, FILTER_SANITIZE_FULL_SPECIAL_CHARS) . "=" . filter_var($gval, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 	}
         // echo "// $gkey = $gval\n";
     }
