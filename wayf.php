@@ -27,6 +27,14 @@ function sanitizeURL($data) {
     $ret = str_replace("(", "", $ret);
     $ret = str_replace(")", "", $ret);
     $ret = str_replace("\"", "", $ret);
+    $ret = str_replace("%3b", "", $ret);
+    $ret = str_replace("%3B", "", $ret);
+    $ret = str_replace("%28", "", $ret);
+    $ret = str_replace("%29", "", $ret);
+    $ret = str_replace("%3c", "", $ret);
+    $ret = str_replace("%3C", "", $ret);
+    $ret = str_replace("%3e", "", $ret);
+    $ret = str_replace("%3E", "", $ret);
     return $ret;
 }
 
@@ -136,11 +144,11 @@ function checkReturnURLWhitelist( $returnURL ) {
 
 $wayfBase = "https://" . $_SERVER['HTTP_HOST'];
 if(isset($_GET['return'])) {
-  $returnURL = $_GET['return'];
+  $returnURL = sanitizeURL($_GET['return']);
 }
 
 if(isset($_GET["filter"])) {
-    $extFilter = $_GET["filter"];
+    $extFilter = sanitizeURL($_GET["filter"]);
 }
 else if(isset($_GET["efilter"])) {
     $ch = curl_init($_GET["efilter"]);
@@ -149,7 +157,7 @@ else if(isset($_GET["efilter"])) {
     $cdata = curl_exec($ch);
     if(!curl_errno($ch)){
         $info = curl_getinfo($ch);
-        $extFilter = $cdata;
+        $extFilter = sanitizeURL($cdata);
     } 
     curl_close($ch);
 }
@@ -170,7 +178,7 @@ if(isset($extFilter)) {
           $filterVersion = 2;
         }
     } else {
-      echo "Unable decode filter.<br>\n";
+      echo "Unable to decode filter.<br>\n";
     }    
     
 }
@@ -184,7 +192,7 @@ else {
 
 $checkSPDiscoveryResponseTest = false;
 if(isset($_GET['entityID'])) {
-    $entityID = $_GET['entityID'];
+    $entityID = sanitizeURL($_GET['entityID']);
     $checkSPDiscoveryResponseTest = checkSPDiscoveryResponse( $entityID, $returnURL );
     if( $checkSPDiscoveryResponseTest == false ) {
       $checkSPDiscoveryResponseTest = checkReturnURLWhitelist( $returnURL );
@@ -201,7 +209,7 @@ if(isset($_GET['entityID'])) {
 }
 
 if(isset($_GET['kerberos'])) {
-    $kerberos = $_GET['kerberos'];
+    $kerberos = sanitizeURL($_GET['kerberos']);
 }
 
 $supportedBrowser = true;
@@ -279,7 +287,7 @@ else {
 
     if(isset($_GET["returnIDParam"])) {
         $useIDParam = true;
-        $idParam = $_GET["returnIDParam"];
+        $idParam = sanitizeURL($_GET["returnIDParam"]);
     }
     else {
         $useIDParam = false;
@@ -379,7 +387,7 @@ else {
 
     // $prefLang = ""; get prefLang from wayf_vars.php
     if(isset($_GET['lang'])) {
-	    $prefLang = $_GET['lang'];
+	    $prefLang = sanitizeURL($_GET['lang']);
     } else {
       // use language from http accept header
       if( isset( $_SERVER["HTTP_ACCEPT_LANGUAGE"] )) {
