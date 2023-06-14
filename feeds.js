@@ -9,11 +9,6 @@
         "url": "eduGAIN"
     },
 
-    "LoginMuni": {
-        "label": "LoginMuni",
-        "url": "LoginMuni"
-    },
-
     "SocialIdPs": {
         "label": "Social IdPs",
         "url": "SocialIdPs"
