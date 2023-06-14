@@ -310,9 +310,7 @@ else {
     echo $doctype;
     echo "<html><head><title>Discovery service</title>";
     echo $charset;
-    // echo "<link rel=\"stylesheet\" href=\"jquery-ui.min.css\" />";
     echo "<script type=\"text/javascript\" src=\"jquery.js\"></script>";
-    // echo "<script type=\"text/javascript\" src=\"jquery-ui.min.js\"></script>";
     echo $edge;
 
     if($mobile) {
