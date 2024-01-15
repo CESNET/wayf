@@ -1162,8 +1162,9 @@ function searchAuto( query, wayf, callback, saveQuery ) {
 }
 
 function containAllSubstring( str, substringArray ) {
+  str = str.replace( /-/g, '' );
   for(var curSubstring in substringArray ) {
-    if( str.toLowerCase().indexOf( substringArray[curSubstring].toLowerCase() ) == -1 ) {
+    if( str.toLowerCase().indexOf( substringArray[curSubstring].toLowerCase().replace(/-/g, '' ) ) == -1 ) {
       return false;
     }
   }
