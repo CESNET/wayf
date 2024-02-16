@@ -277,7 +277,7 @@
         <xsl:variable name="eid">
           <xsl:value-of select="substring-after(@entityID,'://')"/><xsl:if test="@eduidmd:authnContextClassRef">.<xsl:value-of select="@eduidmd:authnContextClassRef"/></xsl:if>
         </xsl:variable>
-        <xsl:value-of select="translate($eid, '/:&amp;=', '....')"/>
+        <xsl:value-of select="translate($eid, '/:&amp;=', '____')"/>
         <xsl:text>.</xsl:text>
         <xsl:value-of select="$fileType"/>
       </xsl:otherwise>
