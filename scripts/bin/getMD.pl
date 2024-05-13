@@ -796,6 +796,7 @@ my $conf = AppConfig->new({CASE	=> 1,
 			     logo_fill_color
 			     test_verify
 			   ),
+			 logo_density1x1 => {ARGCOUNT => ARGCOUNT_HASH},
 			 oldRun_max_age	=> {default => undef},
 			 oldRun_min_kept	=> {default => 5});
 

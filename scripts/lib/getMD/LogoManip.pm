@@ -38,7 +38,19 @@ sub convert {
   my $config = $self->{conf};
 
   my $logo  = new Image::Magick;
-  $self->{err} = $logo->Read($self->{input});
+
+  my $logo_filename = $self->{input};
+
+  # set density 1x1 for configured logos
+  my $density1x1 = $config->logo_density1x1();
+  foreach my $density_filename (keys %$density1x1) {
+    if ($density1x1->{ $density_filename } eq $logo_filename ) {
+      carp "Set density 1x1";
+      $logo->Set(density=>'1x1');
+    }
+  }
+
+  $self->{err} = $logo->Read($logo_filename);
   if ($self->{err}) {
       my $info = '';
       if (-s $self->{input}) {
