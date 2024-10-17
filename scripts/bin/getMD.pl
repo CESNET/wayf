@@ -332,7 +332,7 @@ sub get {
     $targetfile .= $self->{id} if ($targetfile =~ /\/$/);
     warn "tt: $targetfile\n";
 
-    my @cmdArgs = ('--retry', 1, '--max-time', 180, '--silent', '--show-error', '--insecure', '--location',
+    my @cmdArgs = ('--retry', 1, '--max-time', 30, '--silent', '--show-error', '--insecure', '--location',
 		   '--create-dirs',
 		   '--output', $targetfile.'.curl');
     push @cmdArgs, ('--time-cond', $targetfile) if ($opt eq 'conditional');
@@ -421,7 +421,7 @@ sub downloadLogo {
 			$storedFname);
   if ($self->{conf}->cmd_curl) {
     $self->{cmd} = getMD::Cmd->new($self->{conf}->cmd_curl,
-				   qw(--retry 1 --max-time 10 --silent --show-error --insecure --location),
+				   qw(--retry 1 --max-time 2 --silent --show-error --insecure -f),
 				   '--output', $targetfile.'.curl',
 				   #'--time-cond', $targetfile,
 				   '--create-dirs',
@@ -680,6 +680,8 @@ sub getLogos {
   my $self = shift;
   main::info "getLogos(".$self->{id}."; ".$self->getLogoListFname.")\n";
 
+  my $actualTime = time;
+
   my $fh = IO::File->new($self->getLogoListFname,'r') or do {
     warn "error opening logolist file ".$self->getLogoListFname.":$!";
     return;
@@ -687,6 +689,7 @@ sub getLogos {
   while (my $l = $fh->getline) {
     my $tmpF;
     my $tmpFO;
+    my $hardlinked;
 
     chomp;
     next if ($l =~ /^\s*$/); # skip line if it is only whitespace
@@ -694,6 +697,7 @@ sub getLogos {
     my $rem = $1; my $loc = $2;
     my $locURIprefix = $self->{conf}->logoPubBaseURI;
     my $locDir = $self->{conf}->logoPubDir;
+    my $oldLogo = $self->{conf}->oldPubBase ."/". $loc;
     $loc =~ s/^$locURIprefix/$locDir/;
 
     if ($rem =~ /^data:image(.*)$/) {
@@ -714,10 +718,35 @@ sub getLogos {
       $tmpF = $tmpFO->filename;
 #      close $tmpFO;
     } else {
-      $tmpF = $self->downloadLogo($rem);
+
+      # polish - if exist old converted logo => create hard link to it
+      if( -e $oldLogo ) {
+        # old logo exist
+        my $modTime = (stat($oldLogo))[9];
+        if(( $actualTime - $modTime) < $self->{conf}->oldRun_max_age ) {
+          # logo is newer than a day
+	  warn "make hardlink to ". $oldLogo ."\n";
+	  $hardlinked = link $oldLogo, $loc;
+	  if( $hardlinked != 1 ) {
+            # hardlink failed, so download logo
+            $tmpF = $self->downloadLogo($rem);
+          }
+        } else {
+          # logo is too old, so download new logo
+          $tmpF = $self->downloadLogo($rem);
+	}
+      } else {
+        # old logo don't exist, so download new logo
+        $tmpF = $self->downloadLogo($rem);
+      }
     }
+
     unless ($tmpF and $self->processLogo($tmpF, $loc)) {
-      copy(catfile($self->{conf}->logoPredefDir,'missing.png'),$loc);
+      if( $hardlinked != 1 ) {
+        warn "missing logo, copy missing.png\n";
+	#copy(catfile($self->{conf}->logoPredefDir,'missing.png'),$loc);
+	link (catfile($self->{conf}->logoPredefDir,'missing.png') ,$loc );
+      }
     }
     $self->b64Logo($loc);
     close $tmpFO if (defined $tmpFO);
