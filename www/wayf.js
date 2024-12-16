@@ -495,6 +495,10 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
       loadVisibleLogos(); }  
     );
 
+    $( ".content" ).on('touchend', function() {
+      loadVisibleLogos(); }  
+    );
+
     $( document.body ).off( "keyup" ).keyup( function(e) {
 
         var act = $( ".selected" );
