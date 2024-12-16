@@ -743,9 +743,9 @@ sub getLogos {
 
     unless ($tmpF and $self->processLogo($tmpF, $loc)) {
       if( $hardlinked != 1 ) {
-        warn "missing logo, copy missing.png\n";
-	#copy(catfile($self->{conf}->logoPredefDir,'missing.png'),$loc);
-	link (catfile($self->{conf}->logoPredefDir,'missing.png') ,$loc );
+        warn "missing logo: ". $loc .", copy missing.png\n";
+      	copy(catfile($self->{conf}->logoPredefDir,'missing.png'),$loc);
+	      #link (catfile($self->{conf}->logoPredefDir,'missing.png') ,$loc );
       }
     }
     $self->b64Logo($loc);
