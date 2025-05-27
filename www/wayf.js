@@ -130,19 +130,6 @@ function toAscii(data) {
   return ret.replace(/[ÁÅČĎÉĚÍŃÓÖŘŠŤÚÝŽ]/g, replaceEntity );
 }
 
-/** function isInIframe - returns true if script is embedded in frame
-  */
-function isInIframe() {
-    try {
-        if(top.location.href != window.location.href) {
-            return true;
-        }
-        return false;
-    } catch (e) {
-        return true;
-    }
-}
-
 /** function getAllFeeds - returns all feeds
   */
 function getAllFeeds() {
@@ -1089,11 +1076,7 @@ function getFilterVersion() {
 /** function listData - starts here - onload page
   */
 function listData() {
-    if( typeof alertDsx !== 'undefined' && alertDsx == true ) {
-      alert('As announced in March 2020 on the DSX web page and to the SP administrators, the DSX Discovery Service was officially decommissioned on December 31st 2020 and it was shut down on February 1st. \n\nWe suggest to use alternative Discovery Service like the SeamlessAccess Discovery Service (https://seamlessaccess.org/). \n\nContact: support@edugain.org');
-    }
 
-    inIframe = isInIframe();  // running in IFRAME?
     filterVersion = getFilterVersion();
     wayf = new Wayf('wayf');
     if(wayf.userHasSavedIdps()) { 
