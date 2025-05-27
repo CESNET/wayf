@@ -1256,27 +1256,6 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
               feedCount--;
             }
           }
-
-        }
-      } else {
-        // filter v1
-        if( ("allowIdPs" in filter)) {
-          idpFilter = true;
-        }
-
-        if("allowFeeds" in filter) {
-            filterAllowFeeds = true;
-            if(!isSetup) {
-                feedCount = Object.keys(filter["allowFeeds"]).length;
-                for(feed in filter["allowFeeds"]) {
-                    feedUrl = af[filter["allowFeeds"][feed]];
-                    if( typeof feedUrl !== 'undefined' ) {
-                      wayf.getFeed(filter["allowFeeds"][feed], feedUrl, false, false, true );
-                    } else {
-                      feedCount--;
-                    }
-                }
-            }
         }
       }
     }
