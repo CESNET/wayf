@@ -361,6 +361,7 @@ else {
     }
 
     echo "<script type=\"text/javascript\">\n";
+    echo "use strict;"
 
     addVariable("isTablet", $detect->isTablet() );
     addVariable("isMobile", $mobile);
