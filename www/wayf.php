@@ -13,6 +13,7 @@ $edge = "<meta http-equiv=\"X-UA-Compatible\" content=\"edge\" >";
 //$charset = "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">";
 
 $doctype = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n";
+$doctype = "<!doctype html>\n";
 $charset = "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n";
 
 //$doctype = "<!DOCTYPE html>\n";
