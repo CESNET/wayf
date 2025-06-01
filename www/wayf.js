@@ -130,7 +130,7 @@ function toAscii(data) {
   return ret.replace(/[ÁÅČĎÉĚÍŃÓÖŘŠŤÚÝŽ]/g, replaceEntity );
 }
 
-/** function getAllFeeds - returns all feeds in variable feeds (sent from .php)
+/** function getAllFeeds - returns all feeds
   */
 function getAllFeeds() {
     var ret = Array();
