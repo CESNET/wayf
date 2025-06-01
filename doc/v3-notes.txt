@@ -1,0 +1,11 @@
+  Clean up code phase
+
+Enabled "use strict;" in javascript.
+
+Only filter version 2 is supported. Code of filter version 1 will be removed.
+Code for run in <frame> will be removed.
+
+PHP script defines:
+allFeeds - list of json file with feeds
+feeds - structure with name of feed and json file of feeds (getAllFeeds())
+

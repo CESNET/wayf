@@ -130,7 +130,7 @@ function toAscii(data) {
   return ret.replace(/[ÁÅČĎÉĚÍŃÓÖŘŠŤÚÝŽ]/g, replaceEntity );
 }
 
-/** function getAllFeeds - returns all feeds
+/** function getAllFeeds - returns all feeds in variable feeds (sent from .php)
   */
 function getAllFeeds() {
     var ret = Array();
@@ -203,7 +203,7 @@ View.prototype.addButton = function(label) {
 }
 
 View.prototype.createSetupList = function() {
-    wayf.listSavedIdps(true,true);
+    wayf.listSavedIdps(true);
 }
 
 /** function View.prototype.createContainer - generate <div> container for IdP list
@@ -227,7 +227,7 @@ View.prototype.createContainer = function(label, showSetup, showClosing, isSetup
         var callback = (function() {
             return function() {
                 if(wayf.userHasSavedIdps()) {
-                    wayf.listSavedIdps(false,true);
+                    wayf.listSavedIdps(false);
                 } else {
                     wayf.listAllIdps(false);
                 }
@@ -850,7 +850,7 @@ Wayf.prototype.deleteUsedIdp = function(id) {
             if(haveData) {
                 this.persistor.setItem("usedIdps", JSON.stringify(newUsedIdpsObj));
                 this.usedIdps = newUsedIdpsObj;
-                this.listSavedIdps(true,true);
+                this.listSavedIdps(true);
             }
             else {
                 this.listAllIdps(false);
@@ -1078,10 +1078,11 @@ function getFilterVersion() {
 function listData() {
 
     filterVersion = getFilterVersion();
+
     wayf = new Wayf('wayf');
     if(wayf.userHasSavedIdps()) { 
         noSearchSavedIdps = true;
-        wayf.listSavedIdps(false,false);  // display saved IdPs
+        wayf.listSavedIdps(false);  // display saved IdPs
     }
     else {
         wayf.listAllIdps(false);  // display All IdPs in feeds
@@ -1229,7 +1230,7 @@ Wayf.prototype.getLabelFromLabels = function(labels) {
 
 /** function Wayf.prototype.listSavedIdps - display saved or all IdP
   */
-Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
+Wayf.prototype.listSavedIdps = function(isSetup) {
     var idpFilter = false;
     var filterAllowFeeds = false;
     var isListEnabledIdpsEmpty = true;
@@ -1257,7 +1258,7 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
             }
           }
         }
-      }
+      } 
     }
     else {
         /* load all feeds, filter is not set */
@@ -1275,7 +1276,7 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
     var usedIdps = this.usedIdps;
     this.view.deleteContainer();
     var langCallback = function() {
-        wayf.listSavedIdps(isSetup,true);
+        wayf.listSavedIdps(isSetup);
     }
     if(isSetup) {
         this.view.createContainer(this.view.getLabelText('SETUP'), false, true, true, false, langCallback);
