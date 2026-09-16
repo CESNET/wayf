@@ -352,10 +352,11 @@ else {
 
             if( isset( $jFilter['allowFeeds'][ $feed ]['denyIdPs'] )) {
               $filterDenyIdps = true;
-            }
-
-            if( isset( $jFilter['allowFeeds'][ $feed ]['allowIdPs'] )) {
-              $filterAllowIdps = true;
+            } else {
+              // deny has higher priority
+              if( isset( $jFilter['allowFeeds'][ $feed ]['allowIdPs'] )) {
+                $filterAllowIdps = true;
+              }
             }
 
             if( isset( $jFilter['allowFeeds'][ $feed ]['allowRA'] )) {
@@ -368,9 +369,14 @@ else {
 
             if( isset( $jFilter['allowFeeds'][ $feed ]['allowEC'] )) {
               $filterAllowEC = true;
+              // disable filter out hide-from-discovery
               if( in_array( HIDEFROMDISCOVERY, $jFilter['allowFeeds'][ $feed ]['allowEC'] )) {
                 $filterHideFromDiscovery = false;
-              } 
+                // singular case, allowed is only HfD, it is non-sense
+                if( count( $jFilter['allowFeeds'][ $feed ]['allowEC'] ) == 1 ) {
+                  $filterAllowEC = false;
+                }
+              }
             }
 
             if( isset( $jFilter['allowFeeds'][ $feed ]['denyEC'] )) {
@@ -378,66 +384,44 @@ else {
             }
 
             foreach($c_entities as $key => $value) {
-              if( $filterDenyIdps && in_array( $key, $jFilter['allowFeeds'][ $feed ]['denyIdPs'])) {
-                continue;
-              }
- 
-              $allowCurIdp = false;
-              if( $filterAllowIdps ) { 
-                if( in_array( $key, $jFilter['allowFeeds'][ $feed ]['allowIdPs'] )) {
-                        $entities[$key] = $value;
-                        continue;
-                }
-              }
-              
-              if( $filterAllowRA || $filterDenyRA ) { 
-                if( isset( $c_entities[ $key ][ RA ] )) {
-                  if( $filterDenyRA && in_array( $c_entities[ $key ][ RA ], $jFilter['allowFeeds'][ $feed ]['denyRA'])) {
-                      //print_r( $c_entities[ $key ] ); echo "<br>";
-                      //print_r( $ecMetadata ); echo "<br><br>";
-                      continue;
-                  }
-                  if( $filterAllowRA && ! in_array( $c_entities[ $key ][ RA ], $jFilter['allowFeeds'][ $feed ]['allowRA'])) {
-                      continue;
-                  }
-                } else {
-                  if( $filterAllowRA ) { // || ( $filterDenyEC && ! $allowCurIdp )) 
-                    // eid has not any RegistrationAuthority => can't be on list allowedRA
-                    continue;
-                  }
-                }
-                $entities[$key] = $value;
+              $entityEC = isset( $value[ EC ] ) ? $value[ EC ] : array();
+              $entityRA = isset( $value[ RA ] ) ? $value[ RA ] : null;
+
+              if( $filterDenyIdps && in_array( $key, $jFilter['allowFeeds'][ $feed ]['denyIdPs'] )) {
                 continue;
               }
 
-              if( $filterAllowEC || $filterDenyEC || $filterHideFromDiscovery ) { 
-                if( isset( $c_entities[ $key ][ EC ] )) {
-                  foreach( $c_entities[ $key ][ EC ] as $ecMetadata ) {
-                    if( $filterDenyEC && in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['denyEC'])) {
-                      //print_r( $c_entities[ $key ] ); echo "<br>";
-                      //print_r( $ecMetadata ); echo "<br><br>";
-                      continue 2;
-                    }
-                    if( $filterAllowEC && ! in_array( $ecMetadata, $jFilter['allowFeeds'][ $feed ]['allowEC'])) {
-                      continue 2;
-                    }
-                    if( $filterHideFromDiscovery && strcmp( $ecMetadata, HIDEFROMDISCOVERY ) == 0 ) {
-                      continue 2;
-                    }
-                  }
-                } else {
-                  if( $filterAllowEC ) { // || ( $filterDenyEC && ! $allowCurIdp )) 
-                    // eid has not any entity-category => can't be on list allowedEC
-                    continue;
-                  }
+              if( $filterAllowIdps ) {
+                // allowIdPs per feed, extended by allowEC and allowRA
+                if( ! ( in_array( $key, $jFilter['allowFeeds'][ $feed ]['allowIdPs'] )
+                        || ( $filterAllowEC && count( array_intersect( $entityEC, $jFilter['allowFeeds'][ $feed ]['allowEC'] )) > 0 )
+                        || ( $filterAllowRA && in_array( $entityRA, $jFilter['allowFeeds'][ $feed ]['allowRA'], true )))) {
+                  continue;
                 }
-                $entities[$key] = $value;
+              } else {
+                // RegistrationAuthority, first remove denyRA, then add allowRA
+                if( $filterDenyRA && in_array( $entityRA, $jFilter['allowFeeds'][ $feed ]['denyRA'], true )) {
+                  continue;
+                }
+                if( $filterAllowRA && ! in_array( $entityRA, $jFilter['allowFeeds'][ $feed ]['allowRA'], true )) {
+                  continue;
+                }
+
+                // entity category, first remove denyEC, then add allowEC
+                if( $filterDenyEC && count( array_intersect( $entityEC, $jFilter['allowFeeds'][ $feed ]['denyEC'] )) > 0 ) {
+                  continue;
+                }
+                if( $filterAllowEC && count( array_intersect( $entityEC, $jFilter['allowFeeds'][ $feed ]['allowEC'] )) == 0 ) {
+                  continue;
+                }
+              }
+
+              // filter out hide-from-discovery IdP
+              if( $filterHideFromDiscovery && in_array( HIDEFROMDISCOVERY, $entityEC )) {
                 continue;
               }
 
-              if( ! $filterAllowIdps && ! $filterDenyIdps && ! $filterAllowEC && ! $filterDenyEC && $filterHideFromDiscovery ) {
-                $entities[$key] = $value;
-              }
+              $entities[$key] = $value;
             }
 
             // print_r( $c_entities );
