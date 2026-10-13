@@ -1459,6 +1459,10 @@ Wayf.prototype.listSavedIdps = function(isSetup, displayIdps) {
                                 eidAll = false;
                                 if( filter.allowFeeds[feed].allowEC.indexOf( hideFromDiscoveryCategory ) >= 0 ) {
                                   filterHideFromDiscovery = false;
+                                  // singular case, allowed is only HfD, it is non-sense
+                                  if( filter.allowFeeds[feed].allowEC.length == 1 ) {
+                                    filterAllowEC = false;
+                                  }
                                 }
                               }
 
